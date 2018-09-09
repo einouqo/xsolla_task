@@ -19,9 +19,9 @@
         private $type;
 
         /**
-         * @var int
+         * @var string
          */
-        private $size;
+        public $size;
 
         /**
          * @var int

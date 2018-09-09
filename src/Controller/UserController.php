@@ -21,10 +21,15 @@
         {
             $bodyParams = $request->getParsedBody();
             $authenticationData = array (
-                'email' => $bodyParams['email'],
-                'password' => $bodyParams['password']
+                'email' => array_key_exists('email', $bodyParams) ?
+                    $bodyParams['email']:
+                    null,
+                'password' => array_key_exists('password', $bodyParams) ?
+                    $bodyParams['password']:
+                    null,
             );
 
-            $result = $this->userService->authentication($authenticationData);
+            //return $response->withJson($this->userService->authentication($authenticationData));
+            return $response->write($this->userService->authentication($authenticationData));
         }
     }

@@ -86,7 +86,7 @@
             $this->dbConnection->executeQuery(
                 'INSERT INTO users (email, password, id_company, id_personalData) VALUES (?, ?, ?, ?)',
                 [
-                    $newUser->getEmial(),
+                    $newUser->getEmail(),
                     $newUser->getPassword(),
                     $newUser->getCompanyName(),
                     $personalInfoID
@@ -96,7 +96,7 @@
 
         public function registration(EmployeeAbstract $newUser)
         {
-            if ($this->isUniqueEmail($newUser->getEmial()) && $this->isCompanyExist($newUser->getCompanyName())) {
+            if ($this->isUniqueEmail($newUser->getEmail()) && $this->isCompanyExist($newUser->getCompanyName())) {
                 $personalInfoID = $this->getPersonalInfoIfExist($newUser);
                 if (is_null($personalInfoID)) {
                     $this->insertIntoPersonalInfo($newUser);
@@ -110,12 +110,12 @@
             }
         }
 
-        private function getRegisteredUser(string $email, string $password)
+        private function getUserInfo(string $email, string $password)
         {
             $userData = $this->dbConnection->fetchAssoc(
                 'SELECT users.id, personalInfo.name, personalInfo.lastname, company.name AS companyName, users.email, users.password, personalInfo.phone
                 FROM users
-                INNER JOIN personalInfo ON users.id_personalData = personalInfo.id AND users.email = \'?\' AND users.password = \'?\'
+                INNER JOIN personalInfo ON users.id_personalData = personalInfo.id AND users.email = ? AND users.password = ?
                 INNER JOIN company ON users.id_company = company.id;',
                 [
                     $email,
@@ -123,26 +123,19 @@
                 ]
             );
 
-            if (is_null($userData['id'])) {
-                $this->errorMessage = 'User not found';
-                return null;
-            } else {
-                return new Employee($userData);
-            }
+            return $userData;
         }
 
-        private function getItems(int $warehouseID)
+        private function getItems(string $address)
         {
             $items = [];
             $rows = $this->dbConnection->executeQuery(
-                    'SELECT id, infoWarehouses.name, addresses.address, infoWarehouses.capacity 
-                        FROM addresses, infoWarehouses
-                        WHERE id = ? AND addresses.address = infoWarehouses.address',
+                    'SELECT items.id, price, items.name, type, size, quantity FROM items, quantity 
+                    WHERE quantity.address = ? AND items.id = quantity.id_item',
                     [
-                        $warehouseID
+                        $address
                     ]
                 );
-
             while ($row = $rows->fetch(\PDO::FETCH_ASSOC)) {
                 $items[] = new Item($row);
             }
@@ -163,30 +156,21 @@
                     ]
                 );
                 $warehouse = new Warehouse($row);
-                $items = $this->getItems($warehouse->getID());
+                $items = $this->getItems($warehouse->getAddress());
                 foreach ($items as $item){
                     $warehouse->addItem($item);
                 }
-                array_push($warehouses, new $warehouse);
+                array_push($warehouses, $warehouse);
             }
             return $warehouses;
         }
 
         private function giveWarehouses(Employee &$employee)
         {
-            $employeeID = $employee->getID();
-            $companyID = $this->dbConnection->fetchAssoc(
-                'SELECT id_company FROM users WHERE id = ?',
-                [
-                    $employeeID
-                ]
-            );
-
             $warehousesID = $this->dbConnection->fetchAssoc(
-                'SELECT id_address FROM userAccesseble WHERE id_company = ? AND id_user = ?',
+                'SELECT id_address FROM userAccessible WHERE id_user = ?',//не много ли условий?//!!! тут услови вообщедурушле, тебе надо адреса получить (точно адреса?)
                 [
-                    $companyID['id_company'],
-                    $employeeID
+                    $employee->getID()
                 ]
             );
 
@@ -194,6 +178,43 @@
 
             foreach ($warehouses as $wh) {
                 $employee->addWarehouse($wh);
+            }
+        }
+
+
+        private function getUserInfoByID()
+        {
+            if (isset($_SESSION['user_id'])){
+                $userData = $this->dbConnection->fetchAssoc(
+                    'SELECT users.id, personalInfo.name, personalInfo.lastname, company.name AS companyName, users.email, users.password, personalInfo.phone
+                    FROM users
+                    INNER JOIN personalInfo ON users.id_personalData = personalInfo.id AND users.id = ?
+                    INNER JOIN company ON users.id_company = company.id;',
+                    [
+                        $_SESSION['user_id']
+                    ]
+                );
+                return $userData;
+            } else {
+                $this->errorMessage = 'User not found';
+                return null;
+            }
+
+        }
+
+        private function getRegisteredUser(string $email = null, string $password = null)
+        {
+            if (is_null($email)) {
+                $userData = $this->getUserInfoByID();
+            } else {
+                $userData = $this->getUserInfo($email, $password);
+            }
+
+            if (isset($userData['id'])) {
+                return new Employee($userData);
+            } else {
+                $this->errorMessage = 'User not found';
+                return null;
             }
         }
 
@@ -205,7 +226,8 @@
             } else {
                 $this->giveWarehouses($user);
                 $_SESSION['user_id'] = $user->getID();
-                return 'Hello, '.$user->getName();
+                //return $user->warehousesList();
+                return 'Hello, '.$user->getName().'!';
             }
         }
     }

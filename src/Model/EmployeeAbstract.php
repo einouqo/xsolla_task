@@ -87,6 +87,16 @@
             array_push($this->warehouses, $wh);
         }
 
+        //!!!!!!!!!!!!!!!!!!
+        public function warehousesList()
+        {
+            $info = array();
+            foreach ($this->warehouses as $wh){
+                array_push($info, $wh->fullInfoToArray());
+            }
+            return $info;
+        }
+
         public function getCompanyName()
         {
             return $this->companyName;

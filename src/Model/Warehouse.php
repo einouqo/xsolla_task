@@ -46,7 +46,7 @@
         {
             $this->loaded += $item->quantity;
             foreach ($this->items as $key => $elem){
-                if ($elem->id == $item->id){
+                if ($elem->id == $item->id && $elem->size == $item->size){
                     $this->items[$key]->quantity += $item->quantity;
                     return;
                 }
@@ -110,7 +110,13 @@
             return $shortInfo += ['items' => $this->getItemsInfo()];
         }
 
-        public function getID(){
+        public function getID()
+        {
             return $this->id;
+        }
+
+        public function getAddress()
+        {
+            return $this->address;
         }
     }
