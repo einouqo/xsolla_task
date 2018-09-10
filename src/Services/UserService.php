@@ -26,4 +26,14 @@
         {
             return $this->userRepository->authentication($authenticationData);
         }
+
+        public function logoff()
+        {
+            return $this->userRepository->logoff();
+        }
+
+        public function delete()
+        {
+            return $this->userRepository->delete();
+        }
     }

@@ -32,4 +32,14 @@
             //return $response->withJson($this->userService->authentication($authenticationData));
             return $response->write($this->userService->authentication($authenticationData));
         }
+
+        public function logoff(Request $request, Response $response, $args = [])
+        {
+            return $response->write($this->userService->logoff());
+        }
+
+        public function delete(Request $request, Response $response, $args = [])
+        {
+            return $response->write($this->userService->delete());
+        }
     }

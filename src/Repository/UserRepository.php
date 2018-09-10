@@ -7,6 +7,8 @@
     use App\Model\Warehouse;
     use Doctrine\DBAL\Connection;
 
+    session_start();
+
     class UserRepository
     {
         /**
@@ -123,7 +125,12 @@
                 ]
             );
 
-            return $userData;
+            if (isset($userData['id'])) {
+                return new Employee($userData);
+            } else {
+                $this->errorMessage = 'User not found';
+                return null;
+            }
         }
 
         private function getItems(string $address)
@@ -155,12 +162,14 @@
                         $whID
                     ]
                 );
-                $warehouse = new Warehouse($row);
-                $items = $this->getItems($warehouse->getAddress());
-                foreach ($items as $item){
-                    $warehouse->addItem($item);
+                if (gettype($row) === 'array') {
+                    $warehouse = new Warehouse($row);
+                    $items = $this->getItems($warehouse->getAddress());
+                    foreach ($items as $item) {
+                        $warehouse->addItem($item);
+                    }
+                    array_push($warehouses, $warehouse);
                 }
-                array_push($warehouses, $warehouse);
             }
             return $warehouses;
         }
@@ -168,7 +177,7 @@
         private function giveWarehouses(Employee &$employee)
         {
             $warehousesID = $this->dbConnection->fetchAssoc(
-                'SELECT id_address FROM userAccessible WHERE id_user = ?',//не много ли условий?//!!! тут услови вообщедурушле, тебе надо адреса получить (точно адреса?)
+                'SELECT id_address FROM userAccessible WHERE id_user = ?',
                 [
                     $employee->getID()
                 ]
@@ -184,7 +193,7 @@
 
         private function getUserInfoByID()
         {
-            if (isset($_SESSION['user_id'])){
+            if (isset($_SESSION['user_id'])) {
                 $userData = $this->dbConnection->fetchAssoc(
                     'SELECT users.id, personalInfo.name, personalInfo.lastname, company.name AS companyName, users.email, users.password, personalInfo.phone
                     FROM users
@@ -194,9 +203,9 @@
                         $_SESSION['user_id']
                     ]
                 );
-                return $userData;
+                return new Employee($userData);
             } else {
-                $this->errorMessage = 'User not found';
+                $this->errorMessage = 'You need to login';
                 return null;
             }
 
@@ -204,18 +213,14 @@
 
         private function getRegisteredUser(string $email = null, string $password = null)
         {
-            if (is_null($email)) {
-                $userData = $this->getUserInfoByID();
-            } else {
-                $userData = $this->getUserInfo($email, $password);
-            }
+            return is_null($email) ?
+                $this->getUserInfoByID():
+                $this->getUserInfo($email, $password);
+        }
 
-            if (isset($userData['id'])) {
-                return new Employee($userData);
-            } else {
-                $this->errorMessage = 'User not found';
-                return null;
-            }
+        private function fillUser(Employee &$employee)
+        {
+            $this->giveWarehouses($employee);
         }
 
         public function authentication(array $authenticationData)
@@ -224,10 +229,75 @@
             if (is_null($user)) {
                 return $this->errorMessage;
             } else {
-                $this->giveWarehouses($user);
+                $this->fillUser($user);
                 $_SESSION['user_id'] = $user->getID();
                 //return $user->warehousesList();
                 return 'Hello, '.$user->getName().'!';
+            }
+        }
+
+        public function logoff()
+        {
+            if (isset($_SESSION['user_id'])){
+                session_destroy();
+            }
+            return 'Bye-Bye';
+        }
+
+        private function deletePersonalData(int $personalDataID)
+        {
+            $countAccounts = $this->dbConnection->fetchAssoc(
+                'SELECT COUNT(*) as count FROM users WHERE id_personalData = ?',
+                [
+                    $personalDataID
+                ]
+            );
+
+            if ($countAccounts['count'] == 0)
+            {
+                $this->dbConnection->executeQuery(
+                    'DELETE FROM personalInfo WHERE id = ?',
+                    [
+                        $personalDataID
+                    ]
+                );
+            }
+        }
+
+        private function deleteAccount(int $userID)
+        {
+            $personalDataID = $this->dbConnection->fetchAssoc(
+                'SELECT id_personalData FROM users WHERE id = ?',
+                [
+                    $userID
+                ]
+            );
+
+            $this->dbConnection->executeQuery(
+                'DELETE FROM userAccessible WHERE id_user = ?',
+                [
+                    $userID
+                ]
+            );
+
+            $this->dbConnection->executeQuery(
+                'DELETE FROM users WHERE id = ?',
+                [
+                    $userID
+                ]
+            );
+
+            $this->deletePersonalData($personalDataID['id_personalData']);
+        }
+
+        public function delete()
+        {
+            if (isset($_SESSION['user_id'])){
+                $this->deleteAccount($_SESSION['user_id']);
+                session_destroy();
+                return 'Your account was deleted.';
+            } else {
+                return 'You need to login.';
             }
         }
     }
