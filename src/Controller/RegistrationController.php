@@ -27,7 +27,7 @@
                 'companyID' => $bodyParams['companyID'],
                 'email' => $bodyParams['email'],
                 'phone' => $bodyParams['phone'],
-                'password' => $bodyParams['password']
+                'password' => md5($bodyParams['password'])
             );
 
             $result = $this->userService->registration($newUserData);

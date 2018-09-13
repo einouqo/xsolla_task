@@ -58,7 +58,7 @@
                 $this->userRepository->getUserInfo($data['email'], $data['password']):
                 $this->getUser();
             if (is_null($user)) {
-                return $this->userRepository->errorMessage;//? если ни данных, ни сессии => хуй поми какая ошибка
+                return $this->userRepository->errorMessage;
             } else {
                 $_SESSION['user_id'] = $user->getID();
                 //return $user->warehousesList();

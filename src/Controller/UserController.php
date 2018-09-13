@@ -25,7 +25,7 @@
                     $bodyParams['email'] :
                     null,
                 'password' => array_key_exists('password', $bodyParams) ?
-                    $bodyParams['password'] :
+                    md5($bodyParams['password']) :
                     null
             );
             //return $response->withJson($this->userService->authentication($authenticationData));
