@@ -24,7 +24,7 @@
                 'id' => null,
                 'name' => $bodyParams['name'],
                 'lastname' => $bodyParams['lastname'],
-                'companyName' => $bodyParams['companyName'],
+                'companyID' => $bodyParams['companyID'],
                 'email' => $bodyParams['email'],
                 'phone' => $bodyParams['phone'],
                 'password' => $bodyParams['password']
@@ -35,7 +35,7 @@
                 $response->withJson(
                     [
                         'name' => $result->getName(),
-                        'company' => $result->getCompanyName()
+                        'company' => $result->getCompanyID()
                     ],
                     200
                 ):

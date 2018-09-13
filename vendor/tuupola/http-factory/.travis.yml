@@ -1,0 +1,34 @@
+sudo: false
+
+language: php
+
+php:
+    - 7.1
+    - 7.2
+    - nightly
+
+env:
+    - PSR7_LIBRARY="zendframework/zend-diactoros"
+    - PSR7_LIBRARY="nyholm/psr7"
+    - PSR7_LIBRARY="slim/slim"
+    - PSR7_LIBRARY="guzzlehttp/psr7"
+
+matrix:
+    fast_finish: true
+    allow_failures:
+        - php: nightly
+
+before_script:
+    - travis_retry composer self-update
+    - if [ "$PSR7_LIBRARY" != "" ]; then composer require --dev $PSR7_LIBRARY; fi
+    - travis_retry composer install --no-interaction
+
+script:
+    - make travis
+
+after_success:
+    - if [[ $TRAVIS_PHP_VERSION != "hhvm" ]]; then bash <(curl -s https://codecov.io/bash); fi
+
+cache:
+    directories:
+        - $HOME/.composer/cache

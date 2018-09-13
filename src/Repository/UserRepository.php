@@ -1,32 +1,40 @@
 <?php
     namespace App\Repository;
 
+    use App\Controller\Actions\Authentication;
+    use App\Controller\Actions\Change;
+    use App\Controller\Actions\Delete;
     use App\Model\Employee;
     use App\Model\EmployeeAbstract;
     use App\Model\Item;
     use App\Model\Warehouse;
     use Doctrine\DBAL\Connection;
 
-    session_start();
 
     class UserRepository
     {
-        /**
-         * @var string
-         */
-        private $errorMessage;
 
         /**
          * @var Connection
          */
         private $dbConnection;
 
+        /**
+         * @var string
+         */
+        public $errorMessage;
+
         public function __construct(Connection $dbConnection)
         {
             $this->dbConnection = $dbConnection;
         }
 
-        private function isUniqueEmail(string $email)
+        public function lastInsertId()
+        {
+            return $this->dbConnection->lastInsertId();
+        }
+
+        public function isUniqueEmail(string $email)
         {
             $dbEmail = $this->dbConnection->fetchAssoc(
                 'SELECT email FROM users WHERE email = ?',
@@ -42,12 +50,12 @@
             }
         }
 
-        private function isCompanyExist(string $companyName)
+        public function isCompanyExist(string $companyID)
         {
             $companyID = $this->dbConnection->fetchAssoc(
-                'SELECT id FROM company WHERE name = ?',
+                'SELECT id FROM company WHERE id = ?',
                 [
-                    $companyName
+                    $companyID
                 ]
             );
             if (is_null($companyID['id'])){
@@ -58,7 +66,7 @@
             }
         }
 
-        private function getPersonalInfoIfExist(EmployeeAbstract $newUser)
+        public function getPersonalInfoIfExist(EmployeeAbstract $newUser)
         {
             $personalInfoID = $this->dbConnection->fetchAssoc(
                 'SELECT id FROM personalInfo WHERE name = ? AND lastname = ? AND phone = ?',
@@ -71,7 +79,7 @@
             return $personalInfoID['id'];
         }
 
-        private function insertIntoPersonalInfo(EmployeeAbstract $newUser)
+        public function insertIntoPersonalInfo(EmployeeAbstract $newUser)
         {
             $this->dbConnection->executeQuery(
                 'INSERT INTO personalInfo (name, lastname, phone) VALUES (?, ?, ?)',
@@ -83,42 +91,46 @@
             );
         }
 
-        private function insertIntoUsers(EmployeeAbstract $newUser, int $personalInfoID)
+        public function insertIntoUsers(EmployeeAbstract $newUser, int $personalInfoID)
         {
             $this->dbConnection->executeQuery(
                 'INSERT INTO users (email, password, id_company, id_personalData) VALUES (?, ?, ?, ?)',
                 [
                     $newUser->getEmail(),
                     $newUser->getPassword(),
-                    $newUser->getCompanyName(),
+                    $newUser->getCompanyID(),
                     $personalInfoID
                 ]
             );
         }
 
-        public function registration(EmployeeAbstract $newUser)
+        public function isUniqueCompanyEmployee(int $companyID, string $name, string $lastname)
         {
-            if ($this->isUniqueEmail($newUser->getEmail()) && $this->isCompanyExist($newUser->getCompanyName())) {
-                $personalInfoID = $this->getPersonalInfoIfExist($newUser);
-                if (is_null($personalInfoID)) {
-                    $this->insertIntoPersonalInfo($newUser);
-                    $personalInfoID = $this->dbConnection->lastInsertId();
-                }
-                $this->insertIntoUsers($newUser, $personalInfoID);
-                $newUser->setID($this->dbConnection->lastInsertId());
-                return $newUser;
+            $rows = $this->dbConnection->fetchAssoc(
+                'SELECT COUNT(*) as count FROM users
+                    INNER JOIN personalInfo ON users.id_personalData = personalInfo.id AND id_company = ? 
+                    AND personalInfo.name = ? AND personalInfo.lastname = ?',
+                [
+                    $companyID,
+                    $name,
+                    $lastname
+                ]
+            );
+
+            if ($rows['count'] == 0) {
+                return true;
             } else {
-                return $this->errorMessage;
+                $this->errorMessage = 'User with the same name and company is already exist.';
+                return false;
             }
         }
 
-        private function getUserInfo(string $email, string $password)
+        public function getUserInfo(string $email, string $password)
         {
             $userData = $this->dbConnection->fetchAssoc(
-                'SELECT users.id, personalInfo.name, personalInfo.lastname, company.name AS companyName, users.email, users.password, personalInfo.phone
+                'SELECT users.id, personalInfo.name, personalInfo.lastname, users.id_company AS companyID, users.email, users.password, personalInfo.phone
                 FROM users
-                INNER JOIN personalInfo ON users.id_personalData = personalInfo.id AND users.email = ? AND users.password = ?
-                INNER JOIN company ON users.id_company = company.id;',
+                INNER JOIN personalInfo ON users.id_personalData = personalInfo.id AND users.email = ? AND users.password = ?',
                 [
                     $email,
                     $password
@@ -133,115 +145,17 @@
             }
         }
 
-        private function getItems(string $address)
+        public function getUserInfoByID(int $userID)
         {
-            $items = [];
-            $rows = $this->dbConnection->executeQuery(
-                    'SELECT items.id, price, items.name, type, size, quantity FROM items, quantity 
-                    WHERE quantity.address = ? AND items.id = quantity.id_item',
-                    [
-                        $address
-                    ]
-                );
-            while ($row = $rows->fetch(\PDO::FETCH_ASSOC)) {
-                $items[] = new Item($row);
-            }
-
-            return $items;
-        }
-
-        private function getWarehouses(array $warehousesID)
-        {
-            $warehouses = array();
-            foreach ($warehousesID as $whID) {
-                $row = $this->dbConnection->fetchAssoc(
-                    'SELECT id, infoWarehouses.name, addresses.address, infoWarehouses.capacity 
-                        FROM addresses, infoWarehouses
-                        WHERE id = ? AND addresses.address = infoWarehouses.address',
-                    [
-                        $whID
-                    ]
-                );
-                if (gettype($row) === 'array') {
-                    $warehouse = new Warehouse($row);
-                    $items = $this->getItems($warehouse->getAddress());
-                    foreach ($items as $item) {
-                        $warehouse->addItem($item);
-                    }
-                    array_push($warehouses, $warehouse);
-                }
-            }
-            return $warehouses;
-        }
-
-        private function giveWarehouses(Employee &$employee)
-        {
-            $warehousesID = $this->dbConnection->fetchAssoc(
-                'SELECT id_address FROM userAccessible WHERE id_user = ?',
+            $userData = $this->dbConnection->fetchAssoc(
+                'SELECT users.id, personalInfo.name, personalInfo.lastname, users.id_company AS companyID, users.email, users.password, personalInfo.phone
+                FROM users
+                INNER JOIN personalInfo ON users.id_personalData = personalInfo.id AND users.id = ?',
                 [
-                    $employee->getID()
+                    $userID
                 ]
             );
-
-            $warehouses = $this->getWarehouses($warehousesID);
-
-            foreach ($warehouses as $wh) {
-                $employee->addWarehouse($wh);
-            }
-        }
-
-
-        private function getUserInfoByID()
-        {
-            if (isset($_SESSION['user_id'])) {
-                $userData = $this->dbConnection->fetchAssoc(
-                    'SELECT users.id, personalInfo.name, personalInfo.lastname, company.name AS companyName, users.email, users.password, personalInfo.phone
-                    FROM users
-                    INNER JOIN personalInfo ON users.id_personalData = personalInfo.id AND users.id = ?
-                    INNER JOIN company ON users.id_company = company.id;',
-                    [
-                        $_SESSION['user_id']
-                    ]
-                );
-                return new Employee($userData);
-            } else {
-                $this->errorMessage = 'You need to login';
-                return null;
-            }
-
-        }
-
-        private function getRegisteredUser(string $email = null, string $password = null)
-        {
-            return is_null($email) ?
-                $this->getUserInfoByID():
-                $this->getUserInfo($email, $password);
-        }
-
-        private function fillUser(Employee &$employee)
-        {
-            $this->giveWarehouses($employee);
-        }
-
-        public function authentication(array $authenticationData)
-        {
-            $user = $this->getRegisteredUser($authenticationData['email'], $authenticationData['password']);
-            if (is_null($user)) {
-                return $this->errorMessage;
-            } else {
-                $this->fillUser($user);
-                $_SESSION['user_id'] = $user->getID();
-                //return $user->warehousesList();
-                return 'Hello, '.$user->getName().'!';
-            }
-        }
-
-        public function logoff()
-        {
-            if (isset($_SESSION['user_id'])){
-                session_destroy();
-            }
-            return 'Bye-Bye';
+            return new Employee($userData);
         }
 
         private function deletePersonalData(int $personalDataID)
@@ -264,40 +178,61 @@
             }
         }
 
-        private function deleteAccount(int $userID)
+        public function deleteAccount(int $id)
         {
-            $personalDataID = $this->dbConnection->fetchAssoc(
+            $result = $this->dbConnection->fetchAssoc(
                 'SELECT id_personalData FROM users WHERE id = ?',
                 [
-                    $userID
+                    $id
                 ]
             );
 
             $this->dbConnection->executeQuery(
                 'DELETE FROM userAccessible WHERE id_user = ?',
                 [
-                    $userID
+                    $id
                 ]
             );
 
             $this->dbConnection->executeQuery(
                 'DELETE FROM users WHERE id = ?',
                 [
-                    $userID
+                    $id
                 ]
             );
 
-            $this->deletePersonalData($personalDataID['id_personalData']);
+            $this->deletePersonalData($result['id_personalData']);
         }
 
-        public function delete()
+        public function change(Employee $employee, array $data)
         {
-            if (isset($_SESSION['user_id'])){
-                $this->deleteAccount($_SESSION['user_id']);
-                session_destroy();
-                return 'Your account was deleted.';
-            } else {
-                return 'You need to login.';
-            }
+            $this->dbConnection->executeQuery(
+                'UPDATE users SET email = ?, password = ? WHERE id = ?',
+                [
+                    key_exists('email', $data) ?
+                        $data['email']:
+                        $employee->getEmail(),
+                    key_exists('password', $data) ?
+                        $data['password']:
+                        $employee->getPassword(),
+                    $employee->getID()
+                ]
+            );
+
+            $this->dbConnection->executeQuery(
+                'UPDATE personalInfo SET name = ?, lastname = ?, phone = ? WHERE id = ?',
+                [
+                    key_exists('name', $data) ?
+                        $data['name']:
+                        $employee->getName(),
+                    key_exists('lastname', $data) ?
+                        $data['lastname']:
+                        $employee->getLastname(),
+                    key_exists('phone', $data) ?
+                        $data['phone']:
+                        $employee->getPhone(),
+                    $employee->getID()
+                ]
+            );
         }
     }

@@ -22,13 +22,12 @@
             $bodyParams = $request->getParsedBody();
             $authenticationData = array (
                 'email' => array_key_exists('email', $bodyParams) ?
-                    $bodyParams['email']:
+                    $bodyParams['email'] :
                     null,
                 'password' => array_key_exists('password', $bodyParams) ?
-                    $bodyParams['password']:
-                    null,
+                    $bodyParams['password'] :
+                    null
             );
-
             //return $response->withJson($this->userService->authentication($authenticationData));
             return $response->write($this->userService->authentication($authenticationData));
         }
@@ -41,5 +40,29 @@
         public function delete(Request $request, Response $response, $args = [])
         {
             return $response->write($this->userService->delete());
+        }
+
+        public function change(Request $request, Response $response, $args = [])
+        {
+            $bodyParams = $request->getParsedBody();
+            $newData = array (
+                'email' => array_key_exists('email', $bodyParams) ?
+                    $bodyParams['email'] :
+                    null,
+                'password' => array_key_exists('password', $bodyParams) ?
+                    $bodyParams['password'] :
+                    null,
+                'name' => array_key_exists('name', $bodyParams) ?
+                    $bodyParams['name'] :
+                    null,
+                'lastname' => array_key_exists('lastname', $bodyParams) ?
+                    $bodyParams['lastname'] :
+                    null,
+                'phone' => array_key_exists('phone', $bodyParams) ?
+                    $bodyParams['phone'] :
+                    null
+            );
+
+            return $response->write($this->userService->change($newData));
         }
     }

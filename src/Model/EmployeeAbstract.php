@@ -19,9 +19,9 @@
         protected $lastname;
 
         /**
-         * @var string
+         * @var int
          */
-        protected $companyName;
+        protected $companyID;
 
         /**
          * @var string
@@ -48,7 +48,7 @@
             $this->id = $data['id'];
             $this->name = $data['name'];
             $this->lastname = $data['lastname'];
-            $this->companyName = $data['companyName'];
+            $this->companyID = $data['companyID'];
             $this->email = $data['email'];
             $this->password = $data['password'];
             $this->phone = $data['phone'];
@@ -97,9 +97,9 @@
             return $info;
         }
 
-        public function getCompanyName()
+        public function getCompanyID()
         {
-            return $this->companyName;
+            return $this->companyID;
         }
 
         public function getName()
@@ -135,5 +135,19 @@
         public function setID(int $id)
         {
             $this->id = $id;
+        }
+
+        /**
+         * @param array $newData
+         * @return null|string
+         */
+        public function isChangeable(array $newData)
+        {
+            foreach ($newData as $field => $data) {
+                if ($this->$field == $data) {
+                    return $field;
+                }
+            }
+            return null;
         }
     }

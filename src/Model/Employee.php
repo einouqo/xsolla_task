@@ -9,10 +9,6 @@
         }
 
         /**
-         * @param Warehouse $from
-         * @param Warehouse $to
-         * @param int $id
-         * @param int $quantity
          * @return string
          */
         public function moveItem(Warehouse $from, Warehouse $to, int $id, int $quantity)
