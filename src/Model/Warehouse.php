@@ -1,22 +1,12 @@
 <?php
     namespace App\Model;
 
-    class Warehouse
+    class Warehouse extends Room
     {
-        /**
-         * @var int
-         */
-        public $id;
-
         /**
          * @var string
          */
         private $name;
-
-        /**
-         * @var string
-         */
-        public $address;
 
         /**
          * @var int
@@ -35,9 +25,8 @@
 
         public function __construct(array $data)
         {
-            $this->id = $data['id'];
+            parent::__construct($data);
             $this->name = $data['name'];
-            $this->address = $data['address'];
             $this->capacity = $data['capacity'];
             $this->items = array();
         }
@@ -54,11 +43,13 @@
             array_push($this->items, $item);
         }
 
-         /**
-          * 'null' - removing failed
-          * 'Item' - removing done
-          * @return mixed
-          */
+        /**
+         * 'null' - removing failed
+         * 'Item' - removing done
+         * @param int $id
+         * @param int $quantity
+         * @return mixed
+         */
         public function removeItem(int $id, int $quantity)
         {
             foreach ($this->items as $key => $elem) {
@@ -108,15 +99,5 @@
             $shortInfo = $this->shortInfoToArray();
             $shortInfo += ['capacity' => $this->capacity];
             return $shortInfo += ['items' => $this->getItemsInfo()];
-        }
-
-        public function getID()
-        {
-            return $this->id;
-        }
-
-        public function getAddress()
-        {
-            return $this->address;
         }
     }

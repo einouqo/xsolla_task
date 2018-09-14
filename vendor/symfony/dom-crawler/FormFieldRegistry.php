@@ -184,7 +184,7 @@ class FormFieldRegistry
     }
 
     /**
-     * Splits a field name into segments as a web browser would do.
+     * Splits a field name into segments as a public browser would do.
      *
      * <code>
      *     getSegments('base[foo][3][]') = array('base', 'foo, '3', '');

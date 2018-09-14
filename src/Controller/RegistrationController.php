@@ -27,18 +27,10 @@
                 'companyID' => $bodyParams['companyID'],
                 'email' => $bodyParams['email'],
                 'phone' => $bodyParams['phone'],
-                'password' => md5($bodyParams['password'])
+                'password' => md5($bodyParams['password']),
+                'admin' => $bodyParams['admin']
             );
 
-            $result = $this->userService->registration($newUserData);
-            return gettype($result) !== 'string' ?
-                $response->withJson(
-                    [
-                        'name' => $result->getName(),
-                        'company' => $result->getCompanyID()
-                    ],
-                    200
-                ):
-                $response->withStatus(406)->write($result);
+            return $response->write($this->userService->registration($newUserData));
         }
     }

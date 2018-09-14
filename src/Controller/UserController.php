@@ -50,7 +50,7 @@
                     $bodyParams['email'] :
                     null,
                 'password' => array_key_exists('password', $bodyParams) ?
-                    $bodyParams['password'] :
+                    md5($bodyParams['password']) :
                     null,
                 'name' => array_key_exists('name', $bodyParams) ?
                     $bodyParams['name'] :

@@ -1,13 +1,9 @@
 <?php
     namespace App\Repository;
 
-    use App\Controller\Actions\Authentication;
-    use App\Controller\Actions\Change;
-    use App\Controller\Actions\Delete;
     use App\Model\Employee;
     use App\Model\EmployeeAbstract;
-    use App\Model\Item;
-    use App\Model\Warehouse;
+    use App\Model\EmployeeAdmin;
     use Doctrine\DBAL\Connection;
 
 
@@ -37,15 +33,31 @@
         public function isUniqueEmail(string $email)
         {
             $dbEmail = $this->dbConnection->fetchAssoc(
-                'SELECT email FROM users WHERE email = ?',
+                'SELECT COUNT(*) AS count FROM users WHERE email = ?',
                 [
                     $email
                 ]
             );
-            if (is_null($dbEmail['email'])){
+            if ($dbEmail['count'] == 0){
                 return true;
             } else {
                 $this->errorMessage = 'A user with this email already exists.';
+                return false;
+            }
+        }
+
+        public function isUniquePhone(string $phone)
+        {
+            $dbPhone = $this->dbConnection->fetchAssoc(
+                'SELECT COUNT(*) AS count FROM personalInfo WHERE phone = ?',
+                [
+                    $phone
+                ]
+            );
+            if ($dbPhone['count'] == 0){
+                return true;
+            } else {
+                $this->errorMessage = 'A user with this phone already exists.';
                 return false;
             }
         }
@@ -66,40 +78,41 @@
             }
         }
 
-        public function getPersonalInfoIfExist(EmployeeAbstract $newUser)
+        public function getPersonalInfoIfExist(array $data)
         {
             $personalInfoID = $this->dbConnection->fetchAssoc(
                 'SELECT id FROM personalInfo WHERE name = ? AND lastname = ? AND phone = ?',
                 [
-                    $newUser->getName(),
-                    $newUser->getLastname(),
-                    $newUser->getPhone()
+                    $data['name'],
+                    $data['lastname'],
+                    $data['phone']
                 ]
             );
             return $personalInfoID['id'];
         }
 
-        public function insertIntoPersonalInfo(EmployeeAbstract $newUser)
+        public function insertIntoPersonalInfo(array $data)
         {
             $this->dbConnection->executeQuery(
                 'INSERT INTO personalInfo (name, lastname, phone) VALUES (?, ?, ?)',
                 [
-                    $newUser->getName(),
-                    $newUser->getLastname(),
-                    $newUser->getPhone()
+                    $data['name'],
+                    $data['lastname'],
+                    $data['phone']
                 ]
             );
         }
 
-        public function insertIntoUsers(EmployeeAbstract $newUser, int $personalInfoID)
+        public function insertIntoUsers(array $data, int $personalInfoID)
         {
             $this->dbConnection->executeQuery(
-                'INSERT INTO users (email, password, id_company, id_personalData) VALUES (?, ?, ?, ?)',
+                'INSERT INTO users (email, password, id_company, id_personalData, admin) VALUES (?, ?, ?, ?, ?)',
                 [
-                    $newUser->getEmail(),
-                    $newUser->getPassword(),
-                    $newUser->getCompanyID(),
-                    $personalInfoID
+                    $data['email'],
+                    $data['password'],
+                    $data['companyID'],
+                    $personalInfoID,
+                    $data['admin']
                 ]
             );
         }
@@ -127,8 +140,20 @@
 
         public function getUserInfo(string $email, string $password)
         {
+            $userEmail = $this->dbConnection->fetchAssoc(
+                'SELECT email FROM users WHERE email = ?',
+                [
+                    $email
+                ]
+            );
+
+            if (!isset($userEmail['email'])) {
+                $this->errorMessage = 'User not found';
+                return null;
+            }
+
             $userData = $this->dbConnection->fetchAssoc(
-                'SELECT users.id, personalInfo.name, personalInfo.lastname, users.id_company AS companyID, users.email, users.password, personalInfo.phone
+                'SELECT users.id, personalInfo.name, personalInfo.lastname, users.id_company AS companyID, users.email, users.password, users.admin ,personalInfo.phone
                 FROM users
                 INNER JOIN personalInfo ON users.id_personalData = personalInfo.id AND users.email = ? AND users.password = ?',
                 [
@@ -138,9 +163,11 @@
             );
 
             if (isset($userData['id'])) {
-                return new Employee($userData);
+                return $userData['admin'] == 1 ?
+                    new EmployeeAdmin($userData):
+                    new Employee($userData);
             } else {
-                $this->errorMessage = 'User not found';
+                $this->errorMessage = 'Password don\'t valid';
                 return null;
             }
         }
@@ -148,14 +175,16 @@
         public function getUserInfoByID(int $userID)
         {
             $userData = $this->dbConnection->fetchAssoc(
-                'SELECT users.id, personalInfo.name, personalInfo.lastname, users.id_company AS companyID, users.email, users.password, personalInfo.phone
+                'SELECT users.id, personalInfo.name, personalInfo.lastname, users.id_company AS companyID, users.email, users.password, users.admin, personalInfo.phone
                 FROM users
                 INNER JOIN personalInfo ON users.id_personalData = personalInfo.id AND users.id = ?',
                 [
                     $userID
                 ]
             );
-            return new Employee($userData);
+            return $userData['admin'] == 1 ?
+                new EmployeeAdmin($userData):
+                new Employee($userData);
         }
 
         private function deletePersonalData(int $personalDataID)
@@ -204,7 +233,7 @@
             $this->deletePersonalData($result['id_personalData']);
         }
 
-        public function change(Employee $employee, array $data)
+        public function change(EmployeeAbstract $employee, array $data)
         {
             $this->dbConnection->executeQuery(
                 'UPDATE users SET email = ?, password = ? WHERE id = ?',
@@ -220,7 +249,8 @@
             );
 
             $this->dbConnection->executeQuery(
-                'UPDATE personalInfo SET name = ?, lastname = ?, phone = ? WHERE id = ?',
+                'UPDATE personalInfo SET name = ?, lastname = ?, phone = ? WHERE id IN
+                  (SELECT id_personalData FROM users WHERE id = ?)',
                 [
                     key_exists('name', $data) ?
                         $data['name']:

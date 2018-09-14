@@ -38,11 +38,6 @@
          */
         protected $password;
 
-        /**
-         * @var Warehouse[]
-         */
-        protected $warehouses;
-
         protected function __construct(array $data)
         {
             $this->id = $data['id'];
@@ -52,49 +47,6 @@
             $this->email = $data['email'];
             $this->password = $data['password'];
             $this->phone = $data['phone'];
-            $this->warehouses = array();
-        }
-
-        /**
-         * @return array
-         */
-        public function fullInfoToArray()
-        {
-            $result = array(
-                'warehouses' => array()
-            );
-            foreach ($this->warehouses as $wh){
-                array_push($result['warehouses'], $wh->fullInfoToArray());
-            }
-            return $result;
-        }
-
-        /**
-         * @param int $id
-         * @return Warehouse|mixed|null
-         */
-        public function getWarehouseByID(int $id)
-        {
-            foreach ($this->warehouses as $wh) {
-                if ($wh->id == $id)
-                    return $wh;
-            }
-            return null;
-        }
-
-        public function addWarehouse(Warehouse $wh)
-        {
-            array_push($this->warehouses, $wh);
-        }
-
-        //!!!!!!!!!!!!!!!!!!
-        public function warehousesList()
-        {
-            $info = array();
-            foreach ($this->warehouses as $wh){
-                array_push($info, $wh->fullInfoToArray());
-            }
-            return $info;
         }
 
         public function getCompanyID()

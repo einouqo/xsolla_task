@@ -298,7 +298,7 @@ class Request
      */
     public static function createFromGlobals()
     {
-        // With the php's bug #66606, the php's built-in web server
+        // With the php's bug #66606, the php's built-in public server
         // stores the Content-Type and Content-Length header values in
         // HTTP_CONTENT_TYPE and HTTP_CONTENT_LENGTH fields.
         $server = $_SERVER;
@@ -964,7 +964,7 @@ class Request
      *
      *  * http://localhost/index.php         returns an empty string
      *  * http://localhost/index.php/page    returns an empty string
-     *  * http://localhost/web/index.php     returns '/web'
+     *  * http://localhost/web/index.php     returns '/public'
      *  * http://localhost/we%20b/index.php  returns '/we%20b'
      *
      * @return string The raw path (i.e. not urldecoded)
