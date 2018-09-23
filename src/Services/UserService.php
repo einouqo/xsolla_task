@@ -16,31 +16,24 @@
             $this->userRepository = $userRepository;
         }
 
-        private function dataValidation($data)
+        private function dataValidation(array $data, string $exceptID = '')
         {
-            return (
-                $this->userRepository->isUniqueEmail($data['email']) &&
-                $this->userRepository->isUniquePhone($data['phone']) &&
-                $this->userRepository->isCompanyExist($data['companyID']) &&
-                $this->userRepository->isUniqueCompanyEmployee($data['companyID'], $data['name'], $data['lastname'])
-            ) ?
-                true:
-                false;
+            $this->userRepository->isUniqueEmail($data['email'], $exceptID);
+            $this->userRepository->isUniquePhone($data['phone'], $exceptID);
+            $this->userRepository->isCompanyExist($data['companyID']);
+            $this->userRepository->isUniqueCompanyEmployee($data['companyID'], $data['name'], $data['lastname'], $exceptID);
         }
 
         public function registration(array $data)
         {
-            if ($this->dataValidation($data)) {
-                $personalInfoID = $this->userRepository->getPersonalInfoIfExist($data);
-                if (is_null($personalInfoID)) {
-                    $this->userRepository->insertIntoPersonalInfo($data);
-                    $personalInfoID = $this->userRepository->lastInsertId();
-                }
-                $this->userRepository->insertIntoUsers($data, $personalInfoID);
-                return 'You have registered successfully.';
-            } else {
-                return $this->userRepository->errorMessage;
+            $this->dataValidation($data);
+            $personalInfoID = $this->userRepository->getPersonalInfoIfExist($data);
+            if (is_null($personalInfoID)) {
+                $this->userRepository->insertIntoPersonalInfo($data);
+                $personalInfoID = $this->userRepository->lastInsertId();
             }
+            $this->userRepository->insertIntoUsers($data, $personalInfoID);
+            return 'You have registered successfully.';
         }
 
         private function getUserIDFromCookie()
@@ -53,17 +46,15 @@
                     array('HS256')
                 ))['userID'];
             } else {
-                $this->userRepository->errorMessage = 'You need to login.';
-                return null;
+                throw new \Exception('You need to login.', 401);
             }
         }
 
         private function getUser()
         {
-            $id = $this->getUserIDFromCookie();
-            return is_null($id) ?
-                null:
-                $this->userRepository->getUserInfoByID($id);
+            return $this->userRepository->getUserInfoByID(
+                $this->getUserIDFromCookie()
+            );
         }
 
         public function authentication(array $data)
@@ -71,20 +62,18 @@
             $user = isset($data['email'], $data['password']) ?
                 $this->userRepository->getUserInfo($data['email'], $data['password']):
                 $this->getUser();
-            if (is_null($user)) {
-                return $this->userRepository->errorMessage;
-            } else {
-                $config = require __DIR__.'/../settings.php';
-                setcookie('token',
-                    JWT::encode(
-                    ['userID' => $user->getID(), 'exp' => (time() + 60 * 60 * 24)],
-                    $config['jwt']['secret']
-                    )
-                );
-                //$_SESSION['user_id'] = $user->getID();
-                //return $user->warehousesList();
-                return 'Hello, '.$user->getName().'!';
-            }
+
+            $config = require __DIR__.'/../settings.php';
+            setcookie('token',
+                JWT::encode(
+                ['userID' => $user->getID(), 'exp' => (time() + 60 * 60 * 24)],
+                $config['jwt']['secret']
+                ),
+                time() + 60 * 60 * 24,
+                '/'
+            );
+
+            return 'Hello, '.$user->getName().'!';
         }
 
         private function unsetCookies()
@@ -94,8 +83,7 @@
                 foreach($cookies as $cookie) {
                     $parts = explode('=', $cookie);
                     $name = trim($parts[0]);
-                    //setcookie($name, '', time() - 60 * 60);
-                    setcookie($name, '', time() - 60 * 60, '/user');
+                    setcookie($name, '', time() - 60 * 60, '/');
                 }
             }
         }
@@ -110,22 +98,42 @@
 
         public function delete()
         {
-            $id = $this->getUserIDFromCookie();
-            if (!is_null($id)) {
-                $this->userRepository->deleteAccount($id);
-                $this->unsetCookies();
-                return 'Your account was deleted.';
-            } else {
-                return $this->userRepository->errorMessage;
+            $this->userRepository->deleteAccount($this->getUserIDFromCookie());
+            $this->unsetCookies();
+            return 'Your account was deleted.';
+        }
+
+        private function isChangeable(array $oldData, array $newData)
+        {
+            foreach ($newData as $field => $data) {
+                if ($oldData[$field] == $data) {
+                    throw new \Exception('The '.$field.' value can not be the same as the old one, please try again.', 400);
+                }
             }
+
+            $this->dataValidation(
+                array(
+                    'email' => key_exists('email', $newData) ?
+                        $newData['email']:
+                        $oldData['email'],
+                    'phone' => key_exists('phone', $newData) ?
+                        $newData['phone']:
+                        $oldData['phone'],
+                    'name' => key_exists('name', $newData) ?
+                        $newData['name']:
+                        $oldData['name'],
+                    'lastname' => key_exists('lastname', $newData) ?
+                        $newData['lastname']:
+                        $oldData['lastname'],
+                    'companyID' => $oldData['companyID']
+                ),
+                $oldData['id']
+            );
         }
 
         public function change(array $newData)
         {
             $user = $this->getUser();
-            if (is_null($user)) {
-                return $this->userRepository->errorMessage;
-            }
 
             $changeableData = array();
             foreach ($newData as $field => $data) {
@@ -135,13 +143,10 @@
             }
 
             if (count($changeableData) == 0) {
-                return 'Nothing to change.';
+                throw new \Exception('Nothing to change.', 400);
             }
 
-            $result = $user->isChangeable($changeableData);
-            if (!is_null($result)) {
-                return 'The '.$result.' value can not be the same as the old one, please try again.';
-            }
+            $this->isChangeable($user->getPersonalInfo(), $changeableData);
 
             $this->userRepository->change($user, $changeableData);
             return 'Your data was successfully update.';

@@ -1,15 +1,251 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: einouqo
- * Date: 9/16/18
- * Time: 7:23 PM
- */
+    namespace App\Repository;
 
-namespace App\Repository;
+    use App\Model\Employee;
+    use App\Model\EmployeeAdmin;
+    use App\Model\Item;
+    use App\Model\Room;
+    use App\Model\Transfer;
+    use App\Model\Warehouse;
+    use Doctrine\DBAL\Connection;
 
+    class AdminRepository
+    {
+        /**
+         * @var Connection
+         */
+        private $dbConnection;
 
-class AdminRepository
-{
+        public function __construct(Connection $dbConnection)
+        {
+            $this->dbConnection = $dbConnection;
+        }
 
-}
+        public function getEmployees(int $companyID)
+        {
+            $employees = [];
+            $rows = $this->dbConnection->executeQuery(
+                'SELECT users.id, name, lastname, id_company AS companyID, email, password, phone  FROM users
+                    INNER JOIN personalInfo on users.id_personalData = personalInfo.id AND id_company = ?',
+                [
+                    $companyID
+                ]
+            );
+
+            while ($row = $rows->fetch(\PDO::FETCH_ASSOC)) {
+                $employees[] = new Employee($row);
+            }
+
+            return $employees;
+        }
+
+        public function getAccesses(int $companyID)
+        {
+            $accesses = [];
+            $rows = $this->dbConnection->executeQuery(
+                'SELECT id_address AS warehouseID, id_user AS userID FROM userAccessible
+                    WHERE id_company = ?',
+                [
+                    $companyID
+                ]
+            );
+
+            while ($row = $rows->fetch(\PDO::FETCH_ASSOC)) {
+                $accesses[] = $row;
+            }
+
+            return $accesses;
+        }
+
+        public function getWarehouses(int $companyID)
+        {
+            $warehouses = [];
+            $rows = $this->dbConnection->executeQuery(
+                'SELECT id, addresses.address, name, capacity FROM addresses
+                    INNER JOIN infoWarehouses on addresses.address = infoWarehouses.address AND id_company = ?',
+                [
+                    $companyID
+                ]
+            );
+
+            while ($row = $rows->fetch(\PDO::FETCH_ASSOC)) {
+                $warehouses[] = new Warehouse($row);
+            }
+
+            return $warehouses;
+        }
+
+        public function getRooms(int $companyID)
+        {
+            $rooms = [];
+            $rows = $this->dbConnection->executeQuery(
+                'SELECT id, address FROM addresses WHERE id_company = ?',
+                [
+                    $companyID
+                ]
+            );
+
+            while ($row = $rows->fetch(\PDO::FETCH_ASSOC)) {
+                $rooms[] = new Room($row);
+            }
+
+            return $rooms;
+        }
+
+        public function giveAccess(array $data, int $companyID)
+        {
+            $this->dbConnection->executeQuery(
+                'INSERT INTO userAccessible(id_company, id_address, id_user)
+                    VALUES (?, ?, ?)',
+                [
+                    $companyID,
+                    $data['warehouseID'],
+                    $data['userID']
+                ]
+            );
+        }
+
+        public function deleteAccess(array $data, int $companyID)
+        {
+            $this->dbConnection->executeQuery(
+                'DELETE FROM userAccessible
+                    WHERE id_company = ? AND id_address = ? AND id_user = ?',
+                [
+                    $companyID,
+                    $data['warehouseID'],
+                    $data['userID']
+                ]
+            );
+        }
+
+        public function createWarehouse(array $data)
+        {
+            $row = $this->dbConnection->fetchAssoc(
+                'SELECT address FROM addresses WHERE id = ?',
+                [
+                    $data['roomID']
+                ]
+            );
+
+            $this->dbConnection->executeQuery(
+                'INSERT INTO infoWarehouses(address, name, capacity) VALUES (?, ?, ?)',
+                [
+                    $row['address'],
+                    $data['name'],
+                    $data['capacity']
+                ]
+            );
+        }
+
+        public function deleteWarehouse(int $id, string $address)
+        {
+            $items = $this->dbConnection->fetchAssoc(
+                'SELECT COUNT(*) AS count FROM quantity
+                    WHERE address = ?',
+                [
+                    $address
+                ]
+            );
+
+            if ($items['count'] != 0) {
+                throw new \Exception('Warehouse not empty. Deleting forbidden.', 403);
+            }
+
+            $this->dbConnection->executeQuery(
+                'DELETE FROM infoWarehouses WHERE address = ?',
+                [
+                    $address
+                ]
+            );
+
+            $this->dbConnection->executeQuery(
+                'DELETE FROM userAccessible WHERE id_address = ?',
+                [
+                    $id
+                ]
+            );
+        }
+
+        public function addRoom(array $data, int $companyID)
+        {
+            $this->dbConnection->executeQuery(
+                'INSERT INTO addresses(address, id_company) VALUES (?, ?)',
+                [
+                    $data['address'],
+                    $companyID
+                ]
+            );
+        }
+
+        public function deleteRoom(int $roomID)
+        {
+            $unfinishedTransfer = $this->dbConnection->fetchAssoc(
+                'SELECT COUNT(*) as count FROM transferHistory
+                    WHERE (id_from = ? OR id_to = ?) AND date_receiving IS NULL',
+                [
+                    $roomID,
+                    $roomID
+                ]
+            );
+
+            if ($unfinishedTransfer['count'] != 0) {
+                throw new \Exception('There is unfinished transfer.', 403);
+            }
+
+            $this->dbConnection->executeQuery(
+                'DELETE FROM addresses WHERE id = ?',
+                [
+                    $roomID
+                ]
+            );
+        }
+
+        public function changeWarehouse(Warehouse $warehouse, array $data)
+        {
+            $this->dbConnection->executeQuery(
+                'UPDATE infoWarehouses SET name = ?, capacity = ? WHERE address = ?',
+                [
+                    is_null($data['name']) ?
+                        $warehouse->getName() :
+                        $data['name'],
+                    is_null($data['capacity']) ?
+                        $warehouse->getCapacity() :
+                        $data['capacity'],
+                    $warehouse->getAddress()
+                ]
+            );
+        }
+
+        private function fillTransfer(Transfer &$transfer)
+        {
+            $rows = $this->dbConnection->executeQuery(
+                'SELECT id, price, name, type, size, quantity FROM items 
+                    INNER JOIN transfer ON items.id = transfer.id_item AND id_history = ?',
+                [
+                    $transfer->getID()
+                ]
+            );
+
+            while ($row = $rows->fetch(\PDO::FETCH_ASSOC)) {
+                $transfer->addItem(new Item($row));
+            }
+        }
+
+        public function fillTransfers(EmployeeAdmin &$admin)
+        {
+            $rows = $this->dbConnection->executeQuery(
+                'SELECT id, id_from AS warehouseFromID, id_to AS warehouseToID, date_departure AS dateDeparture, date_receiving AS dateReceiving
+                    FROM transferHistory WHERE id_from IN (SELECT id FROM addresses WHERE id_company = ?) OR id_to IN (SELECT id FROM addresses WHERE id_company = ?)',
+                [
+                    $admin->getCompanyID(),
+                    $admin->getCompanyID()
+                ]
+            );
+
+            while ($row = $rows->fetch(\PDO::FETCH_ASSOC)) {
+                $transfer = new Transfer($row);
+                $this->fillTransfer($transfer);
+                $admin->addTransfer($transfer);
+            }
+        }
+    }

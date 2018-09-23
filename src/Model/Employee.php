@@ -3,69 +3,61 @@
 
     class Employee extends EmployeeAbstract
     {
-        /**
-         * @var Warehouse[]
-         */
-        protected $warehouses;
-
         public function __construct(array $data)
         {
             parent::__construct($data);
-            $this->warehouses = array();
         }
 
-//        /**
-//         * @return string
-//         */
-//        public function moveItem(Warehouse $from, Warehouse $to, int $id, int $quantity)
-//        {
-//            $moving = new Actions\Move($from, $to);
-//            if ($moving->moveItem($id, $quantity)){
-//                return "Move success.";
-//            } else {
-//                return "Not enough items in warehouse.";
-//            }
-//        }
-
-//        /**
-//         * @return array
-//         */
-//        public function fullInfoToArray()
-//        {
-//            $result = array(
-//                'warehouses' => array()
-//            );
-//            foreach ($this->warehouses as $wh){
-//                array_push($result['warehouses'], $wh->fullInfoToArray());
-//            }
-//            return $result;
-//        }
-
-//        /**
-//         * @param int $id
-//         * @return Warehouse|mixed|null
-//         */
-//        public function getWarehouseByID(int $id)
-//        {
-//            foreach ($this->warehouses as $wh) {
-//                if ($wh->getID() == $id)
-//                    return $wh;
-//            }
-//            return null;
-//        }
-
-        public function addWarehouse(Warehouse $wh)
+        private function warehouseItems(int $warehouseID)
         {
-            array_push($this->warehouses, $wh);
+            foreach ($this->warehouses as $warehouse) {
+                if ($warehouse->getID() == $warehouseID) {
+                    return $warehouse->getItemsInfo();
+                }
+            }
+            return null;
         }
 
-        //!!!!!!!!!!!!!!!!!!
-//        public function warehousesList()
-//        {
-//            $info = array();
-//            foreach ($this->warehouses as $wh){
-//                array_push($info, $wh->fullInfoToArray());
-//            }
-//            return $info;
-//        }
+        private function addItemToInfo(array &$itemsInfo, Item $item)
+        {
+            foreach ($itemsInfo as $key => $itemInfo) {
+                if ($itemInfo['id'] == $item->getID() && $itemInfo['size'] == $item->getSize()) {
+                    $itemsInfo[$key]['quantity'] += $item->getQuantity();
+                    return;
+                }
+            }
+            array_push($itemsInfo, $item->infoToArray());
+        }
+
+        private function allItems()
+        {
+            $result = array(
+                'items' => array()
+            );
+            $totalPrice = 0.;
+            $totalQuantity = 0;
+            foreach ($this->warehouses as $warehouse) {
+                $items = $warehouse->getItems();
+                foreach ($items as $item) {
+                    $this->addItemToInfo($result['items'], $item);
+                    $totalPrice +=$item->getTotalPrice();
+                }
+                $totalQuantity += $warehouse->getLoaded();
+            }
+            $result += [
+                'Report' => array(
+                'Total price: ' => $totalPrice,
+                'Total quantity: ' => $totalQuantity
+                )
+            ];
+
+            return $result;
+        }
+
+        public function getItemList(int $warehouseID = null)
+        {
+            return is_null($warehouseID) ?
+                $this->allItems() :
+                $this->warehouseItems($warehouseID);
+        }
     }

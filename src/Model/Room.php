@@ -29,4 +29,12 @@
         {
             return $this->address;
         }
+
+        public function getInfo()
+        {
+            return array(
+                'id' => $this->id,
+                'address' => $this->address
+            );
+        }
     }

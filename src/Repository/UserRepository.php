@@ -6,19 +6,12 @@
     use App\Model\EmployeeAdmin;
     use Doctrine\DBAL\Connection;
 
-
     class UserRepository
     {
-
         /**
          * @var Connection
          */
         private $dbConnection;
-
-        /**
-         * @var string
-         */
-        public $errorMessage;
 
         public function __construct(Connection $dbConnection)
         {
@@ -30,35 +23,33 @@
             return $this->dbConnection->lastInsertId();
         }
 
-        public function isUniqueEmail(string $email)
+        public function isUniqueEmail(string $email, string $exceptID)
         {
-            $dbEmail = $this->dbConnection->fetchAssoc(
-                'SELECT COUNT(*) AS count FROM users WHERE email = ?',
+            $result = $this->dbConnection->fetchAssoc(
+                'SELECT COUNT(*) AS count FROM users WHERE email = ? AND id <> ?',
                 [
-                    $email
+                    $email,
+                    $exceptID
                 ]
             );
-            if ($dbEmail['count'] == 0){
-                return true;
-            } else {
-                $this->errorMessage = 'A user with this email already exists.';
-                return false;
+            if ($result['count'] != 0) {
+                throw new \Exception('A user with this email already exists.', 409);
             }
         }
 
-        public function isUniquePhone(string $phone)
+        public function isUniquePhone(string $phone, string $exceptID)
         {
             $dbPhone = $this->dbConnection->fetchAssoc(
-                'SELECT COUNT(*) AS count FROM personalInfo WHERE phone = ?',
+                'SELECT COUNT(*) AS count FROM personalInfo 
+                    INNER JOIN users ON users.id_personalData = personalInfo.id AND phone = ? AND users.id <> ?;',
                 [
-                    $phone
+                    $phone,
+                    $exceptID
                 ]
             );
-            if ($dbPhone['count'] == 0){
-                return true;
-            } else {
-                $this->errorMessage = 'A user with this phone already exists.';
-                return false;
+
+            if ($dbPhone['count'] != 0) {
+                throw new \Exception('A user with this phone already exists.', 409);
             }
         }
 
@@ -70,11 +61,29 @@
                     $companyID
                 ]
             );
-            if (is_null($companyID['id'])){
-                $this->errorMessage = 'There is no company with that name.';
-                return false;
-            } else {
-                return true;
+
+            if (is_null($companyID['id'])) {
+                throw new \Exception('There is no company with that name.', 409);
+            }
+        }
+
+
+        public function isUniqueCompanyEmployee(int $companyID, string $name, string $lastname, string $exceptID)
+        {
+            $rows = $this->dbConnection->fetchAssoc(
+                'SELECT COUNT(*) as count FROM users
+                    INNER JOIN personalInfo ON users.id_personalData = personalInfo.id AND id_company = ? 
+                    AND personalInfo.name = ? AND personalInfo.lastname = ? AND users.id <> ?',
+                [
+                    $companyID,
+                    $name,
+                    $lastname,
+                    $exceptID
+                ]
+            );
+
+            if ($rows['count'] != 0) {
+                throw new \Exception('User with the same name and company is already exist.', 409);
             }
         }
 
@@ -117,39 +126,17 @@
             );
         }
 
-        public function isUniqueCompanyEmployee(int $companyID, string $name, string $lastname)
-        {
-            $rows = $this->dbConnection->fetchAssoc(
-                'SELECT COUNT(*) as count FROM users
-                    INNER JOIN personalInfo ON users.id_personalData = personalInfo.id AND id_company = ? 
-                    AND personalInfo.name = ? AND personalInfo.lastname = ?',
-                [
-                    $companyID,
-                    $name,
-                    $lastname
-                ]
-            );
-
-            if ($rows['count'] == 0) {
-                return true;
-            } else {
-                $this->errorMessage = 'User with the same name and company is already exist.';
-                return false;
-            }
-        }
-
         public function getUserInfo(string $email, string $password)
         {
-            $userEmail = $this->dbConnection->fetchAssoc(
-                'SELECT email FROM users WHERE email = ?',
+            $isUserEmail = $this->dbConnection->fetchAssoc(
+                'SELECT COUNT(*) AS count FROM users WHERE email = ?',
                 [
                     $email
                 ]
             );
 
-            if (!isset($userEmail['email'])) {
-                $this->errorMessage = 'User not found';
-                return null;
+            if ($isUserEmail['count'] != 1) {
+                throw new \Exception('User not found', 403);
             }
 
             $userData = $this->dbConnection->fetchAssoc(
@@ -167,8 +154,7 @@
                     new EmployeeAdmin($userData):
                     new Employee($userData);
             } else {
-                $this->errorMessage = 'Password don\'t valid';
-                return null;
+                throw new \Exception('Password don\'t valid', 400);
             }
         }
 
@@ -182,9 +168,14 @@
                     $userID
                 ]
             );
-            return $userData['admin'] == 1 ?
-                new EmployeeAdmin($userData):
-                new Employee($userData);
+
+            if (isset($userData['id'])) {
+                return $userData['admin'] == 1 ?
+                    new EmployeeAdmin($userData) :
+                    new Employee($userData);
+            } else {
+                throw new \Exception('Your account don\'t valid anymore');
+            }
         }
 
         private function deletePersonalData(int $personalDataID)
@@ -233,7 +224,21 @@
             $this->deletePersonalData($result['id_personalData']);
         }
 
-        public function change(EmployeeAbstract $employee, array $data)
+        public function isNewEmailValid(string $email)
+        {
+            $result = $this->dbConnection->fetchAssoc(
+                'SELECT COUNT(*) AS count FROM users WHERE email = ?',
+                [
+                    $email
+                ]
+            );
+
+            if ($result['count'] != 0) {
+                throw new \Exception('The email you entered is already taken.', 403);
+            }
+        }
+
+        public function change(EmployeeAbstract $employee, array $data)//посмотреть что вообще с параметрами происходит
         {
             $this->dbConnection->executeQuery(
                 'UPDATE users SET email = ?, password = ? WHERE id = ?',

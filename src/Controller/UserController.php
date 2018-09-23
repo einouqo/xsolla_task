@@ -28,18 +28,18 @@
                     md5($bodyParams['password']) :
                     null
             );
-            //return $response->withJson($this->userService->authentication($authenticationData));
-            return $response->write($this->userService->authentication($authenticationData));
+
+            return $response->withStatus(200)->write($this->userService->authentication($authenticationData));
         }
 
         public function logoff(Request $request, Response $response, $args = [])
         {
-            return $response->write($this->userService->logoff());
+            return $response->withStatus(200)->write($this->userService->logoff());
         }
 
         public function delete(Request $request, Response $response, $args = [])
         {
-            return $response->write($this->userService->delete());
+            return $response->withStatus(200)->write($this->userService->delete());
         }
 
         public function change(Request $request, Response $response, $args = [])

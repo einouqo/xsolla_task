@@ -33,7 +33,42 @@
          */
         public $price;
 
-         /**
+        public function __construct(array $data)
+        {
+            $this->id = $data['id'];
+            $this->name = $data['name'];
+            $this->type = $data['type'];
+            $this->size = $data['size'];
+            $this->price = $data['price'];
+            $this->quantity = $data['quantity'];
+        }
+
+        public function getID()
+        {
+            return $this->id;
+        }
+
+        public function getSize()
+        {
+            return $this->size;
+        }
+
+        public function getUnitPrice()
+        {
+            return $this->price;
+        }
+
+        public function getQuantity()
+        {
+            return $this->quantity;
+        }
+
+        public function getTotalPrice()
+        {
+            return $this->quantity * $this->price;
+        }
+
+         /**???????????????????????????????????
           * 'null' - removing failed
           * 'new Item' - removing done
           * @return mixed
@@ -50,25 +85,23 @@
             }
         }
 
-        public function infoToArray()
+        public function shortInfo()
         {
             return array(
                 'id' => $this->id,
                 'name' => $this->name,
                 'type' => $this->type,
-                'size' => $this->size,
-                'price' => $this->price,
-                'quantity' => $this->quantity
+                'price' => (float)$this->price
             );
         }
 
-        public function __construct(array $data)
+        public function infoToArray()
         {
-            $this->id = $data['id'];
-            $this->name = $data['name'];
-            $this->type = $data['type'];
-            $this->size = $data['size'];
-            $this->price = $data['price'];
-            $this->quantity = $data['quantity'];
+            $result = $this->shortInfo();
+            $result += [
+                'size' => $this->size,
+                'quantity' => (int)$this->quantity
+            ];
+            return $result;
         }
     }

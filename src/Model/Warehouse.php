@@ -28,6 +28,7 @@
             parent::__construct($data);
             $this->name = $data['name'];
             $this->capacity = $data['capacity'];
+            $this->loaded = 0;
             $this->items = array();
         }
 
@@ -67,37 +68,89 @@
             return null;
         }
 
+        public function getItemByID(int $itemID, $size = null)
+        {
+            $result = [];
+            foreach ($this->items as $item) {
+                if ($item->getID() == $itemID && (is_null($size) xor (isset($size) && $item->getSize() == $size))) {
+                    array_push($result, $item);
+                }
+            }
+            return count($result) == 0 ?
+                null:
+                $result;
+        }
+
+        public function getItems()
+        {
+            return $this->items;
+        }
+
         /**
          * @return array
          */
         public function getItemsInfo()
         {
-            $result = array();
+            $result = array(
+                'items' => array()
+            );
+            $totalPrice = 0.;
+            $totalQuantity = 0;
             foreach ($this->items as $item){
-                array_push($result, $item->infoToArray());
+                array_push($result['items'], $item->infoToArray());
+                $totalPrice += $item->getTotalPrice();
+                $totalQuantity += $item->getQuantity();
             }
+            $result += [
+                'Total price: ' => $totalPrice,
+                'Total quantity: ' => $totalQuantity
+            ];
             return $result;
         }
 
         /**
          * @return array
          */
-        private function shortInfoToArray()
+        public function getShortInfo()
         {
-            return array(
-                'id' => $this->id,
+            $info = $this->getInfo();
+            $info += [
                 'name' => $this->name,
-                'address' => $this->address
-            );
+                'capacity' => $this->capacity
+            ];
+            return $info;
         }
 
         /**
          * @return array
          */
-        public function fullInfoToArray()
+        public function getFullInfo()
         {
-            $shortInfo = $this->shortInfoToArray();
-            $shortInfo += ['capacity' => $this->capacity];
-            return $shortInfo += ['items' => $this->getItemsInfo()];
+            $info = $this->getShortInfo();
+            $info += [
+                'loaded' =>$this->loaded,
+                'items' => $this->getItemsInfo()
+            ];
+            return $info;
+        }
+
+        public function getName()
+        {
+            return $this->name;
+        }
+
+        public function getCapacity()
+        {
+            return $this->capacity;
+        }
+
+        public function getFreeSpace()
+        {
+            return $this->capacity - $this->loaded;
+        }
+
+        public function getLoaded()
+        {
+            return $this->loaded;
         }
     }
