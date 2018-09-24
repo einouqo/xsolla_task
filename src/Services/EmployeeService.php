@@ -2,6 +2,7 @@
     namespace App\Services;
 
     use App\Model\Employee;
+    use App\Model\Item;
     use App\Model\Warehouse;
     use App\Repository\EmployeeRepository;
     use App\Repository\UserRepository;
@@ -186,7 +187,7 @@
             return false;
         }
 
-        public function addToTransferCookie(int $itemID, array $data, int $totalQuantity)
+        private function addToTransferCookie(int $itemID, array $data, int $totalQuantity)
         {
             $added = false;
             $transfers = $this->getTransfersFromCookie();
@@ -283,5 +284,38 @@
             return $isSent ?
                 'Transfer was successfully sent.':
                 'There is nothing to send.';
+        }
+
+        private function sellValidate(array $data)
+        {
+            foreach ($data as $field => $value) {
+                if (is_null($value)) {
+                    throw new \Exception('Field '.$field.' cannot be empty.', 403);
+                }
+            }
+        }
+
+        public function sellItem(int $itemID, array $data)
+        {
+            $employee = $this->getUser();
+            $this->sellValidate($data);
+            $this->fillWarehouses($employee);
+            $warehouse = $employee->getWarehouseByID($data['warehouseID']);
+            if (is_null($warehouse)) {
+                throw new \Exception('You have no access for this warehouse.', 403);
+            }
+
+            $items = $warehouse->getItemByID($itemID, $data['size']);
+            if (is_null($items)) {
+                throw new \Exception('Item not found in this warehouse.', 403);
+            }
+            $item = array_shift($items);//также при доьбавлении в куку трансфера
+
+            if ($item->getQuantity() < $data['quantity']) {
+                throw new \Exception('There is not enough items.', 403);
+            }
+
+            $this->employeeRepository->sellItem($warehouse->getID(), $employee->getID(),$itemID, $data);
+            return 'Item was sold successfully.';
         }
     }

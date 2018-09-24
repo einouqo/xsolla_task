@@ -86,4 +86,22 @@
                 $response->withStatus(400)->write('Warehouse ID of this item cannot be empty.'):
                 $response->withStatus(200)->write($this->employeeService->sendTransfer($warehouseToID));
         }
+
+        public function sellItem(Request $request, Response $response, $args = [])
+        {
+            $parsedBody = $request->getParsedBody() ?? array();
+            $data = array (
+                'warehouseID' => key_exists('warehouseID', $parsedBody) ?
+                    $parsedBody['warehouseID']:
+                    null,
+                'size' => key_exists('size', $parsedBody) ?
+                    $parsedBody['size']:
+                    null,
+                'quantity'=> key_exists('quantity', $parsedBody) ?
+                    $parsedBody['quantity']:
+                    null
+            );
+            $itemID = $args['id'];
+            return $response->withStatus(200)->write($this->employeeService->sellItem($itemID, $data));
+        }
     }

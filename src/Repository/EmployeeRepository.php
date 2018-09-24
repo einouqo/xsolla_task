@@ -128,13 +128,13 @@
             );
         }
 
-        private function removeQuantity(int $warehouseID, array $item, int $avalebleQuantity)
+        private function removeQuantity(int $warehouseID, array $item, int $availableQuantity)
         {
             $this->dbConnection->executeQuery(
                 'UPDATE quantity SET quantity = ? WHERE id_item = ? AND size = ? AND 
                     address IN (SELECT address FROM addresses WHERE id = ?)',
                 [
-                    $avalebleQuantity - $item['quantity'],
+                    $availableQuantity - $item['quantity'],
                     $item['id'],
                     $item['size'],
                     $warehouseID
@@ -186,5 +186,30 @@
                 $this->removeItem($transfer['warehouseID'], $item);
                 $this->fillTranser($id_transfer, $item);
             }
+        }
+
+        public function sellItem(int $warehouseID, int $employeeID, int $itemID, array $data)
+        {
+            $unit = $this->dbConnection->fetchAssoc(
+                'SELECT price FROM items WHERE id = ?',
+                [
+                    $itemID
+                ]
+            );
+
+            $this->removeItem($warehouseID, $data + ['id' => $itemID]);
+
+            $this->dbConnection->executeQuery(
+                'INSERT INTO selling(id_address, id_user, id_item, size, quantity, unit_price, date)
+                    VALUES (?, ?, ?, ?, ?, ?, NOW())',
+                [
+                    $warehouseID,
+                    $employeeID,
+                    $itemID,
+                    $data['size'],
+                    $data['quantity'],
+                    $unit['price'],
+                ]
+            );
         }
     }

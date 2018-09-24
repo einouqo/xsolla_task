@@ -140,7 +140,7 @@
             }
 
             $userData = $this->dbConnection->fetchAssoc(
-                'SELECT users.id, personalInfo.name, personalInfo.lastname, users.id_company AS companyID, users.email, users.password, users.admin ,personalInfo.phone
+                'SELECT users.id, personalInfo.name, personalInfo.lastname, users.id_company AS companyID, users.email, users.password, users.position ,personalInfo.phone
                 FROM users
                 INNER JOIN personalInfo ON users.id_personalData = personalInfo.id AND users.email = ? AND users.password = ?',
                 [
@@ -150,7 +150,7 @@
             );
 
             if (isset($userData['id'])) {
-                return $userData['admin'] == 1 ?
+                return $userData['position'] == 1 ?
                     new EmployeeAdmin($userData):
                     new Employee($userData);
             } else {
@@ -161,7 +161,7 @@
         public function getUserInfoByID(int $userID)
         {
             $userData = $this->dbConnection->fetchAssoc(
-                'SELECT users.id, personalInfo.name, personalInfo.lastname, users.id_company AS companyID, users.email, users.password, users.admin, personalInfo.phone
+                'SELECT users.id, personalInfo.name, personalInfo.lastname, users.id_company AS companyID, users.email, users.password, users.position, personalInfo.phone
                 FROM users
                 INNER JOIN personalInfo ON users.id_personalData = personalInfo.id AND users.id = ?',
                 [
@@ -170,7 +170,7 @@
             );
 
             if (isset($userData['id'])) {
-                return $userData['admin'] == 1 ?
+                return $userData['position'] == 1 ?
                     new EmployeeAdmin($userData) :
                     new Employee($userData);
             } else {
