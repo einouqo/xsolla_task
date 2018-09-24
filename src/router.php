@@ -55,8 +55,8 @@
     $app->group('/items', function () use ($app) {
         $app->post('/add', 'admin.controller:addItem');
         $app->group('/{id}', function () use ($app) {
-            $app->put('/change', 'admin.controller:changeItem');//основыне параметры итема
-            $app->get('/state', 'admin.controller:itemState');//
+            $app->put('/change', 'admin.controller:changeItem');
+            $app->get('/state', 'admin.controller:itemState');
             $app->get('/transfers', 'admin.controller:getTransfersForItem');
         });
     });

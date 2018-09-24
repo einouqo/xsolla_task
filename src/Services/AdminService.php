@@ -5,7 +5,6 @@
     use App\Repository\AdminRepository;
     use App\Repository\UserRepository;
     use Firebase\JWT\JWT;
-    use http\Exception\RuntimeException;
 
     class AdminService
     {
@@ -171,12 +170,12 @@
             $warehouse = $admin->getWarehouseByID($data['warehouseID']);
             if (!isset($data['name']) && !isset($data['capacity']) ||
                 $warehouse->getName() == $data['name'] && $warehouse->getCapacity() == $data['capacity']) {
-                throw new \Exception('There nothing to change.', 400);
+                throw new \Exception('There is nothing to change.', 400);
             }
 
             $oldWarehouseInfo = $warehouse->fullInfoToArray();
-            foreach ($data as $field => $data) {
-                if ($oldWarehouseInfo[$field] == $data) {
+            foreach ($data as $field => $value) {
+                if ($oldWarehouseInfo[$field] == $value) {
                     throw new \Exception('The '.$field.' value can not be the same as the old one, please try again.', 400);
                 }
             }
@@ -316,5 +315,24 @@
             $this->adminRepository->addItem($data, $warehouseTo->getAddress());
 
             return 'Item was added successfully.';
+        }
+
+        public function changeItem($itemID, array $data)
+        {
+            $this->getUser();
+
+            if (is_null($data['price']) && is_null($data['name']) && is_null($data['type'])) {
+                throw new \Exception('Nothing to change.', 400);
+            }
+
+            $this->adminRepository->changeItem($itemID, $data);
+
+            return 'Item was successfully changed.';
+        }
+
+        public function itemState(int $id)
+        {
+            $admin = $this->getUser();
+            return $this->adminRepository->itemState($id, $admin->getCompanyID());
         }
     }

@@ -345,4 +345,69 @@
                 $this->addItemToWarehouse($data, $address, $id):
                 $this->addQuantity($data, $address, $id);
         }
+
+        public function changeItem(int $itemID, array $data)
+        {
+            $itemOld = $this->dbConnection->fetchAssoc(
+                'SELECT price, name, type FROM items WHERE id = ?',
+                [
+                    $itemID
+                ]
+            );
+
+            if ((is_null($data['price']) || $data['price'] == $itemOld['price']) &&
+                (is_null($data['name']) || $data['name'] == $itemOld['name']) &&
+                (is_null($data['type']) || $data['type'] == $itemOld['type'])) {
+                throw new \Exception('Nothing to change', 400);
+            }
+
+            $this->dbConnection->executeQuery(
+                'UPDATE items SET price = ?, name = ?, type = ? WHERE id = ?',
+                [
+                    $data['price'] ?? $itemOld['price'],
+                    $data['name'] ?? $itemOld['name'],
+                    $data['type'] ?? $itemOld['type'],
+                    $itemID
+                ]
+            );
+        }
+
+        public function itemState(int $itemID, int $companyID)
+        {
+            $rows = $this->dbConnection->executeQuery(
+                'SELECT addresses.id AS id, quantity.address AS address, size, quantity, price FROM quantity
+                    INNER JOIN  addresses ON addresses.address = quantity.address AND id_item = ? AND id_company = ?
+                    INNER JOIN items ON quantity.id_item = items.id',
+                [
+                    $itemID,
+                    $companyID
+                ]
+            );
+
+            $result = [
+                'itemID' => $itemID,
+                'warehouses' => []
+            ];
+            $totalQuantity = 0;
+            $totalPrice = 0.;
+            while ($row = $rows->fetch(\PDO::FETCH_ASSOC)) {
+                $totalQuantity += $row['quantity'];
+                $totalPrice += $row['quantity'] * $row['price'];
+                array_push(
+                    $result['warehouses'],
+                    [
+                        'id' => $row['id'],
+                        'address' => $row['address'],
+                        'size' => $row['size'],
+                        'quantity' => $row['quantity']
+                    ]
+                );
+            }
+            $result += [
+                'Total quantity' => $totalQuantity,
+                'Total price' => $totalPrice
+            ];
+
+            return $result;
+        }
     }
