@@ -57,7 +57,27 @@
             return $accesses;
         }
 
-        public function getWarehouses(int $companyID)
+        private function warehouseWithLoaded(Warehouse $warehouse)
+        {
+            $rows = $this->dbConnection->executeQuery(
+                'SELECT quantity FROM quantity WHERE address = ?',
+                [
+                    $warehouse->getAddress()
+                ]
+            );
+
+            $loaded = 0;
+            while ($row = $rows->fetch(\PDO::FETCH_ASSOC)) {
+                $loaded += $row['quantity'];
+            }
+
+            if (!$warehouse->setLoaded($loaded)) {
+                throw new \Exception('Unexpected error.', 409);
+            };
+            return $warehouse;
+        }
+
+        public function getWarehouses(int $companyID, bool $setLoaded = false)
         {
             $warehouses = [];
             $rows = $this->dbConnection->executeQuery(
@@ -69,7 +89,9 @@
             );
 
             while ($row = $rows->fetch(\PDO::FETCH_ASSOC)) {
-                $warehouses[] = new Warehouse($row);
+                $warehouses[] = $setLoaded ?
+                    $this->warehouseWithLoaded(new Warehouse($row)):
+                    new Warehouse($row);
             }
 
             return $warehouses;
@@ -247,5 +269,80 @@
                 $this->fillTransfer($transfer);
                 $admin->addTransfer($transfer);
             }
+        }
+
+        public function createItem(array $data)
+        {
+            $this->dbConnection->executeQuery(
+                'INSERT INTO items(price, name, type) VALUES (?, ?, ?)',
+                [
+                    $data['price'],
+                    $data['name'],
+                    $data['type']
+                ]
+            );
+            return $this->dbConnection->lastInsertId();
+        }
+
+        private function addQuantity(array $data, string $address, int $id_item)
+        {
+            $old = $this->dbConnection->fetchAssoc(
+                'SELECT quantity FROM quantity WHERE address = ? AND id_item = ? AND size = ?',
+                [
+                    $address,
+                    $id_item,
+                    $data['size']
+                ]
+            );
+
+            $this->dbConnection->executeQuery(
+                'UPDATE quantity SET quantity = ? WHERE address = ? AND id_item = ? AND size = ?',
+                [
+                    $old['quantity'] + $data['quantity'],
+                    $address,
+                    $id_item,
+                    $data['size']
+                ]
+            );
+        }
+
+        private function addItemToWarehouse(array $data, string $address, int $id_item)
+        {
+            $this->dbConnection->executeQuery(
+                'INSERT INTO quantity(address, id_item, size, quantity) VALUES (?, ?, ?, ?)',
+                [
+                    $address,
+                    $id_item,
+                    $data['size'],
+                    $data['quantity']
+                ]
+            );
+        }
+
+        public function addItem(array $data, string $address)
+        {
+            $existItem = $this->dbConnection->fetchAssoc(
+                'SELECT id FROM items WHERE price = ? AND name = ? AND type = ?',
+                [
+                    $data['price'],
+                    $data['name'],
+                    $data['type']
+                ]
+            );
+
+            $id = $existItem['id'] ?? $this->createItem($data);
+
+            $alreadyIs = $this->dbConnection->fetchAssoc(
+                'SELECT COUNT(*) AS count FROM quantity WHERE address = ? AND id_item = ? AND size = ?',
+                [
+                    $address,
+                    $id,
+                    $data['size'],
+                ]
+            );
+
+            $alreadyIs['count'] == 0 ?
+                $this->addItemToWarehouse($data, $address, $id):
+                $this->addQuantity($data, $address, $id);
         }
     }

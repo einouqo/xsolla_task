@@ -153,4 +153,14 @@
         {
             return $this->loaded;
         }
+
+        public function setLoaded(int $loaded)
+        {
+            if ($loaded <= $this->capacity) {
+                $this->loaded = $loaded;
+                return true;
+            } else {
+                return false;
+            }
+        }
     }

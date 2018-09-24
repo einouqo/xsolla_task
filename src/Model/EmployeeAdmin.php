@@ -46,11 +46,6 @@
             array_push($this->employees, $employee);
         }
 
-        public function addItem(Item $item)
-        {
-            array_push($this->items, $item);
-        }
-
         public function isRoomExist(int $roomID)
         {
             foreach ($this->rooms as $room) {

@@ -134,6 +134,33 @@
                 $response->withStatus(200)->withJson($result);
         }
 
+        public function addItem(Request $request, Response $response, $args = [])
+        {
+            $parsedBody = $request->getParsedBody() ?? array();
+            $data = [
+                'name' => key_exists('name', $parsedBody) ?
+                    $parsedBody['name']:
+                    null,
+                'type' => key_exists('type', $parsedBody) ?
+                    $parsedBody['type']:
+                    null,
+                'size' => key_exists('size', $parsedBody) ?
+                    $parsedBody['size']:
+                    null,
+                'price' => key_exists('price', $parsedBody) ?
+                    $parsedBody['price']:
+                    null,
+                'quantity' => key_exists('quantity', $parsedBody) ?
+                    $parsedBody['quantity']:
+                    null
+            ];
+            $warehouseID = key_exists('warehouseID', $parsedBody) ?
+                $parsedBody['warehouseID']:
+                null;
+
+            $response->withStatus(200)->write($this->adminService->addItem($data, $warehouseID));
+        }
+
 //        public function itemState(Request $request, Response $response, $args = [])
 //        {
 //            $result = $this->adminService->itemState($args['id']);

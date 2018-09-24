@@ -5,6 +5,7 @@
     use App\Repository\AdminRepository;
     use App\Repository\UserRepository;
     use Firebase\JWT\JWT;
+    use http\Exception\RuntimeException;
 
     class AdminService
     {
@@ -50,9 +51,9 @@
             }
         }
 
-        private function fillWarehouses(EmployeeAdmin &$admin)
+        private function fillWarehouses(EmployeeAdmin &$admin, bool $setLoaded = false)
         {
-            $warehouses = $this->adminRepository->getWarehouses($admin->getCompanyID());
+            $warehouses = $this->adminRepository->getWarehouses($admin->getCompanyID(), $setLoaded);
             foreach ($warehouses as $warehouse) {
                 $admin->addWarehouse($warehouse);
             }
@@ -266,6 +267,11 @@
         public function getTransfersForWarehouse(int $warehouseID)
         {
             $admin = $this->getUser();
+            $this->fillWarehouses($admin);
+            if (is_null($admin->getWarehouseByID($warehouseID))) {
+                throw new \Exception('This warehouse wasn\'t found in your company.', 403);
+            }
+
             $this->adminRepository->fillTransfers($admin);
             return $admin->getWarehouseTransfers($warehouseID);
         }
@@ -275,5 +281,40 @@
             $admin = $this->getUser();
             $this->adminRepository->fillTransfers($admin);
             return $admin->getItemTransfers($itemID);
+        }
+
+        private function newItemValidation(array $data)
+        {
+            foreach ($data as $field => $value) {
+                if (is_null($value)) {
+                    throw new \Exception('Field '.$field.' cannot be empty.', 403);
+                }
+            }
+        }
+
+        public function addItem(array $data, $warehouseID)
+        {
+            $admin = $this->getUser();
+
+            if (is_null($warehouseID)) {
+                throw new \Exception('Receiving warehouse ID cannot be empty.', 403);
+            }
+
+            $this->fillWarehouses($admin, true);
+            $warehouseTo = $admin->getWarehouseByID($warehouseID);
+            if (is_null($warehouseTo)) {
+                throw new \Exception('This warehouse wasn\'t found in your company.', 403);
+            }
+
+            $this->newItemValidation($data);
+
+            $available = $warehouseTo->getCapacity() - $warehouseTo->getLoaded();
+            if ($available < $data['quantity']) {
+                throw new \Exception('There is not enough storage space. Available: '.$available.'.', 403);
+            }
+
+            $this->adminRepository->addItem($data, $warehouseTo->getAddress());
+
+            return 'Item was added successfully.';
         }
     }
