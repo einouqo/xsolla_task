@@ -41,7 +41,7 @@
             //для регуляр юзера
             $app->post('/take', 'employee.controller:takeTransfer');
             $app->group('/{id}', function () use ($app) {
-                $app->delete('/sell', 'employee.controller:sellItem');//
+                $app->delete('/sell', 'employee.controller:sellItem');
                 $app->post('/toTransfer', 'employee.controller:addToTransfer');
             });
             $app->group('/transfer', function () use ($app) {

@@ -159,7 +159,7 @@
             );
         }
 
-        public function deleteWarehouse(int $id, string $address)
+        private function isEmpty(string $address)
         {
             $items = $this->dbConnection->fetchAssoc(
                 'SELECT COUNT(*) AS count FROM quantity
@@ -172,6 +172,26 @@
             if ($items['count'] != 0) {
                 throw new \Exception('Warehouse not empty. Deleting forbidden.', 403);
             }
+        }
+
+        private function hasCompletedTransfers(int $warehouseID)
+        {
+            $unComlitedTransfers = $this->dbConnection->fetchAssoc(
+                'SELECT COUNT(*) as count FROM transferHistory WHERE date_receiving IS NULL AND id_to = ?',
+                [
+                    $warehouseID
+                ]
+            );
+
+            if ($unComlitedTransfers['count'] != 0) {
+                throw new \Exception('Warehouse are awaiting '.$unComlitedTransfers['count'].' transfer(-s). Deleting forbidden.', 403);
+            }
+        }
+
+        public function deleteWarehouse(int $id, string $address)
+        {
+            $this->isEmpty($address);
+            $this->hasCompletedTransfers($id);
 
             $this->dbConnection->executeQuery(
                 'DELETE FROM infoWarehouses WHERE address = ?',
