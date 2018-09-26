@@ -21,40 +21,34 @@
             $this->dbConnection = $dbConnection;
         }
 
-        public function getEmployees(int $companyID)
+        public function fillEmployees(EmployeeAdmin &$admin)
         {
-            $employees = [];
             $rows = $this->dbConnection->executeQuery(
                 'SELECT users.id, name, lastname, id_company AS companyID, email, password, phone  FROM users
                     INNER JOIN personalInfo on users.id_personalData = personalInfo.id AND id_company = ?',
                 [
-                    $companyID
+                    $admin->getCompanyID()
                 ]
             );
 
             while ($row = $rows->fetch(\PDO::FETCH_ASSOC)) {
-                $employees[] = new Employee($row);
+                $admin->addEmployee(new Employee($row));
             }
-
-            return $employees;
         }
 
-        public function getAccesses(int $companyID)
+        public function getAccesses(EmployeeAdmin &$admin)
         {
-            $accesses = [];
             $rows = $this->dbConnection->executeQuery(
                 'SELECT id_address AS warehouseID, id_user AS userID FROM userAccessible
                     WHERE id_company = ?',
                 [
-                    $companyID
+                    $admin->getCompanyID()
                 ]
             );
 
             while ($row = $rows->fetch(\PDO::FETCH_ASSOC)) {
-                $accesses[] = $row;
+                $admin->addAccess($row['userID'], $row['warehouseID']);
             }
-
-            return $accesses;
         }
 
         private function warehouseWithLoaded(Warehouse $warehouse)
@@ -77,24 +71,53 @@
             return $warehouse;
         }
 
-        public function getWarehouses(int $companyID, bool $setLoaded = false)
+        private function fillItems(Warehouse &$warehouse)
         {
-            $warehouses = [];
             $rows = $this->dbConnection->executeQuery(
-                'SELECT id, addresses.address, name, capacity FROM addresses
-                    INNER JOIN infoWarehouses on addresses.address = infoWarehouses.address AND id_company = ?',
+                'SELECT id, price, name, type, quantity, size FROM items
+                    INNER JOIN quantity ON items.id = quantity.id_item AND address = ?',
                 [
-                    $companyID
+                    $warehouse->getAddress()
                 ]
             );
 
             while ($row = $rows->fetch(\PDO::FETCH_ASSOC)) {
-                $warehouses[] = $setLoaded ?
-                    $this->warehouseWithLoaded(new Warehouse($row)):
-                    new Warehouse($row);
+                $warehouse->addItem(new Item($row));
             }
+        }
 
-            return $warehouses;
+        public function fillWarehousesWithItems(EmployeeAdmin &$admin)
+        {
+            $rows = $this->dbConnection->executeQuery(
+                'SELECT id, addresses.address, name, capacity FROM addresses
+                    INNER JOIN infoWarehouses on addresses.address = infoWarehouses.address AND id_company = ?',
+                [
+                    $admin->getCompanyID()
+                ]
+            );
+
+            while ($row = $rows->fetch(\PDO::FETCH_ASSOC)) {
+                $warehouse =new Warehouse($row);
+                $this->fillItems($warehouse);
+                $admin->addWarehouse($warehouse);
+            }
+        }
+
+        public function fillWarehouses(EmployeeAdmin &$admin, bool $setLoaded = false)
+        {
+            $rows = $this->dbConnection->executeQuery(
+                'SELECT id, addresses.address, name, capacity FROM addresses
+                    INNER JOIN infoWarehouses on addresses.address = infoWarehouses.address AND id_company = ?',
+                [
+                    $admin->getCompanyID()
+                ]
+            );
+
+            while ($row = $rows->fetch(\PDO::FETCH_ASSOC)) {
+                $setLoaded ?
+                    $admin->addWarehouse($this->warehouseWithLoaded(new Warehouse($row))):
+                    $admin->addWarehouse(new Warehouse($row));
+            }
         }
 
         public function getRooms(int $companyID)
@@ -402,7 +425,7 @@
             );
         }
 
-        private function getDeliveryCondition(int $itemID, string $address, string $size, \DateTime $date = null)
+        public function getDeliveryCondition(int $itemID, string $address, string $size, \DateTime $date = null)
         {
             return isset($date) ?
                 $this->dbConnection->fetchAssoc(
@@ -416,7 +439,7 @@
                 )['quantity'] : 0;
         }
 
-        private function getSellingCondition(int $itemID, string $warehouseID, string $size, \DateTime $date = null)
+        public function getSellingCondition(int $itemID, string $warehouseID, string $size, \DateTime $date = null)
         {
             return isset($date) ? $this->dbConnection->fetchAssoc(
                 'SELECT SUM(quantity) AS quantity FROM selling WHERE id_item = ? AND id_address = ? AND size = ? AND date > ? ;',
@@ -429,7 +452,7 @@
             )['quantity'] : 0;
         }
 
-        private function getSendedCondition(int $itemID, string $warehouseID, string $size, \DateTime $date = null)
+        public function getSendedCondition(int $itemID, string $warehouseID, string $size, \DateTime $date = null)
         {
             return isset($date) ? $this->dbConnection->fetchAssoc(
                 'SELECT SUM(quantity) AS quantity FROM transfer
@@ -443,7 +466,7 @@
             )['quantity'] : 0;
         }
 
-        private function getReceivingCondition(int $itemID, string $warehouseID, string $size, \DateTime $date = null)
+        public function getReceivingCondition(int $itemID, string $warehouseID, string $size, \DateTime $date = null)
         {
             return isset($date) ? $this->dbConnection->fetchAssoc(
                 'SELECT SUM(quantity) AS quantity FROM transfer

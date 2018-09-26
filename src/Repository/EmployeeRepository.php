@@ -34,25 +34,22 @@
             }
         }
 
-        public function getWarehouses(int $employeeID)
+        public function fillWarehouses(Employee &$employee)
         {
-            $warehouses = [];
             $rows = $this->dbConnection->executeQuery(
                 'SELECT id, addresses.address, name, capacity FROM addresses
                     INNER JOIN infoWarehouses ON addresses.address = infoWarehouses.address
                     INNER JOIN userAccessible ON addresses.id = userAccessible.id_address AND id_user = ?',
                 [
-                    $employeeID
+                    $employee->getID()
                 ]
             );
 
             while ($row = $rows->fetch(\PDO::FETCH_ASSOC)) {
                 $warehouse =new Warehouse($row);
                 $this->fillItems($warehouse);
-                array_push($warehouses, $warehouse);
+                $employee->addWarehouse($warehouse);
             }
-
-            return $warehouses;
         }
 
         private function fillItemForTransfer(Transfer &$transfer)
@@ -70,26 +67,23 @@
             }
         }
 
-        public function getPendingTransfers(int $employeeID)
+        public function fillPendingTransfers(Employee &$employee)
         {
-            $transfers = [];
             $rows = $this->dbConnection->executeQuery(
                 'SELECT transferHistory.id, id_from AS warehouseFromID, id_to AS warehouseToID, date_departure AS dateDeparture, date_receiving AS dateReceiving 
                     FROM transferHistory
                     INNER JOIN addresses ON transferHistory.id_to = addresses.id AND date_receiving IS NULL AND addresses.id IN 
                     (SELECT id_address FROM userAccessible WHERE id_user = ?)',
                 [
-                    $employeeID
+                    $employee->getID()
                 ]
             );
 
             while ($row = $rows->fetch(\PDO::FETCH_ASSOC)) {
                 $transfer = new Transfer($row);
                 $this->fillItemForTransfer($transfer);
-                array_push($transfers, $transfer);
+                $employee->addTransfer($transfer);
             }
-
-            return $transfers;
         }
 
         private function addToWarehouse(Item $item, string $warehouseAddress)

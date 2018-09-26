@@ -52,36 +52,20 @@
             }
         }
 
-        private function fillPendingTransfers(Employee &$employee)
-        {
-            $transfers = $this->employeeRepository->getPendingTransfers($employee->getID());
-            foreach ($transfers as $transfer) {
-                $employee->addTransfer($transfer);
-            }
-        }
-
         public function getPendingList()
         {
             $employee = $this->getUser();
 
-            $this->fillPendingTransfers($employee);
+            $this->employeeRepository->fillPendingTransfers($employee);
 
             return $employee->getTransferList();
-        }
-
-        private function fillWarehouses(Employee &$employee)
-        {
-            $warehouses = $this->employeeRepository->getWarehouses($employee->getID());
-            foreach ($warehouses as $warehouse) {
-                $employee->addWarehouse($warehouse);
-            }
         }
 
         public function getAvailableList($warehouseID = null)
         {
             $employee = $this->getUser();
 
-            $this->fillWarehouses($employee);
+            $this->employeeRepository->fillWarehouses($employee);
             if (isset($warehouseID) && !$employee->isWarehouseExist($warehouseID)) {
                 throw new \Exception('You have no access for this warehouse.', 403);
             }
@@ -92,12 +76,12 @@
         {
             $employee = $this->getUser();
 
-            $this->fillPendingTransfers($employee);
+            $this->employeeRepository->fillPendingTransfers($employee);
             $transfer = $employee->getTransferByID($transferID);
             if (is_null($transfer)) {
                 throw new \Exception('Pending transfer with this id wasn\'t found.', 403);
             }
-            $this->fillWarehouses($employee);
+            $this->employeeRepository->fillWarehouses($employee);
             $warehouse = $employee->getWarehouseByID($transfer->getWarehouseToID());
             if ($warehouse->getCapacity() - $warehouse->getLoaded() < $transfer->itemsQuantity()) {
                 throw new \Exception('There is not enough space in the warehouse.');
@@ -231,7 +215,7 @@
                 throw new \Exception('You need to set size.', 400);
             }
 
-            $this->fillWarehouses($employee);
+            $this->employeeRepository->fillWarehouses($employee);
             $warehouse = $employee->getWarehouseByID($data['warehouseFromID']);
             if (is_null($warehouse)) {
                 throw new \Exception('You have no access for this warehouse.', 403);
@@ -299,7 +283,7 @@
         {
             $employee = $this->getUser();
             $this->sellValidate($data);
-            $this->fillWarehouses($employee);
+            $this->employeeRepository->fillWarehouses($employee);
             $warehouse = $employee->getWarehouseByID($data['warehouseID']);
             if (is_null($warehouse)) {
                 throw new \Exception('You have no access for this warehouse.', 403);

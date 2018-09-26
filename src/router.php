@@ -27,7 +27,7 @@
         $app->get('/list', 'warehouse.controller:getList');
         $app->post('/create', 'admin.controller:createWarehouse');
         $app->group('/{id}', function () use ($app) {
-            $app->get('/info', 'warehouse.controller:getOne');
+            $app->get('/state', 'warehouse.controller:getOne');
             $app->get('/transfers', 'admin.controller:getTransfersForWarehouse');
             $app->put('/change', 'admin.controller:changeWarehouse');
             $app->delete('/delete', 'admin.controller:deleteWarehouse');

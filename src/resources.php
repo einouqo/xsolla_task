@@ -38,7 +38,8 @@
 
     $container['warehouse.service'] = function ($c) {
         /** @var ContainerInterface $c */
-        return new \App\Services\WarehouseService($c->get('admin.repository'), $c->get('employee.repository'), $c->get('user.repository'));
+        return new \App\Services\WarehouseService($c->get('admin.repository'),
+            $c->get('employee.repository'), $c->get('user.repository'));
     };
 
     $container['admin.service'] = function ($c) {

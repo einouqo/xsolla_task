@@ -50,30 +50,6 @@
             }
         }
 
-        private function fillWarehouses(EmployeeAdmin &$admin, bool $setLoaded = false)
-        {
-            $warehouses = $this->adminRepository->getWarehouses($admin->getCompanyID(), $setLoaded);
-            foreach ($warehouses as $warehouse) {
-                $admin->addWarehouse($warehouse);
-            }
-        }
-
-        private function fillEmployees(EmployeeAdmin &$admin)
-        {
-            $employees = $this->adminRepository->getEmployees($admin->getCompanyID());
-            foreach ($employees as $employee) {
-                $admin->addEmployee($employee);
-            }
-        }
-
-        private function fillAccesses(EmployeeAdmin &$admin)
-        {
-            $accesses = $this->adminRepository->getAccesses($admin->getCompanyID());
-            foreach ($accesses as $access) {
-                $admin->addAccess($access['userID'], $access['warehouseID']);
-            }
-        }
-
         private function fillRooms(EmployeeAdmin &$admin)
         {
             $rooms = $this->adminRepository->getRooms($admin->getCompanyID());
@@ -99,9 +75,9 @@
         {
             $admin = $this->getUser();
 
-            $this->fillWarehouses($admin);
-            $this->fillEmployees($admin);
-            $this->fillAccesses($admin);
+            $this->adminRepository->fillWarehouses($admin);
+            $this->adminRepository->fillEmployees($admin);
+            $this->adminRepository->fillAccesses($admin);
 
             $this->dataAccessValidation($admin, $data);
             if ($admin->isAccessExist($data['userID'], $data['warehouseID'])) {
@@ -116,9 +92,9 @@
         {
             $admin = $this->getUser();
 
-            $this->fillWarehouses($admin);
-            $this->fillEmployees($admin);
-            $this->fillAccesses($admin);
+            $this->adminRepository->fillWarehouses($admin);
+            $this->adminRepository->fillEmployees($admin);
+            $this->adminRepository->fillAccesses($admin);
 
             $this->dataAccessValidation($admin, $data);
             if (!$admin->isAccessExist($data['userID'], $data['warehouseID'])) {
@@ -150,7 +126,7 @@
             $admin = $this->getUser();
 
             $this->fillRooms($admin);
-            $this->fillWarehouses($admin);
+            $this->adminRepository->fillWarehouses($admin);
 
             $this->createWarehouseValidation($admin, $data);
             $this->adminRepository->createWarehouse($data);
@@ -185,7 +161,7 @@
         {
             $admin = $this->getUser();
 
-            $this->fillWarehouses($admin);
+            $this->adminRepository->fillWarehouses($admin);
 
             $this->changeWarehouseValidation($admin, $data);
             $this->adminRepository->changeWarehouse($admin->getWarehouseByID($data['warehouseID']), $data);
@@ -197,7 +173,7 @@
         {
             $admin = $this->getUser();
 
-            $this->fillWarehouses($admin);
+            $this->adminRepository->fillWarehouses($admin);
 
             if (!$admin->isWarehouseExist($warehouseID)) {
                 throw new \Exception('Warehouse with this ID wasn\'t found in your organisation.', 400);
@@ -266,7 +242,7 @@
         public function getTransfersForWarehouse(int $warehouseID)
         {
             $admin = $this->getUser();
-            $this->fillWarehouses($admin);
+            $this->adminRepository->fillWarehouses($admin);
             if (is_null($admin->getWarehouseByID($warehouseID))) {
                 throw new \Exception('This warehouse wasn\'t found in your company.', 403);
             }
@@ -299,7 +275,7 @@
                 throw new \Exception('Receiving warehouse ID cannot be empty.', 403);
             }
 
-            $this->fillWarehouses($admin, true);
+            $this->adminRepository->fillWarehouses($admin, true);
             $warehouseTo = $admin->getWarehouseByID($warehouseID);
             if (is_null($warehouseTo)) {
                 throw new \Exception('This warehouse wasn\'t found in your company.', 403);

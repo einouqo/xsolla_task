@@ -6,6 +6,7 @@
     use App\Repository\AdminRepository;
     use App\Repository\EmployeeRepository;
     use App\Repository\UserRepository;
+    use App\Repository\WarehouseRepository;
     use Firebase\JWT\JWT;
 
     class WarehouseService
@@ -35,7 +36,7 @@
         private function getUserIDFromCookie()
         {
             if (isset($_COOKIE['token'])) {
-                $config = require __DIR__.'/../settings.php';
+                $config = require __DIR__ . '/../settings.php';
                 return ((array)JWT::decode(
                     $_COOKIE['token'],
                     $config['jwt']['secret'],
@@ -53,26 +54,10 @@
             );
 
             is_a($user, 'App\Model\EmployeeAdmin') ?
-                $this->fillWarehousesForAdmin($user):
-                $this->fillWarehousesForEmployee($user);
+                $this->adminRepository->fillWarehousesWithItems($user):
+                $this->employeeRepository->fillWarehouses($user);
 
             return $user;
-        }
-
-        private function fillWarehousesForAdmin(EmployeeAdmin &$admin)
-        {
-            $warehouses = $this->adminRepository->getWarehouses($admin->getCompanyID());
-            foreach ($warehouses as $warehouse) {
-                $admin->addWarehouse($warehouse);
-            }
-        }
-
-        private function fillWarehousesForEmployee(Employee &$employee)
-        {
-            $warehouses = $this->employeeRepository->getWarehouses($employee->getID());
-            foreach ($warehouses as $warehouse) {
-                $employee->addWarehouse($warehouse);
-            }
         }
 
         public function getList()
@@ -81,9 +66,69 @@
             return $user->getWarehousesList();
         }
 
-        public function getOne(int $warehouseID)
+        private function getReport(array $report, \DateTime $date = null)
+        {
+            if (is_null($date)) {
+                return $report;
+            }
+
+            $totalQuantity = 0;
+            $totalPrice = 0.;
+            foreach ($report['items'] as $key => $item) {
+                print_r($report['items']);
+                $report['items'][$key]['quantity'] +=
+                    ($this->adminRepository->getSellingCondition($item['id'], $report['id'], $item['size'], $date) ?? 0) -
+                    ($this->adminRepository->getDeliveryCondition($item['id'], $report['address'], $item['size'], $date) ?? 0) +
+                    ($this->adminRepository->getSendedCondition($item['id'], $report['id'], $item['size'], $date) ?? 0) -
+                    ($this->adminRepository->getReceivingCondition($item['id'], $report['id'], $item['size'], $date) ?? 0);
+                $totalQuantity += $report['items'][$key]['quantity'];
+                $totalPrice += $report['items'][$key]['quantity'] * $report['items'][$key]['price'];
+            }
+            $report['Total price: '] = $totalPrice;
+            $report['Total quantity: '] = $totalQuantity;
+
+            return $report;
+        }
+
+        public function getOne(int $warehouseID, \DateTime $date = null)
         {
             $user = $this->getUser();
-            return $user->getWarehouseByID($warehouseID);
+
+            $warehouse = $user->getWarehouseByID($warehouseID);
+            if (is_null($warehouse)) {
+                throw new \Exception('This warehouse wasn\'t found in your organisation.', 400);
+            }
+
+            return $this->getReport($warehouse->getFullInfo(), $date);
         }
     }
+
+    //employee
+//{
+//    "id": "2",
+//    "address": "address2",
+//    "name": "name_test",
+//    "capacity": 650,
+//    "loaded": 35,
+//    "items": [
+//        {
+//            "id": "9",
+//            "name": "name_test",
+//            "type": "type_test",
+//            "price": 2010,
+//            "size": "2",
+//            "quantity": 35
+//        }
+//    ],
+//    "Total price: ": 70350,
+//    "Total quantity: ": 35
+//}
+
+    //admin
+//{
+//    "id": "2",
+//    "address": "address2",
+//    "name": "name_test",
+//    "capacity": 650,
+//    "loaded": 35
+//}

@@ -24,6 +24,7 @@
 
         public function getOne(Request $request, Response $response, $args = [])
         {
-            return $response->withStatus(200)->withJson($this->warehouseService->getOne($args['id']));
+            $date = $request->getQueryParam('date');
+            return $response->withStatus(200)->withJson($this->warehouseService->getOne($args['id'], new \DateTime($date)));
         }
     }

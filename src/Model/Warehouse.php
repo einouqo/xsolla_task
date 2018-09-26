@@ -116,7 +116,8 @@
             $info = $this->getInfo();
             $info += [
                 'name' => $this->name,
-                'capacity' => $this->capacity
+                'capacity' => $this->capacity,
+                'loaded' =>$this->loaded,
             ];
             return $info;
         }
@@ -127,10 +128,7 @@
         public function getFullInfo()
         {
             $info = $this->getShortInfo();
-            $info += [
-                'loaded' =>$this->loaded,
-                'items' => $this->getItemsInfo()
-            ];
+            $info += $this->getItemsInfo();
             return $info;
         }
 
