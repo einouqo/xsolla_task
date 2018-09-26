@@ -17,7 +17,7 @@
             $this->userRepository = $userRepository;
         }
 
-        private function dataValidation(array $data, string $exceptID = '')
+        private function baseValidation(array $data)
         {
             if (is_null($data['email']) || $data['email'] == '') {
                 throw new \Exception('Email cannot be empty.', 403);
@@ -25,6 +25,13 @@
                 throw new \Exception('Email are incorrect.', 403);
             }
 
+            if (is_null($data['password']) || $data['password'] == '') {
+                throw new \Exception('Password cannot be empty.', 403);
+            }
+        }
+
+        private function dataValidation(array $data, string $exceptID = '')
+        {
             if (is_null($data['name']) || $data['name'] == '') {
                 throw new \Exception('Name cannot be empty.', 403);
             } elseif (!ctype_alpha($data['name'])) {
@@ -47,15 +54,14 @@
                 throw new \Exception('Phone may consist digits only.', 403);
             }
 
-            if (is_null($data['password']) || $data['password'] == '') {
-                throw new \Exception('Password cannot be empty.', 403);
-            }
-
             if (is_null($data['position']) || $data['position'] == '') {
                 throw new \Exception('Position cannot be empty. (0 - regular Employee, 1 - admin)', 403);
             } elseif (!is_numeric($data['position']) || $data['position'] > 2 || $data['position'] < 0) {
                 throw new \Exception('Position value are wrong.', 403);
             }
+
+            $this->baseValidation($data);
+
             $this->userRepository->isUniqueEmail($data['email'], $exceptID);
             $this->userRepository->isUniquePhone($data['phone'], $exceptID);
             $this->userRepository->isCompanyExist($data['companyID']);

@@ -20,7 +20,7 @@
         public function registration(Request $request, Response $response, $args = [])
         {
             $bodyParams = $request->getParsedBody() ?? [];
-            $newUserData = array(
+            $newUserData = [
                 'id' => null,
                 'name' => key_exists('name', $bodyParams)?
                     $bodyParams['name']:
@@ -43,7 +43,7 @@
                 'position' => key_exists('position', $bodyParams) ?
                     $bodyParams['position']:
                     null
-            );
+            ];
 
             return $response->write($this->userService->registration($newUserData));
         }

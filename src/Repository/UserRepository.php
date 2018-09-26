@@ -141,16 +141,15 @@
             }
 
             $userData = $this->dbConnection->fetchAssoc(
-                'SELECT users.id, personalInfo.name, personalInfo.lastname, users.id_company AS companyID, users.email, users.password, users.position ,personalInfo.phone
-                FROM users
-                INNER JOIN personalInfo ON users.id_personalData = personalInfo.id AND users.email = ? AND users.password = ?',
+                'SELECT users.id, personalInfo.name, personalInfo.lastname, users.id_company AS companyID, 
+                users.email, users.password, users.position ,personalInfo.phone, salt FROM users
+                INNER JOIN personalInfo ON users.id_personalData = personalInfo.id AND users.email = ?',
                 [
                     $email,
-                    $password
                 ]
             );
 
-            if (isset($userData['id'])) {
+            if (isset($userData['id']) && password_verify($password.$userData['salt'], $userData['password'])) {
                 return $userData['position'] == 1 ?
                     new EmployeeAdmin($userData):
                     new Employee($userData);

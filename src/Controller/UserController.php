@@ -19,15 +19,15 @@
 
         public function authentication(Request $request, Response $response, $args = [])
         {
-            $bodyParams = $request->getParsedBody();
-            $authenticationData = array (
+            $bodyParams = $request->getParsedBody() ?? [];
+            $authenticationData = [
                 'email' => array_key_exists('email', $bodyParams) ?
                     $bodyParams['email'] :
                     null,
                 'password' => array_key_exists('password', $bodyParams) ?
-                    md5($bodyParams['password']) :
+                    $bodyParams['password'] :
                     null
-            );
+            ];
 
             return $response->withStatus(200)->write($this->userService->authentication($authenticationData));
         }
@@ -44,8 +44,8 @@
 
         public function change(Request $request, Response $response, $args = [])
         {
-            $bodyParams = $request->getParsedBody();
-            $newData = array (
+            $bodyParams = $request->getParsedBody() ?? [];
+            $newData = [
                 'email' => array_key_exists('email', $bodyParams) ?
                     $bodyParams['email'] :
                     null,
@@ -61,7 +61,7 @@
                 'phone' => array_key_exists('phone', $bodyParams) ?
                     $bodyParams['phone'] :
                     null
-            );
+            ];
 
             return $response->write($this->userService->change($newData));
         }
