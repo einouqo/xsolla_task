@@ -1,9 +1,6 @@
 <?php
     namespace App\Services;
 
-    use App\Model\Employee;
-    use App\Model\Item;
-    use App\Model\Warehouse;
     use App\Repository\EmployeeRepository;
     use App\Repository\UserRepository;
     use Firebase\JWT\JWT;

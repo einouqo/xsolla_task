@@ -60,8 +60,11 @@
 
         private function dataAccessValidation(EmployeeAdmin $admin, array $data)
         {
-            if (!isset($data['userID'], $data['warehouseID'])) {
-                throw new \Exception('Not all fields are filled.', 403);
+            if (!isset($data['userID']) || $data['userID'] == '') {
+                throw new \Exception('User ID cannot be empty.', 403);
+            }
+            if (!isset($data['warehouseID']) || $data['warehouseID'] == '') {
+                throw new \Exception('Warehouse ID cannot be empty.', 403);
             }
             if (!$admin->isEmployeeExist($data['userID'])) {
                 throw new \Exception('User with this ID wasn\'t found in your organisation.', 400);
@@ -207,8 +210,8 @@
 
         private function deleteRoomValidation(EmployeeAdmin $admin, $roomID)
         {
-            if (!isset($roomID)) {
-                throw new \Exception('Not all fields are filled.', 403);
+            if (is_null($roomID)) {
+                throw new \Exception('Room ID cannot be empty.', 403);
             }
             if (!is_numeric($roomID)) {
                 throw new \Exception('Room ID are wrong.', 403);

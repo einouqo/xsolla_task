@@ -1,12 +1,9 @@
 <?php
     namespace App\Services;
 
-    use App\Model\Employee;
-    use App\Model\EmployeeAdmin;
     use App\Repository\AdminRepository;
     use App\Repository\EmployeeRepository;
     use App\Repository\UserRepository;
-    use App\Repository\WarehouseRepository;
     use Firebase\JWT\JWT;
 
     class WarehouseService
@@ -102,33 +99,3 @@
             return $this->getReport($warehouse->getFullInfo(), $date);
         }
     }
-
-    //employee
-//{
-//    "id": "2",
-//    "address": "address2",
-//    "name": "name_test",
-//    "capacity": 650,
-//    "loaded": 35,
-//    "items": [
-//        {
-//            "id": "9",
-//            "name": "name_test",
-//            "type": "type_test",
-//            "price": 2010,
-//            "size": "2",
-//            "quantity": 35
-//        }
-//    ],
-//    "Total price: ": 70350,
-//    "Total quantity: ": 35
-//}
-
-    //admin
-//{
-//    "id": "2",
-//    "address": "address2",
-//    "name": "name_test",
-//    "capacity": 650,
-//    "loaded": 35
-//}

@@ -36,7 +36,7 @@
             }
         }
 
-        public function getAccesses(EmployeeAdmin &$admin)
+        public function fillAccesses(EmployeeAdmin &$admin)
         {
             $rows = $this->dbConnection->executeQuery(
                 'SELECT id_address AS warehouseID, id_user AS userID FROM userAccessible

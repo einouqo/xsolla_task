@@ -19,7 +19,7 @@
 
         public function giveAccess(Request $request, Response $response, $args = [])
         {
-            $bodyParams = $request->getParsedBody();
+            $bodyParams = $request->getParsedBody() ?? [];
             $accessData = array (
                 'userID' => array_key_exists('userID', $bodyParams) ?
                     $bodyParams['userID'] :
@@ -33,7 +33,7 @@
 
         public function deleteAccess(Request $request, Response $response, $args = [])
         {
-            $bodyParams = $request->getParsedBody();
+            $bodyParams = $request->getParsedBody() ?? [];
             $accessData = array (
                 'userID' => array_key_exists('userID', $bodyParams) ?
                     $bodyParams['userID'] :
@@ -47,10 +47,7 @@
 
         public function createWarehouse(Request $request, Response $response, $args = [])
         {
-            $parsedBody = $request->getParsedBody();
-            $bodyParams = is_null($parsedBody) ?
-                array():
-                $parsedBody;
+            $bodyParams = $request->getParsedBody() ?? [];
             $warehouseData = array (
                 'roomID' => array_key_exists('roomID', $bodyParams) ?
                     $bodyParams['roomID'] :
@@ -68,10 +65,7 @@
 
         public function changeWarehouse(Request $request, Response $response, $args = [])
         {
-            $parsedBody = $request->getParsedBody();
-            $bodyParams = is_null($parsedBody) ?
-                array():
-                $parsedBody;
+            $bodyParams = $request->getParsedBody() ?? [];
             $warehouseData = array (
                 'warehouseID' => $args['id'],
                 'name' => array_key_exists('name', $bodyParams) ?
@@ -91,10 +85,7 @@
 
         public function addRoom(Request $request, Response $response, $args = [])
         {
-            $parsedBody = $request->getParsedBody();
-            $bodyParams = is_null($parsedBody) ?
-                array():
-                $parsedBody;
+            $bodyParams = $request->getParsedBody() ?? [];
             $roomData = array (
                 'address' => array_key_exists('address', $bodyParams) ?
                     $bodyParams['address'] :
@@ -105,10 +96,7 @@
 
         public function deleteRoom(Request $request, Response $response, $args = [])
         {
-            $parsedBody = $request->getParsedBody();
-            $roomID = !is_null($parsedBody['roomID']) ?
-                $parsedBody['roomID'] :
-                null;
+            $roomID = $request->getParsedBody()['roomID'];
 
             return $response->withStatus(200)->write($this->adminService->deleteRoom($roomID));
         }
@@ -136,7 +124,7 @@
 
         public function addItem(Request $request, Response $response, $args = [])
         {
-            $parsedBody = $request->getParsedBody() ?? array();
+            $parsedBody = $request->getParsedBody() ?? [];
             $data = [
                 'name' => key_exists('name', $parsedBody) ?
                     $parsedBody['name']:
@@ -163,7 +151,7 @@
 
         public function changeItem(Request $request, Response $response, $args = [])
         {
-            $parsedBody = $request->getParsedBody() ?? array();
+            $parsedBody = $request->getParsedBody() ?? [];
             $data = [
                 'name' => key_exists('name', $parsedBody) ?
                     $parsedBody['name']:
