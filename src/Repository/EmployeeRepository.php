@@ -92,7 +92,7 @@
             return $transfers;
         }
 
-        public function addItemToWarehouse(Item $item, string $warehouseAddress)
+        private function addToWarehouse(Item $item, string $warehouseAddress)
         {
             $this->dbConnection->executeQuery(
                 'INSERT INTO quantity(address, id_item, size, quantity) VALUES (?, ?, ?, ?)',
@@ -103,6 +103,35 @@
                     $item->getQuantity()
                 ]
             );
+        }
+
+        public function addQuantity(Item $item, string $warehouseAddress, $quantity)
+        {
+            $this->dbConnection->executeQuery(
+                'UPDATE quantity SET quantity = ? WHERE address = ? AND id_item = ? AND size = ?',
+                [
+                    $quantity + $item->getQuantity(),
+                    $warehouseAddress,
+                    $item->getID(),
+                    $item->getSize()
+                ]
+            );
+        }
+
+        public function addItemToWarehouse(Item $item, string $warehouseAddress)
+        {
+            $isExist = $this->dbConnection->fetchAssoc(
+                'SELECT quantity FROM quantity WHERE address = ? AND id_item = ? AND size = ?',
+                [
+                    $warehouseAddress,
+                    $item->getID(),
+                    $item->getSize()
+                ]
+            )['quantity'];
+
+            is_null($isExist) ?
+                $this->addToWarehouse($item, $warehouseAddress) :
+                $this->addQuantity($item, $warehouseAddress, $isExist);
         }
 
         public function closeTransfer(int $transferID)

@@ -361,6 +361,16 @@
                 ]
             );
 
+            $this->dbConnection->executeQuery(
+                'INSERT INTO delivery(address, id_item, size, quantity, date) VALUES (?, ?, ?, ?, NOW())',
+                [
+                    $address,
+                    $id,
+                    $data['size'],
+                    $data['quantity']
+                ]
+            );
+
             $alreadyIs['count'] == 0 ?
                 $this->addItemToWarehouse($data, $address, $id):
                 $this->addQuantity($data, $address, $id);
@@ -392,11 +402,66 @@
             );
         }
 
-        public function itemState(int $itemID, int $companyID)
+        private function getDeliveryCondition(int $itemID, string $address, string $size, \DateTime $date = null)
+        {
+            return isset($date) ?
+                $this->dbConnection->fetchAssoc(
+                'SELECT SUM(quantity) AS quantity FROM delivery WHERE id_item = ? AND address = ? AND size = ? AND date > ? ;',
+                    [
+                        $itemID,
+                        $address,
+                        $size,
+                        $date->format('Y-m-d H:i:s')
+                    ]
+                )['quantity'] : 0;
+        }
+
+        private function getSellingCondition(int $itemID, string $warehouseID, string $size, \DateTime $date = null)
+        {
+            return isset($date) ? $this->dbConnection->fetchAssoc(
+                'SELECT SUM(quantity) AS quantity FROM selling WHERE id_item = ? AND id_address = ? AND size = ? AND date > ? ;',
+                [
+                    $itemID,
+                    $warehouseID,
+                    $size,
+                    $date->format('Y-m-d H:i:s')
+                ]
+            )['quantity'] : 0;
+        }
+
+        private function getSendedCondition(int $itemID, string $warehouseID, string $size, \DateTime $date = null)
+        {
+            return isset($date) ? $this->dbConnection->fetchAssoc(
+                'SELECT SUM(quantity) AS quantity FROM transfer
+                    INNER JOIN transferHistory ON transfer.id_history = transferHistory.id AND id_item = ? AND id_from = ? AND size = ? AND date_departure > ?',
+                [
+                    $itemID,
+                    $warehouseID,
+                    $size,
+                    $date->format('Y-m-d H:i:s')
+                ]
+            )['quantity'] : 0;
+        }
+
+        private function getReceivingCondition(int $itemID, string $warehouseID, string $size, \DateTime $date = null)
+        {
+            return isset($date) ? $this->dbConnection->fetchAssoc(
+                'SELECT SUM(quantity) AS quantity FROM transfer
+                    INNER JOIN transferHistory ON transfer.id_history = transferHistory.id AND id_item = ? AND id_to = ? AND size = ? AND date_receiving > ?',
+                [
+                    $itemID,
+                    $warehouseID,
+                    $size,
+                    $date->format('Y-m-d H:i:s')
+                ]
+            )['quantity'] : 0;
+        }
+
+        public function itemState(int $itemID, int $companyID, \DateTime $date = null)
         {
             $rows = $this->dbConnection->executeQuery(
                 'SELECT addresses.id AS id, quantity.address AS address, size, quantity, price FROM quantity
-                    INNER JOIN  addresses ON addresses.address = quantity.address AND id_item = ? AND id_company = ?
+                    INNER JOIN addresses ON addresses.address = quantity.address AND id_item = ? AND id_company = ?
                     INNER JOIN items ON quantity.id_item = items.id',
                 [
                     $itemID,
@@ -411,15 +476,20 @@
             $totalQuantity = 0;
             $totalPrice = 0.;
             while ($row = $rows->fetch(\PDO::FETCH_ASSOC)) {
-                $totalQuantity += $row['quantity'];
-                $totalPrice += $row['quantity'] * $row['price'];
+                $quantity = $row['quantity'] -
+                    ($this->getDeliveryCondition($itemID, $row['address'], $row['size'], $date) ?? 0) +
+                    ($this->getSellingCondition($itemID, $row['id'], $row['size'], $date) ?? 0) +
+                    ($this->getSendedCondition($itemID, $row['id'], $row['size'], $date) ?? 0) -
+                    ($this->getReceivingCondition($itemID, $row['id'], $row['size'], $date) ?? 0);
+                $totalQuantity += $quantity;
+                $totalPrice += $quantity * $row['price'];
                 array_push(
                     $result['warehouses'],
                     [
                         'id' => $row['id'],
                         'address' => $row['address'],
                         'size' => $row['size'],
-                        'quantity' => $row['quantity']
+                        'quantity' => $quantity
                     ]
                 );
             }

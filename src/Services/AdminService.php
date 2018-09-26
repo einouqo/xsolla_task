@@ -330,9 +330,12 @@
             return 'Item was successfully changed.';
         }
 
-        public function itemState(int $id)
+        public function itemState(int $id, string $date = null)
         {
             $admin = $this->getUser();
-            return $this->adminRepository->itemState($id, $admin->getCompanyID());
+            $onDate = isset($date) ?
+                new \DateTime($date) :
+                null;
+            return $this->adminRepository->itemState($id, $admin->getCompanyID(), $onDate);
         }
     }

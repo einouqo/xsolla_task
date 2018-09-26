@@ -83,7 +83,7 @@
                 $parsedBody['warehouseToID']:
                 null;
             return is_null($warehouseToID) ?
-                $response->withStatus(400)->write('Warehouse ID of this item cannot be empty.'):
+                $response->withStatus(400)->write('Destination warehouse ID cannot be empty.'):
                 $response->withStatus(200)->write($this->employeeService->sendTransfer($warehouseToID));
         }
 

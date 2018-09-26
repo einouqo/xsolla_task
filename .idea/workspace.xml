@@ -2,8 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="db5789f7-a183-4fa3-94ec-3abd33fba6fd" name="Default Changelist" comment="Work in progress (authentication)">
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/7be1b0b3-8a6b-4dd5-8e26-b614e159c028.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/7be1b0b3-8a6b-4dd5-8e26-b614e159c028.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Controller/AdminController.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Controller/AdminController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Controller/EmployeeController.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Controller/EmployeeController.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Repository/AdminRepository.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Repository/AdminRepository.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Repository/EmployeeRepository.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Repository/EmployeeRepository.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Services/AdminService.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Services/AdminService.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/router.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/router.php" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -177,31 +182,31 @@
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="json" value="10" />
-          <entry key="php" value="42120" />
+          <entry key="php" value="43787" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="JSON" value="10" />
-          <entry key="PHP" value="41837" />
-          <entry key="SQL" value="283" />
+          <entry key="PHP" value="43492" />
+          <entry key="SQL" value="295" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
           <entry key="json" value="1" />
-          <entry key="php" value="284" />
+          <entry key="php" value="291" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
           <entry key="JSON" value="1" />
-          <entry key="PHP" value="284" />
+          <entry key="PHP" value="291" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="22" />
+          <entry key="project.closed" value="23" />
           <entry key="project.open.time.10" value="4" />
           <entry key="project.open.time.11" value="1" />
           <entry key="project.open.time.12" value="1" />
@@ -237,17 +242,53 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/router.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="454">
-              <caret line="32" column="69" selection-start-line="32" selection-start-column="54" selection-end-line="32" selection-end-column="69" />
+            <state relative-caret-position="485">
+              <caret line="40" column="65" selection-start-line="40" selection-start-column="53" selection-end-line="40" selection-end-column="65" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/Controller/EmployeeController.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="447">
+              <caret line="43" column="78" selection-start-line="43" selection-start-column="78" selection-end-line="43" selection-end-column="78" />
+              <folding>
+                <element signature="e#41#74#0#PHP" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/Services/EmployeeService.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="490">
+              <caret line="106" column="39" selection-start-line="106" selection-start-column="39" selection-end-line="106" selection-end-column="39" />
+              <folding>
+                <element signature="e#39#62#0#PHP" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/Repository/EmployeeRepository.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="243">
+              <caret line="112" column="53" selection-start-line="112" selection-start-column="53" selection-end-line="112" selection-end-column="53" />
+              <folding>
+                <element signature="e#41#64#0#PHP" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/Controller/AdminController.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="342">
-              <caret line="88" column="85" selection-start-line="88" selection-start-column="85" selection-end-line="88" selection-end-column="85" />
+            <state relative-caret-position="624">
+              <caret line="160" column="76" lean-forward="true" selection-start-line="160" selection-start-column="76" selection-end-line="160" selection-end-column="76" />
             </state>
           </provider>
         </entry>
@@ -255,8 +296,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/Services/AdminService.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="568">
-              <caret line="204" column="46" selection-start-line="204" selection-start-column="46" selection-end-line="204" selection-end-column="46" />
+            <state relative-caret-position="761">
+              <caret line="338" column="46" selection-start-line="338" selection-start-column="46" selection-end-line="338" selection-end-column="46" />
               <folding>
                 <element signature="e#39#67#0#PHP" expanded="true" />
               </folding>
@@ -264,11 +305,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/Repository/AdminRepository.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="299">
-              <caret line="181" column="32" lean-forward="true" selection-start-line="181" selection-start-column="32" selection-end-line="181" selection-end-column="32" />
+            <state relative-caret-position="1316">
+              <caret line="501" column="9" lean-forward="true" selection-start-line="501" selection-start-column="9" selection-end-line="501" selection-end-column="9" />
               <folding>
                 <element signature="e#41#64#0#PHP" expanded="true" />
               </folding>
@@ -305,6 +346,8 @@
       <find>upd</find>
       <find>getItemByID</find>
       <find>dele</find>
+      <find>takeTransfer</find>
+      <find>addToWarehouse</find>
       <find>deleteWarehouse</find>
     </findStrings>
   </component>
@@ -350,17 +393,17 @@
         <option value="$PROJECT_DIR$/src/Model/EmployeeAdmin.php" />
         <option value="$PROJECT_DIR$/src/Model/Warehouse.php" />
         <option value="$PROJECT_DIR$/src/Model/Transfer.php" />
-        <option value="$PROJECT_DIR$/src/Services/AdminService.php" />
+        <option value="$PROJECT_DIR$/src/Services/UserService.php" />
+        <option value="$PROJECT_DIR$/src/Services/UserService.php" />
+        <option value="$PROJECT_DIR$/src/Repository/UserRepository.php" />
+        <option value="$PROJECT_DIR$/src/Repository/UserRepository.php" />
         <option value="$PROJECT_DIR$/src/Controller/AdminController.php" />
+        <option value="$PROJECT_DIR$/src/Services/AdminService.php" />
         <option value="$PROJECT_DIR$/src/Controller/EmployeeController.php" />
-        <option value="$PROJECT_DIR$/src/Services/EmployeeService.php" />
-        <option value="$PROJECT_DIR$/src/Services/UserService.php" />
-        <option value="$PROJECT_DIR$/src/Services/UserService.php" />
-        <option value="$PROJECT_DIR$/src/Repository/UserRepository.php" />
-        <option value="$PROJECT_DIR$/src/Repository/UserRepository.php" />
-        <option value="$PROJECT_DIR$/src/Repository/EmployeeRepository.php" />
-        <option value="$PROJECT_DIR$/src/router.php" />
         <option value="$PROJECT_DIR$/src/Repository/AdminRepository.php" />
+        <option value="$PROJECT_DIR$/src/router.php" />
+        <option value="$PROJECT_DIR$/src/Repository/EmployeeRepository.php" />
+        <option value="$PROJECT_DIR$/src/Services/EmployeeService.php" />
       </list>
     </option>
   </component>
@@ -584,18 +627,18 @@
       <workItem from="1537771476926" duration="9016000" />
       <workItem from="1537801790569" duration="10511000" />
       <workItem from="1537824720172" duration="3000" />
-      <workItem from="1537900356622" duration="1251000" />
+      <workItem from="1537900356622" duration="17877000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="287881000" />
+    <option name="totallyTimeSpent" value="304507000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="899" y="0" width="1661" height="1080" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49911818" visible="true" weight="0.21124151" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49911818" visible="true" weight="0.18159358" />
       <window_info id="Structure" order="1" sideWeight="0.50088185" side_tool="true" weight="0.27265862" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -615,7 +658,7 @@
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-      <window_info anchor="right" id="Database" order="3" weight="0.18268467" />
+      <window_info anchor="right" id="Database" order="3" weight="0.18221124" />
       <window_info anchor="right" x="0" y="0" width="319" height="880" id="Documentation" order="4" side_tool="true" weight="0.32985386" />
     </layout>
     <layout-to-restore>
@@ -862,10 +905,34 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/Model/Warehouse.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="697">
+          <caret line="80" column="23" selection-start-line="80" selection-start-column="23" selection-end-line="80" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Repository/AdminRepository.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1316">
+          <caret line="501" column="9" lean-forward="true" selection-start-line="501" selection-start-column="9" selection-end-line="501" selection-end-column="9" />
+          <folding>
+            <element signature="e#41#64#0#PHP" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/router.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="485">
+          <caret line="40" column="65" selection-start-line="40" selection-start-column="53" selection-end-line="40" selection-end-column="65" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/Controller/EmployeeController.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2142">
-          <caret line="104" column="82" selection-start-line="104" selection-start-column="82" selection-end-line="104" selection-end-column="82" />
+        <state relative-caret-position="447">
+          <caret line="43" column="78" selection-start-line="43" selection-start-column="78" selection-end-line="43" selection-end-column="78" />
           <folding>
             <element signature="e#41#74#0#PHP" expanded="true" />
           </folding>
@@ -874,15 +941,15 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Model/Item.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1260">
-          <caret line="60" column="35" selection-start-line="60" selection-start-column="24" selection-end-line="60" selection-end-column="35" />
+        <state relative-caret-position="676">
+          <caret line="45" column="24" selection-start-line="45" selection-start-column="24" selection-end-line="45" selection-end-column="24" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Services/EmployeeService.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="740">
-          <caret line="317" column="42" lean-forward="true" selection-start-line="317" selection-start-column="42" selection-end-line="317" selection-end-column="42" />
+        <state relative-caret-position="490">
+          <caret line="106" column="39" selection-start-line="106" selection-start-column="39" selection-end-line="106" selection-end-column="39" />
           <folding>
             <element signature="e#39#62#0#PHP" expanded="true" />
           </folding>
@@ -891,52 +958,28 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Repository/EmployeeRepository.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="288">
-          <caret line="189" lean-forward="true" selection-start-line="189" selection-end-line="189" />
+        <state relative-caret-position="243">
+          <caret line="112" column="53" selection-start-line="112" selection-start-column="53" selection-end-line="112" selection-end-column="53" />
           <folding>
             <element signature="e#41#64#0#PHP" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/Controller/AdminController.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="342">
-          <caret line="88" column="85" selection-start-line="88" selection-start-column="85" selection-end-line="88" selection-end-column="85" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/Services/AdminService.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="568">
-          <caret line="204" column="46" selection-start-line="204" selection-start-column="46" selection-end-line="204" selection-end-column="46" />
+        <state relative-caret-position="761">
+          <caret line="338" column="46" selection-start-line="338" selection-start-column="46" selection-end-line="338" selection-end-column="46" />
           <folding>
             <element signature="e#39#67#0#PHP" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/Model/Warehouse.php">
+    <entry file="file://$PROJECT_DIR$/src/Controller/AdminController.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="697">
-          <caret line="80" column="23" selection-start-line="80" selection-start-column="23" selection-end-line="80" selection-end-column="23" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/router.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="454">
-          <caret line="32" column="69" selection-start-line="32" selection-start-column="54" selection-end-line="32" selection-end-column="69" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Repository/AdminRepository.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="299">
-          <caret line="181" column="32" lean-forward="true" selection-start-line="181" selection-start-column="32" selection-end-line="181" selection-end-column="32" />
-          <folding>
-            <element signature="e#41#64#0#PHP" expanded="true" />
-          </folding>
+        <state relative-caret-position="624">
+          <caret line="160" column="76" lean-forward="true" selection-start-line="160" selection-start-column="76" selection-end-line="160" selection-end-column="76" />
         </state>
       </provider>
     </entry>

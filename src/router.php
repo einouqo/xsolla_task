@@ -38,7 +38,6 @@
                 $app->get('/pending', 'employee.controller:pendingList');
                 $app->get('/available','employee.controller:availableList');
             });
-            //для регуляр юзера
             $app->post('/take', 'employee.controller:takeTransfer');
             $app->group('/{id}', function () use ($app) {
                 $app->delete('/sell', 'employee.controller:sellItem');
@@ -47,7 +46,7 @@
             $app->group('/transfer', function () use ($app) {
                 $app->get('/list', 'employee.controller:showTransfer');
                 $app->get('/clear', 'employee.controller:clearTransfer');
-                $app->post('/send', 'employee.controller:sendTransfer');
+                $app->delete('/send', 'employee.controller:sendTransfer');
             });
         });
     });
