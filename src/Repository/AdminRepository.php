@@ -25,7 +25,7 @@
         {
             $rows = $this->dbConnection->executeQuery(
                 'SELECT users.id, name, lastname, id_company AS companyID, email, password, phone  FROM users
-                    INNER JOIN personalInfo on users.id_personalData = personalInfo.id AND id_company = ?',
+                    INNER JOIN personalInfo on users.id_personalData = personalInfo.id AND id_company = ? AND position <> 1',
                 [
                     $admin->getCompanyID()
                 ]
@@ -120,21 +120,18 @@
             }
         }
 
-        public function getRooms(int $companyID)
+        public function fillRooms(EmployeeAdmin &$admin)
         {
-            $rooms = [];
             $rows = $this->dbConnection->executeQuery(
                 'SELECT id, address FROM addresses WHERE id_company = ?',
                 [
-                    $companyID
+                    $admin->getCompanyID()
                 ]
             );
 
             while ($row = $rows->fetch(\PDO::FETCH_ASSOC)) {
-                $rooms[] = new Room($row);
+                $admin->addRoom(new Room($row));
             }
-
-            return $rooms;
         }
 
         public function giveAccess(array $data, int $companyID)

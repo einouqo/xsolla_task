@@ -17,6 +17,13 @@
             $this->adminService = $adminService;
         }
 
+        /**
+         * @param Request $request
+         * @param Response $response
+         * @param array $args
+         * @return Response
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function giveAccess(Request $request, Response $response, $args = [])
         {
             $bodyParams = $request->getParsedBody() ?? [];
@@ -31,6 +38,13 @@
             return $response->withStatus(200)->write($this->adminService->giveAccess($accessData));
         }
 
+        /**
+         * @param Request $request
+         * @param Response $response
+         * @param array $args
+         * @return Response
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function deleteAccess(Request $request, Response $response, $args = [])
         {
             $bodyParams = $request->getParsedBody() ?? [];
@@ -45,6 +59,13 @@
             return $response->withStatus(200)->write($this->adminService->deleteAccess($accessData));
         }
 
+        /**
+         * @param Request $request
+         * @param Response $response
+         * @param array $args
+         * @return Response
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function createWarehouse(Request $request, Response $response, $args = [])
         {
             $bodyParams = $request->getParsedBody() ?? [];
@@ -63,6 +84,13 @@
         }
 
 
+        /**
+         * @param Request $request
+         * @param Response $response
+         * @param array $args
+         * @return Response
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function changeWarehouse(Request $request, Response $response, $args = [])
         {
             $bodyParams = $request->getParsedBody() ?? [];
@@ -78,50 +106,100 @@
             return $response->withStatus(200)->write($this->adminService->changeWarehouse($warehouseData));
         }
 
+        /**
+         * @param Request $request
+         * @param Response $response
+         * @param array $args
+         * @return Response
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function deleteWarehouse(Request $request, Response $response, $args = [])
         {
             return $response->withStatus(200)->write($this->adminService->deleteWarehouse($args['id']));
         }
 
+        /**
+         * @param Request $request
+         * @param Response $response
+         * @param array $args
+         * @return Response
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function addRoom(Request $request, Response $response, $args = [])
         {
             $bodyParams = $request->getParsedBody() ?? [];
-            $roomData = array (
+            $roomData = [
                 'address' => array_key_exists('address', $bodyParams) ?
                     $bodyParams['address'] :
                     null
-            );
+            ];
             return $response->withStatus(200)->write($this->adminService->addRoom($roomData));
         }
 
+        /**
+         * @param Request $request
+         * @param Response $response
+         * @param array $args
+         * @return Response
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function deleteRoom(Request $request, Response $response, $args = [])
         {
-            $roomID = $request->getParsedBody()['roomID'];
-
-            return $response->withStatus(200)->write($this->adminService->deleteRoom($roomID));
+            return $response->withStatus(200)->write($this->adminService->deleteRoom($args['id']));
         }
 
+        /**
+         * @param Request $request
+         * @param Response $response
+         * @param array $args
+         * @return Response
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function getListRooms(Request $request, Response $response, $args = [])
         {
-            return $response->withStatus(200)->withJson($this->adminService->getRooms());
+            $result = $this->adminService->getRooms();
+            return count($result) == 0 ?
+                $response->withStatus(406)->write('Rooms were not found.'):
+                $response->withStatus(200)->withJson($this->adminService->getRooms());
         }
 
+        /**
+         * @param Request $request
+         * @param Response $response
+         * @param array $args
+         * @return Response
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function getTransfersForWarehouse(Request $request, Response $response, $args = [])
         {
             $result = $this->adminService->getTransfersForWarehouse($args['id']);
             return count($result) == 0 ?
-                $response->withStatus(406)->write('Transfers was not found.'):
+                $response->withStatus(406)->write('Transfers were not found.'):
                 $response->withStatus(200)->withJson($result);
         }
 
+        /**
+         * @param Request $request
+         * @param Response $response
+         * @param array $args
+         * @return Response
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function getTransfersForItem(Request $request, Response $response, $args = [])
         {
             $result = $this->adminService->getTransfersForItem($args['id']);
             return count($result) == 0 ?
-                $response->withStatus(406)->write('Transfers was not found.'):
+                $response->withStatus(406)->write('Transfers were not found.'):
                 $response->withStatus(200)->withJson($result);
         }
 
+        /**
+         * @param Request $request
+         * @param Response $response
+         * @param array $args
+         * @return Response
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function addItem(Request $request, Response $response, $args = [])
         {
             $parsedBody = $request->getParsedBody() ?? [];
@@ -149,6 +227,13 @@
             return $response->withStatus(200)->write($this->adminService->addItem($data, $warehouseID));
         }
 
+        /**
+         * @param Request $request
+         * @param Response $response
+         * @param array $args
+         * @return Response
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function changeItem(Request $request, Response $response, $args = [])
         {
             $parsedBody = $request->getParsedBody() ?? [];
@@ -168,6 +253,13 @@
             return $response->withStatus(200)->write($this->adminService->changeItem($itemID, $data));
         }
 
+        /**
+         * @param Request $request
+         * @param Response $response
+         * @param array $args
+         * @return Response
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function itemState(Request $request, Response $response, $args = [])
         {
             $date = $request->getQueryParam('date');

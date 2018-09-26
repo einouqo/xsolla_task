@@ -36,7 +36,9 @@
 
         /**
          * @param array $data
+         * @param string $exceptID
          * @throws \Exception
+         * @throws \Doctrine\DBAL\DBALException
          */
         private function fullValidation(array $data, $exceptID = '')
         {
@@ -103,10 +105,11 @@
             return $salt;
         }
 
+
         /**
          * @param array $data
          * @return string
-         * @throws \Exception
+         * @throws \Doctrine\DBAL\DBALException
          */
         public function registration(array $data)
         {

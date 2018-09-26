@@ -24,7 +24,11 @@
             $this->userRepository = $userRepository;
         }
 
-        private function getUserIDFromCookie()//из user service, как переиспользовать?
+        /**
+         * @return mixed
+         * @throws \Exception
+         */
+        private function getUserIDFromCookie()
         {
             if (isset($_COOKIE['token'])) {
                 $config = require __DIR__.'/../settings.php';
@@ -38,6 +42,11 @@
             }
         }
 
+        /**
+         * @return \App\Model\Employee|EmployeeAdmin
+         * @throws \Exception
+         * @throws \Doctrine\DBAL\DBALException
+         */
         private function getUser()
         {
             $user = $this->userRepository->getUserInfoByID(
@@ -50,14 +59,11 @@
             }
         }
 
-        private function fillRooms(EmployeeAdmin &$admin)
-        {
-            $rooms = $this->adminRepository->getRooms($admin->getCompanyID());
-            foreach ($rooms as $room) {
-                $admin->addRoom($room);
-            }
-        }
-
+        /**
+         * @param EmployeeAdmin $admin
+         * @param array $data
+         * @throws \Exception
+         */
         private function dataAccessValidation(EmployeeAdmin $admin, array $data)
         {
             if (!isset($data['userID']) || $data['userID'] == '') {
@@ -67,13 +73,19 @@
                 throw new \Exception('Warehouse ID cannot be empty.', 403);
             }
             if (!$admin->isEmployeeExist($data['userID'])) {
-                throw new \Exception('User with this ID wasn\'t found in your organisation.', 400);
+                throw new \Exception('Employee with this ID wasn\'t found in your organisation.', 400);
             };
             if (!$admin->isWarehouseExist($data['warehouseID'])) {
                 throw new \Exception('Warehouse with this ID wasn\'t found in your organisation.', 400);
             }
         }
 
+        /**
+         * @param array $data
+         * @return string
+         * @throws \Exception
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function giveAccess(array $data)
         {
             $admin = $this->getUser();
@@ -91,6 +103,12 @@
             return 'Access was added successfully.';
         }
 
+        /**
+         * @param array $data
+         * @return string
+         * @throws \Exception
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function deleteAccess(array $data)
         {
             $admin = $this->getUser();
@@ -108,6 +126,11 @@
             return 'Access was deleted successfully.';
         }
 
+        /**
+         * @param EmployeeAdmin $admin
+         * @param array $data
+         * @throws \Exception
+         */
         private function createWarehouseValidation(EmployeeAdmin $admin, array $data)
         {
             if (!isset($data['roomID'], $data['name'], $data['capacity'])) {
@@ -124,11 +147,17 @@
             }
         }
 
+        /**
+         * @param array $data
+         * @return string
+         * @throws \Exception
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function createWarehouse(array $data)
         {
             $admin = $this->getUser();
 
-            $this->fillRooms($admin);
+            $this->adminRepository->fillRooms($admin);
             $this->adminRepository->fillWarehouses($admin);
 
             $this->createWarehouseValidation($admin, $data);
@@ -137,6 +166,11 @@
             return 'Warehouse was successfully created.';
         }
 
+        /**
+         * @param EmployeeAdmin $admin
+         * @param array $data
+         * @throws \Exception
+         */
         private function changeWarehouseValidation(EmployeeAdmin $admin, array $data)
         {
             if (!isset($data['warehouseID'])) {
@@ -160,6 +194,12 @@
             }
         }
 
+        /**
+         * @param array $data
+         * @return string
+         * @throws \Exception
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function changeWarehouse(array $data)
         {
             $admin = $this->getUser();
@@ -172,6 +212,12 @@
             return 'Warehouse info was successfully updated.';
         }
 
+        /**
+         * @param int $warehouseID
+         * @return string
+         * @throws \Exception
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function deleteWarehouse(int $warehouseID)
         {
             $admin = $this->getUser();
@@ -186,21 +232,32 @@
             return 'Warehouse was successfully deleted.';
         }
 
+        /**
+         * @param EmployeeAdmin $admin
+         * @param array $data
+         * @throws \Exception
+         */
         private function addRoomValidation(EmployeeAdmin $admin, array $data)
         {
-            if (!isset($data['address'])) {
-                throw new \Exception('Not all fields are filled.', 403);
+            if (is_null($data['address']) || $data['address'] == '') {
+                throw new \Exception('Address cannot be empty.', 403);
             }
             if ($admin->isRoomExistByAddress($data['address'])) {
                 throw new \Exception('Room was added before.', 403);
             }
         }
 
+        /**
+         * @param array $data
+         * @return string
+         * @throws \Exception
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function addRoom(array $data)
         {
             $admin = $this->getUser();
 
-            $this->fillRooms($admin);
+            $this->adminRepository->fillRooms($admin);
 
             $this->addRoomValidation($admin, $data);
             $this->adminRepository->addRoom($data, $admin->getCompanyID());
@@ -208,11 +265,13 @@
             return 'Room was successfully created.';
         }
 
+        /**
+         * @param EmployeeAdmin $admin
+         * @param $roomID
+         * @throws \Exception
+         */
         private function deleteRoomValidation(EmployeeAdmin $admin, $roomID)
         {
-            if (is_null($roomID)) {
-                throw new \Exception('Room ID cannot be empty.', 403);
-            }
             if (!is_numeric($roomID)) {
                 throw new \Exception('Room ID are wrong.', 403);
             }
@@ -221,11 +280,17 @@
             }
         }
 
+        /**
+         * @param $roomID
+         * @return string
+         * @throws \Exception
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function deleteRoom($roomID)
         {
             $admin = $this->getUser();
 
-            $this->fillRooms($admin);
+            $this->adminRepository->fillRooms($admin);
 
             $this->deleteRoomValidation($admin, $roomID);
             $this->adminRepository->deleteRoom($roomID);
@@ -233,15 +298,25 @@
             return 'Room was successfully deleted.';
         }
 
+        /**
+         * @return array|string
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function getRooms()
         {
             $admin = $this->getUser();
 
-            $this->fillRooms($admin);
+            $this->adminRepository->fillRooms($admin);
 
             return $admin->getRoomsList();
         }
 
+        /**
+         * @param int $warehouseID
+         * @return array
+         * @throws \Exception
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function getTransfersForWarehouse(int $warehouseID)
         {
             $admin = $this->getUser();
@@ -254,6 +329,11 @@
             return $admin->getWarehouseTransfers($warehouseID);
         }
 
+        /**
+         * @param int $itemID
+         * @return array
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function getTransfersForItem(int $itemID)
         {
             $admin = $this->getUser();
@@ -261,6 +341,10 @@
             return $admin->getItemTransfers($itemID);
         }
 
+        /**
+         * @param array $data
+         * @throws \Exception
+         */
         private function newItemValidation(array $data)
         {
             foreach ($data as $field => $value) {
@@ -270,6 +354,13 @@
             }
         }
 
+        /**
+         * @param array $data
+         * @param $warehouseID
+         * @return string
+         * @throws \Exception
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function addItem(array $data, $warehouseID)
         {
             $admin = $this->getUser();
@@ -296,6 +387,13 @@
             return 'Item was added successfully.';
         }
 
+        /**
+         * @param $itemID
+         * @param array $data
+         * @return string
+         * @throws \Exception
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function changeItem($itemID, array $data)
         {
             $this->getUser();
@@ -309,6 +407,12 @@
             return 'Item was successfully changed.';
         }
 
+        /**
+         * @param int $id
+         * @param string|null $date
+         * @return array
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function itemState(int $id, string $date = null)
         {
             $admin = $this->getUser();

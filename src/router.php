@@ -20,7 +20,7 @@
     $app->group('/rooms', function () use ($app) {
         $app->get('/list', 'admin.controller:getListRooms');
         $app->post('/add', 'admin.controller:addRoom');
-        $app->delete('/delete', 'admin.controller:deleteRoom');
+        $app->delete('/{id}/delete', 'admin.controller:deleteRoom');
     });
 
     $app->group('/warehouses', function () use ($app) {
