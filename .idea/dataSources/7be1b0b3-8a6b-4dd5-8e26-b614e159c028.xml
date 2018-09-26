@@ -1035,7 +1035,7 @@
     </column>
     <column id="263" parent="235" name="date">
       <Position>5</Position>
-      <DataType>date|0s</DataType>
+      <DataType>datetime|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
@@ -1532,33 +1532,39 @@ id_user</ColNames>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <index id="348" parent="245" name="email">
+    <column id="348" parent="245" name="salt">
+      <Position>7</Position>
+      <DataType>varchar(255)|0s</DataType>
+      <NotNull>1</NotNull>
+      <ColumnKind>normal</ColumnKind>
+    </column>
+    <index id="349" parent="245" name="email">
       <ColNames>email</ColNames>
       <Unique>1</Unique>
       <Type>btree</Type>
     </index>
-    <index id="349" parent="245" name="users_ibfk_1">
+    <index id="350" parent="245" name="users_ibfk_1">
       <ColNames>id_company</ColNames>
       <Type>btree</Type>
     </index>
-    <index id="350" parent="245" name="users_ibfk_2">
+    <index id="351" parent="245" name="users_ibfk_2">
       <ColNames>id_personalData</ColNames>
       <Type>btree</Type>
     </index>
-    <index id="351" parent="245" name="users_ibfk_3">
+    <index id="352" parent="245" name="users_ibfk_3">
       <ColNames>position</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="352" parent="245" name="PRIMARY">
+    <key id="353" parent="245" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <key id="353" parent="245" name="email">
+    <key id="354" parent="245" name="email">
       <ColNames>email</ColNames>
       <UnderlyingIndexName>email</UnderlyingIndexName>
     </key>
-    <foreign-key id="354" parent="245" name="users_ibfk_1">
+    <foreign-key id="355" parent="245" name="users_ibfk_1">
       <ColNames>id_company</ColNames>
       <RefSchemaName>PHP04</RefSchemaName>
       <RefTableName>company</RefTableName>
@@ -1566,7 +1572,7 @@ id_user</ColNames>
       <OnUpdate>cascade</OnUpdate>
       <OnDelete>cascade</OnDelete>
     </foreign-key>
-    <foreign-key id="355" parent="245" name="users_ibfk_2">
+    <foreign-key id="356" parent="245" name="users_ibfk_2">
       <ColNames>id_personalData</ColNames>
       <RefSchemaName>PHP04</RefSchemaName>
       <RefTableName>personalInfo</RefTableName>
@@ -1574,7 +1580,7 @@ id_user</ColNames>
       <OnUpdate>cascade</OnUpdate>
       <OnDelete>cascade</OnDelete>
     </foreign-key>
-    <foreign-key id="356" parent="245" name="users_ibfk_3">
+    <foreign-key id="357" parent="245" name="users_ibfk_3">
       <ColNames>position</ColNames>
       <RefSchemaName>PHP04</RefSchemaName>
       <RefTableName>positions</RefTableName>

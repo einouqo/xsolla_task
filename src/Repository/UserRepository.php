@@ -112,16 +112,17 @@
             );
         }
 
-        public function insertIntoUsers(array $data, int $personalInfoID)
+        public function insertIntoUsers(array $data, int $personalInfoID, string $salt)
         {
             $this->dbConnection->executeQuery(
-                'INSERT INTO users (email, password, id_company, id_personalData, admin) VALUES (?, ?, ?, ?, ?)',
+                'INSERT INTO users (email, password, id_company, id_personalData, position, salt) VALUES (?, ?, ?, ?, ?, ?)',
                 [
                     $data['email'],
-                    $data['password'],
+                    password_hash($data['password'].$salt, PASSWORD_DEFAULT),
                     $data['companyID'],
                     $personalInfoID,
-                    $data['admin']
+                    $data['position'],
+                    $salt
                 ]
             );
         }
@@ -174,7 +175,7 @@
                     new EmployeeAdmin($userData) :
                     new Employee($userData);
             } else {
-                throw new \Exception('Your account don\'t valid anymore');
+                throw new \Exception('Your account don\'t valid anymore', 403);
             }
         }
 
