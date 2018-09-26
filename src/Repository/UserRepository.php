@@ -18,11 +18,20 @@
             $this->dbConnection = $dbConnection;
         }
 
+        /**
+         * @return string
+         */
         public function lastInsertId()
         {
             return $this->dbConnection->lastInsertId();
         }
 
+        /**
+         * @param string $email
+         * @param string $exceptID
+         * @throws \Exception
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function isUniqueEmail(string $email, string $exceptID)
         {
             $result = $this->dbConnection->fetchAssoc(
@@ -37,6 +46,12 @@
             }
         }
 
+        /**
+         * @param string $phone
+         * @param string $exceptID
+         * @throws \Exception
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function isUniquePhone(string $phone, string $exceptID)
         {
             $dbPhone = $this->dbConnection->fetchAssoc(
@@ -53,6 +68,11 @@
             }
         }
 
+        /**
+         * @param string $companyID
+         * @throws \Exception
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function isCompanyExist(string $companyID)
         {
             $companyID = $this->dbConnection->fetchAssoc(
@@ -68,6 +88,14 @@
         }
 
 
+        /**
+         * @param int $companyID
+         * @param string $name
+         * @param string $lastname
+         * @param string $exceptID
+         * @throws \Exception
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function isUniqueCompanyEmployee(int $companyID, string $name, string $lastname, string $exceptID)
         {
             $rows = $this->dbConnection->fetchAssoc(
@@ -87,6 +115,11 @@
             }
         }
 
+        /**
+         * @param array $data
+         * @return mixed
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function getPersonalInfoIfExist(array $data)
         {
             $personalInfoID = $this->dbConnection->fetchAssoc(
@@ -100,6 +133,10 @@
             return $personalInfoID['id'];
         }
 
+        /**
+         * @param array $data
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function insertIntoPersonalInfo(array $data)
         {
             $this->dbConnection->executeQuery(
@@ -112,6 +149,12 @@
             );
         }
 
+        /**
+         * @param array $data
+         * @param int $personalInfoID
+         * @param string $salt
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function insertIntoUsers(array $data, int $personalInfoID, string $salt)
         {
             $this->dbConnection->executeQuery(
@@ -127,6 +170,13 @@
             );
         }
 
+        /**
+         * @param string $email
+         * @param string $password
+         * @return Employee|EmployeeAdmin
+         * @throws \Exception
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function getUserInfo(string $email, string $password)
         {
             $isUserEmail = $this->dbConnection->fetchAssoc(
@@ -158,6 +208,12 @@
             }
         }
 
+        /**
+         * @param int $userID
+         * @return Employee|EmployeeAdmin
+         * @throws \Exception
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function getUserInfoByID(int $userID)
         {
             $userData = $this->dbConnection->fetchAssoc(
@@ -178,6 +234,10 @@
             }
         }
 
+        /**
+         * @param int $personalDataID
+         * @throws \Doctrine\DBAL\DBALException
+         */
         private function deletePersonalData(int $personalDataID)
         {
             $countAccounts = $this->dbConnection->fetchAssoc(
@@ -198,6 +258,10 @@
             }
         }
 
+        /**
+         * @param int $id
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function deleteAccount(int $id)
         {
             $result = $this->dbConnection->fetchAssoc(
@@ -224,6 +288,11 @@
             $this->deletePersonalData($result['id_personalData']);
         }
 
+        /**
+         * @param string $email
+         * @throws \Exception
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function isNewEmailValid(string $email)
         {
             $result = $this->dbConnection->fetchAssoc(
@@ -238,8 +307,20 @@
             }
         }
 
-        public function change(EmployeeAbstract $employee, array $data)//посмотреть что вообще с параметрами происходит
+        /**
+         * @param EmployeeAbstract $employee
+         * @param array $data
+         * @throws \Doctrine\DBAL\DBALException
+         */
+        public function change(EmployeeAbstract $employee, array $data)
         {
+            $salt = $this->dbConnection->fetchAssoc(
+                'SELECT salt FROM users WHERE id = ?',
+                [
+                    $employee->getID()
+                ]
+            )['salt'];
+
             $this->dbConnection->executeQuery(
                 'UPDATE users SET email = ?, password = ? WHERE id = ?',
                 [
@@ -247,7 +328,7 @@
                         $data['email']:
                         $employee->getEmail(),
                     key_exists('password', $data) ?
-                        $data['password']:
+                        password_hash($data['password'].$salt, PASSWORD_DEFAULT):
                         $employee->getPassword(),
                     $employee->getID()
                 ]

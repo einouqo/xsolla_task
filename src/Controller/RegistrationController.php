@@ -17,6 +17,13 @@
             $this->userService = $userService;
         }
 
+        /**
+         * @param Request $request
+         * @param Response $response
+         * @param array $args
+         * @return Response
+         * @throws \Exception
+         */
         public function registration(Request $request, Response $response, $args = [])
         {
             $bodyParams = $request->getParsedBody() ?? [];

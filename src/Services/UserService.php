@@ -17,6 +17,10 @@
             $this->userRepository = $userRepository;
         }
 
+        /**
+         * @param array $data
+         * @throws \Exception
+         */
         private function baseValidation(array $data)
         {
             if (is_null($data['email']) || $data['email'] == '') {
@@ -30,7 +34,11 @@
             }
         }
 
-        private function dataValidation(array $data, string $exceptID = '')
+        /**
+         * @param array $data
+         * @throws \Exception
+         */
+        private function fullValidation(array $data, $exceptID = '')
         {
             if (is_null($data['name']) || $data['name'] == '') {
                 throw new \Exception('Name cannot be empty.', 403);
@@ -62,12 +70,28 @@
 
             $this->baseValidation($data);
 
+            $this->dataValidation($data, $exceptID);
+        }
+
+
+        /**
+         * @param array $data
+         * @param string $exceptID
+         * @throws \Doctrine\DBAL\DBALException
+         */
+        private function dataValidation(array $data, $exceptID = '')
+        {
             $this->userRepository->isUniqueEmail($data['email'], $exceptID);
             $this->userRepository->isUniquePhone($data['phone'], $exceptID);
             $this->userRepository->isCompanyExist($data['companyID']);
             $this->userRepository->isUniqueCompanyEmployee($data['companyID'], $data['name'], $data['lastname'], $exceptID);
         }
 
+        /**
+         * @param int $length
+         * @return string
+         * @throws \Exception
+         */
         private function salt(int $length = 8)
         {
             $salt = '';
@@ -79,9 +103,14 @@
             return $salt;
         }
 
+        /**
+         * @param array $data
+         * @return string
+         * @throws \Exception
+         */
         public function registration(array $data)
         {
-            $this->dataValidation($data);
+            $this->fullValidation($data);
             $salt = $this->salt();
             $personalInfoID = $this->userRepository->getPersonalInfoIfExist($data);
             if (is_null($personalInfoID)) {
@@ -89,9 +118,16 @@
                 $personalInfoID = $this->userRepository->lastInsertId();
             }
             $this->userRepository->insertIntoUsers($data, $personalInfoID, $salt);
+            if (key_exists('token', $_COOKIE)) {
+                $this->unsetCookies();
+            }
             return 'You have registered successfully.';
         }
 
+        /**
+         * @return mixed
+         * @throws \Exception
+         */
         private function getUserIDFromCookie()
         {
             if (isset($_COOKIE['token'])) {
@@ -106,6 +142,10 @@
             }
         }
 
+        /**
+         * @return Employee|\App\Model\EmployeeAdmin
+         * @throws \Exception
+         */
         private function getUser()
         {
             return $this->userRepository->getUserInfoByID(
@@ -113,6 +153,11 @@
             );
         }
 
+        /**
+         * @param array $data
+         * @return string
+         * @throws \Exception
+         */
         public function authentication(array $data)
         {
             $user = isset($data['email'], $data['password']) ?
@@ -144,6 +189,9 @@
             }
         }
 
+        /**
+         * @return string
+         */
         public function logoff()
         {
             if (isset($_COOKIE['token'])){
@@ -152,6 +200,10 @@
             return 'Bye-Bye';
         }
 
+        /**
+         * @return string
+         * @throws \Exception
+         */
         public function delete()
         {
             $this->userRepository->deleteAccount($this->getUserIDFromCookie());
@@ -159,6 +211,11 @@
             return 'Your account was deleted.';
         }
 
+        /**
+         * @param array $oldData
+         * @param array $newData
+         * @throws \Exception
+         */
         private function isChangeable(array $oldData, array $newData)
         {
             foreach ($newData as $field => $data) {
@@ -168,7 +225,7 @@
             }
 
             $this->dataValidation(
-                array(
+                [
                     'email' => key_exists('email', $newData) ?
                         $newData['email']:
                         $oldData['email'],
@@ -182,18 +239,23 @@
                         $newData['lastname']:
                         $oldData['lastname'],
                     'companyID' => $oldData['companyID']
-                ),
+                ],
                 $oldData['id']
             );
         }
 
+        /**
+         * @param array $newData
+         * @return string
+         * @throws \Exception
+         */
         public function change(array $newData)
         {
             $user = $this->getUser();
 
             $changeableData = array();
             foreach ($newData as $field => $data) {
-                if (!is_null($data)) {
+                if (!is_null($data) && $data != '') {
                     $changeableData[$field] = $data;
                 }
             }
@@ -202,9 +264,15 @@
                 throw new \Exception('Nothing to change.', 400);
             }
 
-            $this->isChangeable($user->getPersonalInfo(), $changeableData);
+            $this->isChangeable(
+                $user->getPersonalInfo() + [
+                    'id' => $user->getID(),
+                    'companyID' => $user->getCompanyID()
+                ],
+                $changeableData);
 
             $this->userRepository->change($user, $changeableData);
+            $this->unsetCookies();
             return 'Your data was successfully update.';
         }
     }

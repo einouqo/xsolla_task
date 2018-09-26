@@ -17,6 +17,13 @@
             $this->userService = $userService;
         }
 
+        /**
+         * @param Request $request
+         * @param Response $response
+         * @param array $args
+         * @return Response
+         * @throws \Exception
+         */
         public function authentication(Request $request, Response $response, $args = [])
         {
             $bodyParams = $request->getParsedBody() ?? [];
@@ -32,16 +39,36 @@
             return $response->withStatus(200)->write($this->userService->authentication($authenticationData));
         }
 
+        /**
+         * @param Request $request
+         * @param Response $response
+         * @param array $args
+         * @return Response
+         */
         public function logoff(Request $request, Response $response, $args = [])
         {
             return $response->withStatus(200)->write($this->userService->logoff());
         }
 
+        /**
+         * @param Request $request
+         * @param Response $response
+         * @param array $args
+         * @return Response
+         * @throws \Exception
+         */
         public function delete(Request $request, Response $response, $args = [])
         {
             return $response->withStatus(200)->write($this->userService->delete());
         }
 
+        /**
+         * @param Request $request
+         * @param Response $response
+         * @param array $args
+         * @return Response
+         * @throws \Exception
+         */
         public function change(Request $request, Response $response, $args = [])
         {
             $bodyParams = $request->getParsedBody() ?? [];
@@ -50,7 +77,7 @@
                     $bodyParams['email'] :
                     null,
                 'password' => array_key_exists('password', $bodyParams) ?
-                    md5($bodyParams['password']) :
+                    $bodyParams['password'] :
                     null,
                 'name' => array_key_exists('name', $bodyParams) ?
                     $bodyParams['name'] :
