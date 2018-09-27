@@ -22,6 +22,7 @@
          * @param Response $response
          * @param array $args
          * @return Response
+         * @throws \Doctrine\DBAL\DBALException
          */
         public function pendingList(Request $request, Response $response, $args = [])
         {
@@ -98,6 +99,7 @@
          * @param Response $response
          * @param array $args
          * @return Response
+         * @throws \Doctrine\DBAL\DBALException
          */
         public function clearTransfer(Request $request, Response $response, $args = [])
         {
@@ -109,6 +111,7 @@
          * @param Response $response
          * @param array $args
          * @return Response
+         * @throws \Doctrine\DBAL\DBALException
          */
         public function showTransfer(Request $request, Response $response, $args = [])
         {
@@ -120,6 +123,7 @@
          * @param Response $response
          * @param array $args
          * @return Response
+         * @throws \Doctrine\DBAL\DBALException
          */
         public function sendTransfer(Request $request, Response $response, $args = [])
         {

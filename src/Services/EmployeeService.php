@@ -333,10 +333,12 @@
             $this->getUser();
             $isSent = false;
             $transfers = $this->getTransfersFromCookie();
-            foreach ($transfers as $transfer) {
-                if ($transfer['warehouseID'] != $warehouseToID) {
-                    $this->employeeRepository->registerTransfer($transfer, $warehouseToID);
-                    $isSent = true;
+            if (gettype($transfers) == 'array') {
+                foreach ($transfers as $transfer) {
+                    if ($transfer['warehouseID'] != $warehouseToID) {
+                        $this->employeeRepository->registerTransfer($transfer, $warehouseToID);
+                        $isSent = true;
+                    }
                 }
             }
             setcookie('transfer', '', time() - 60 * 60, '/');
@@ -354,6 +356,29 @@
             foreach ($data as $field => $value) {
                 if (is_null($value)) {
                     throw new \Exception('Field '.$field.' cannot be empty.', 403);
+                }
+            }
+        }
+
+        /**
+         * @param int $itemID
+         * @param string $size
+         * @param int $warehouseID
+         * @return int
+         */
+        private function quantityFromTransfer(int $itemID, string $size, int $warehouseID)
+        {
+            if (!key_exists('transfer', $_COOKIE)) {
+                return 0;
+            }
+            $transfers = $this->getTransfersFromCookie();
+            foreach ($transfers as $key => $transfer) {
+                if ($transfer['warehouseID'] == $warehouseID) {
+                    foreach ($transfer['items'] as $item) {
+                        if ($item['id'] == $itemID && $item['size'] == $size) {
+                            return $item['quantity'];
+                        }
+                    }
                 }
             }
         }
@@ -379,10 +404,12 @@
             if (is_null($items)) {
                 throw new \Exception('Item not found in this warehouse.', 403);
             }
-            $item = array_shift($items);//также при доьбавлении в куку трансфера
+            $item = array_shift($items);
 
-            if ($item->getQuantity() < $data['quantity']) {
-                throw new \Exception('There is not enough items.', 403);
+            $reserved = $this->quantityFromTransfer($itemID, $data['size'], $data['warehouseID']);
+            $available = $item->getQuantity();
+            if ($available < $data['quantity'] + $reserved) {
+                throw new \Exception('There is not enough items. Available: '.$available.' units. Reserved '.$reserved.' units.', 403);
             }
 
             $this->employeeRepository->sellItem($warehouse->getID(), $employee->getID(),$itemID, $data);
