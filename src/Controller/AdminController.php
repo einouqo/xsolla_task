@@ -263,7 +263,10 @@
         public function itemState(Request $request, Response $response, $args = [])
         {
             $date = $request->getQueryParam('date');
-            $result = $this->adminService->itemState($args['id'], $date);
+            $onDate = isset($date) ?
+                new \DateTime($date) :
+                null;
+            $result = $this->adminService->itemState($args['id'], $onDate);
             return count($result['warehouses']) == 0 ?
                 $response->withStatus(406)->write('Item was not found.'):
                 $response->withStatus(200)->withJson($result);

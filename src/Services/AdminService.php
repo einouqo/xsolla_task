@@ -218,6 +218,7 @@
         }
 
         /**
+         * @param int $warehouseID
          * @param array $data
          * @return string
          * @throws \Exception
@@ -428,7 +429,9 @@
         {
             $this->getUser();
 
-            if (is_null($data['price']) && is_null($data['name']) && is_null($data['type'])) {
+            if ((is_null($data['price']) || $data['price'] == '') &&
+                (is_null($data['name']) || $data['name'] == '') &&
+                (is_null($data['type']) || $data['type'] == '')) {
                 throw new \Exception('Nothing to change.', 400);
             }
 
@@ -439,16 +442,13 @@
 
         /**
          * @param int $id
-         * @param string|null $date
+         * @param \DateTime|null $onDate
          * @return array
          * @throws \Doctrine\DBAL\DBALException
          */
-        public function itemState(int $id, string $date = null)
+        public function itemState(int $id, \DateTime $onDate = null)
         {
             $admin = $this->getUser();
-            $onDate = isset($date) ?
-                new \DateTime($date) :
-                null;
             return $this->adminRepository->itemState($id, $admin->getCompanyID(), $onDate);
         }
     }

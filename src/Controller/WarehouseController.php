@@ -27,10 +27,10 @@
 
         public function getOne(Request $request, Response $response, $args = [])
         {
-            $param = $request->getQueryParam('date');
-            $date = is_null($param) ?
-                null:
-                new \DateTime($param);
-            return $response->withStatus(200)->withJson($this->warehouseService->getOne($args['id'], $date));
+            $date = $request->getQueryParam('date');
+            $onDate = isset($date) ?
+                new \DateTime($date) :
+                null;
+            return $response->withStatus(200)->withJson($this->warehouseService->getOne($args['id'], $onDate));
         }
     }

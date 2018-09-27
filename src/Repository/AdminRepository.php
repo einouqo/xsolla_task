@@ -21,6 +21,10 @@
             $this->dbConnection = $dbConnection;
         }
 
+        /**
+         * @param EmployeeAdmin $admin
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function fillEmployees(EmployeeAdmin &$admin)
         {
             $rows = $this->dbConnection->executeQuery(
@@ -36,6 +40,10 @@
             }
         }
 
+        /**
+         * @param EmployeeAdmin $admin
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function fillAccesses(EmployeeAdmin &$admin)
         {
             $rows = $this->dbConnection->executeQuery(
@@ -51,6 +59,11 @@
             }
         }
 
+        /**
+         * @param Warehouse $warehouse
+         * @return Warehouse
+         * @throws \Doctrine\DBAL\DBALException
+         */
         private function warehouseWithLoaded(Warehouse $warehouse)
         {
             $rows = $this->dbConnection->executeQuery(
@@ -71,6 +84,10 @@
             return $warehouse;
         }
 
+        /**
+         * @param Warehouse $warehouse
+         * @throws \Doctrine\DBAL\DBALException
+         */
         private function fillItems(Warehouse &$warehouse)
         {
             $rows = $this->dbConnection->executeQuery(
@@ -86,6 +103,10 @@
             }
         }
 
+        /**
+         * @param EmployeeAdmin $admin
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function fillWarehousesWithItems(EmployeeAdmin &$admin)
         {
             $rows = $this->dbConnection->executeQuery(
@@ -103,6 +124,11 @@
             }
         }
 
+        /**
+         * @param EmployeeAdmin $admin
+         * @param bool $setLoaded
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function fillWarehouses(EmployeeAdmin &$admin, bool $setLoaded = false)
         {
             $rows = $this->dbConnection->executeQuery(
@@ -120,6 +146,10 @@
             }
         }
 
+        /**
+         * @param EmployeeAdmin $admin
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function fillRooms(EmployeeAdmin &$admin)
         {
             $rows = $this->dbConnection->executeQuery(
@@ -134,6 +164,11 @@
             }
         }
 
+        /**
+         * @param array $data
+         * @param int $companyID
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function giveAccess(array $data, int $companyID)
         {
             $this->dbConnection->executeQuery(
@@ -147,6 +182,11 @@
             );
         }
 
+        /**
+         * @param array $data
+         * @param int $companyID
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function deleteAccess(array $data, int $companyID)
         {
             $this->dbConnection->executeQuery(
@@ -160,6 +200,10 @@
             );
         }
 
+        /**
+         * @param array $data
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function createWarehouse(array $data)
         {
             $row = $this->dbConnection->fetchAssoc(
@@ -179,6 +223,10 @@
             );
         }
 
+        /**
+         * @param string $address
+         * @throws \Doctrine\DBAL\DBALException
+         */
         private function isEmpty(string $address)
         {
             $items = $this->dbConnection->fetchAssoc(
@@ -194,6 +242,10 @@
             }
         }
 
+        /**
+         * @param int $warehouseID
+         * @throws \Doctrine\DBAL\DBALException
+         */
         private function hasCompletedTransfers(int $warehouseID)
         {
             $unComlitedTransfers = $this->dbConnection->fetchAssoc(
@@ -208,6 +260,11 @@
             }
         }
 
+        /**
+         * @param int $id
+         * @param string $address
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function deleteWarehouse(int $id, string $address)
         {
             $this->isEmpty($address);
@@ -228,6 +285,11 @@
             );
         }
 
+        /**
+         * @param array $data
+         * @param int $companyID
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function addRoom(array $data, int $companyID)
         {
             $this->dbConnection->executeQuery(
@@ -239,6 +301,10 @@
             );
         }
 
+        /**
+         * @param int $roomID
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function deleteRoom(int $roomID)
         {
             $unfinishedTransfer = $this->dbConnection->fetchAssoc(
@@ -262,6 +328,11 @@
             );
         }
 
+        /**
+         * @param Warehouse $warehouse
+         * @param array $data
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function changeWarehouse(Warehouse $warehouse, array $data)
         {
             $this->dbConnection->executeQuery(
@@ -278,6 +349,10 @@
             );
         }
 
+        /**
+         * @param Transfer $transfer
+         * @throws \Doctrine\DBAL\DBALException
+         */
         private function fillTransfer(Transfer &$transfer)
         {
             $rows = $this->dbConnection->executeQuery(
@@ -293,6 +368,10 @@
             }
         }
 
+        /**
+         * @param EmployeeAdmin $admin
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function fillTransfers(EmployeeAdmin &$admin)
         {
             $rows = $this->dbConnection->executeQuery(
@@ -311,6 +390,11 @@
             }
         }
 
+        /**
+         * @param array $data
+         * @return string
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function createItem(array $data)
         {
             $this->dbConnection->executeQuery(
@@ -324,6 +408,12 @@
             return $this->dbConnection->lastInsertId();
         }
 
+        /**
+         * @param array $data
+         * @param string $address
+         * @param int $id_item
+         * @throws \Doctrine\DBAL\DBALException
+         */
         private function addQuantity(array $data, string $address, int $id_item)
         {
             $old = $this->dbConnection->fetchAssoc(
@@ -346,6 +436,12 @@
             );
         }
 
+        /**
+         * @param array $data
+         * @param string $address
+         * @param int $id_item
+         * @throws \Doctrine\DBAL\DBALException
+         */
         private function addItemToWarehouse(array $data, string $address, int $id_item)
         {
             $this->dbConnection->executeQuery(
@@ -359,6 +455,11 @@
             );
         }
 
+        /**
+         * @param array $data
+         * @param string $address
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function addItem(array $data, string $address)
         {
             $existItem = $this->dbConnection->fetchAssoc(
@@ -396,6 +497,11 @@
                 $this->addQuantity($data, $address, $id);
         }
 
+        /**
+         * @param int $itemID
+         * @param array $data
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function changeItem(int $itemID, array $data)
         {
             $itemOld = $this->dbConnection->fetchAssoc(
@@ -404,6 +510,10 @@
                     $itemID
                 ]
             );
+
+            if (is_null($itemOld['name'])) {
+                throw new \Exception('Item was not found.', 400);
+            }
 
             if ((is_null($data['price']) || $data['price'] == $itemOld['price']) &&
                 (is_null($data['name']) || $data['name'] == $itemOld['name']) &&
@@ -422,6 +532,14 @@
             );
         }
 
+        /**
+         * @param int $itemID
+         * @param string $address
+         * @param string $size
+         * @param \DateTime|null $date
+         * @return int
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function getDeliveryCondition(int $itemID, string $address, string $size, \DateTime $date = null)
         {
             return isset($date) ?
@@ -436,6 +554,14 @@
                 )['quantity'] : 0;
         }
 
+        /**
+         * @param int $itemID
+         * @param string $warehouseID
+         * @param string $size
+         * @param \DateTime|null $date
+         * @return int
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function getSellingCondition(int $itemID, string $warehouseID, string $size, \DateTime $date = null)
         {
             return isset($date) ? $this->dbConnection->fetchAssoc(
@@ -449,6 +575,14 @@
             )['quantity'] : 0;
         }
 
+        /**
+         * @param int $itemID
+         * @param string $warehouseID
+         * @param string $size
+         * @param \DateTime|null $date
+         * @return int
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function getSendedCondition(int $itemID, string $warehouseID, string $size, \DateTime $date = null)
         {
             return isset($date) ? $this->dbConnection->fetchAssoc(
@@ -463,6 +597,14 @@
             )['quantity'] : 0;
         }
 
+        /**
+         * @param int $itemID
+         * @param string $warehouseID
+         * @param string $size
+         * @param \DateTime|null $date
+         * @return int
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function getReceivingCondition(int $itemID, string $warehouseID, string $size, \DateTime $date = null)
         {
             return isset($date) ? $this->dbConnection->fetchAssoc(
@@ -477,10 +619,17 @@
             )['quantity'] : 0;
         }
 
+        /**
+         * @param int $itemID
+         * @param int $companyID
+         * @param \DateTime|null $date
+         * @return array
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function itemState(int $itemID, int $companyID, \DateTime $date = null)
         {
-            $rows = $this->dbConnection->executeQuery(
-                'SELECT addresses.id AS id, quantity.address AS address, size, quantity, price FROM quantity
+            $rows = $this->dbConnection->fetchAll(
+                'SELECT addresses.id AS id, quantity.address AS address, items.name, size, quantity, price FROM quantity
                     INNER JOIN addresses ON addresses.address = quantity.address AND id_item = ? AND id_company = ?
                     INNER JOIN items ON quantity.id_item = items.id',
                 [
@@ -491,11 +640,13 @@
 
             $result = [
                 'itemID' => $itemID,
+                'name' => reset($rows)['name'],
+                'price' => (float)reset($rows)['price'],
                 'warehouses' => []
             ];
             $totalQuantity = 0;
             $totalPrice = 0.;
-            while ($row = $rows->fetch(\PDO::FETCH_ASSOC)) {
+            foreach ($rows as $row) {
                 $quantity = $row['quantity'] -
                     ($this->getDeliveryCondition($itemID, $row['address'], $row['size'], $date) ?? 0) +
                     ($this->getSellingCondition($itemID, $row['id'], $row['size'], $date) ?? 0) +
@@ -503,15 +654,17 @@
                     ($this->getReceivingCondition($itemID, $row['id'], $row['size'], $date) ?? 0);
                 $totalQuantity += $quantity;
                 $totalPrice += $quantity * $row['price'];
-                array_push(
-                    $result['warehouses'],
-                    [
-                        'id' => $row['id'],
-                        'address' => $row['address'],
-                        'size' => $row['size'],
-                        'quantity' => $quantity
-                    ]
-                );
+                if ($quantity != 0) {
+                    array_push(
+                        $result['warehouses'],
+                        [
+                            'id' => $row['id'],
+                            'address' => $row['address'],
+                            'size' => $row['size'],
+                            'quantity' => $quantity
+                        ]
+                    );
+                }
             }
             $result += [
                 'Total quantity' => $totalQuantity,
