@@ -442,6 +442,22 @@
 
         /**
          * @param int $id
+         * @param array $itemData
+         * @param \DateTime $onDate
+         * @return int|mixed
+         * @throws \Doctrine\DBAL\DBALException
+         */
+        private function countQuantityOnDate(int $id, array $itemData, \DateTime $onDate)
+        {
+            return $itemData['quantity'] -
+                ($this->adminRepository->getDeliveryCondition($id, $itemData['address'], $itemData['size'], $onDate) ?? 0) +
+                ($this->adminRepository->getSellingCondition($id, $itemData['id'], $itemData['size'], $onDate) ?? 0) +
+                ($this->adminRepository->getSendedCondition($id, $itemData['id'], $itemData['size'], $onDate) ?? 0) -
+                ($this->adminRepository->getReceivingCondition($id, $itemData['id'], $itemData['size'], $onDate) ?? 0);
+        }
+
+        /**
+         * @param int $id
          * @param \DateTime|null $onDate
          * @return array
          * @throws \Doctrine\DBAL\DBALException
@@ -449,6 +465,39 @@
         public function itemState(int $id, \DateTime $onDate = null)
         {
             $admin = $this->getUser();
-            return $this->adminRepository->itemState($id, $admin->getCompanyID(), $onDate);
+
+            $itemsData = $this->adminRepository->getItems($id, $admin->getCompanyID());
+            $result = [
+                'itemID' => $id,
+                'name' => reset($itemsData)['name'],
+                'price' => (float)reset($itemsData)['price'],
+                'warehouses' => []
+            ];
+            $totalQuantity = 0;
+            $totalPrice = 0.;
+            foreach ($itemsData as $itemData) {
+                $quantity = is_null($onDate) ?
+                    $itemData['quantity']:
+                    $this->countQuantityOnDate($id, $itemData, $onDate);
+                $totalQuantity += $quantity;
+                $totalPrice += $quantity * $itemData['price'];
+                if ($quantity != 0) {
+                    array_push(
+                        $result['warehouses'],
+                        [
+                            'id' => $itemData['id'],
+                            'address' => $itemData['address'],
+                            'size' => $itemData['size'],
+                            'quantity' => $quantity
+                        ]
+                    );
+                }
+            }
+            $result += [
+                'Total quantity' => $totalQuantity,
+                'Total price' => $totalPrice
+            ];
+
+            return $result;
         }
     }

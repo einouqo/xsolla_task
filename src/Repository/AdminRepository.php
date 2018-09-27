@@ -62,6 +62,7 @@
         /**
          * @param Warehouse $warehouse
          * @return Warehouse
+         * @throws \Exception
          * @throws \Doctrine\DBAL\DBALException
          */
         private function warehouseWithLoaded(Warehouse $warehouse)
@@ -225,6 +226,7 @@
 
         /**
          * @param string $address
+         * @throws \Exception
          * @throws \Doctrine\DBAL\DBALException
          */
         private function isEmpty(string $address)
@@ -244,6 +246,7 @@
 
         /**
          * @param int $warehouseID
+         * @throws \Exception
          * @throws \Doctrine\DBAL\DBALException
          */
         private function hasCompletedTransfers(int $warehouseID)
@@ -303,6 +306,7 @@
 
         /**
          * @param int $roomID
+         * @throws \Exception
          * @throws \Doctrine\DBAL\DBALException
          */
         public function deleteRoom(int $roomID)
@@ -500,6 +504,7 @@
         /**
          * @param int $itemID
          * @param array $data
+         * @throws \Exception
          * @throws \Doctrine\DBAL\DBALException
          */
         public function changeItem(int $itemID, array $data)
@@ -622,13 +627,11 @@
         /**
          * @param int $itemID
          * @param int $companyID
-         * @param \DateTime|null $date
          * @return array
-         * @throws \Doctrine\DBAL\DBALException
          */
-        public function itemState(int $itemID, int $companyID, \DateTime $date = null)
+        public function getItems(int $itemID, int $companyID)
         {
-            $rows = $this->dbConnection->fetchAll(
+            return $this->dbConnection->fetchAll(
                 'SELECT addresses.id AS id, quantity.address AS address, items.name, size, quantity, price FROM quantity
                     INNER JOIN addresses ON addresses.address = quantity.address AND id_item = ? AND id_company = ?
                     INNER JOIN items ON quantity.id_item = items.id',
@@ -637,40 +640,5 @@
                     $companyID
                 ]
             );
-
-            $result = [
-                'itemID' => $itemID,
-                'name' => reset($rows)['name'],
-                'price' => (float)reset($rows)['price'],
-                'warehouses' => []
-            ];
-            $totalQuantity = 0;
-            $totalPrice = 0.;
-            foreach ($rows as $row) {
-                $quantity = $row['quantity'] -
-                    ($this->getDeliveryCondition($itemID, $row['address'], $row['size'], $date) ?? 0) +
-                    ($this->getSellingCondition($itemID, $row['id'], $row['size'], $date) ?? 0) +
-                    ($this->getSendedCondition($itemID, $row['id'], $row['size'], $date) ?? 0) -
-                    ($this->getReceivingCondition($itemID, $row['id'], $row['size'], $date) ?? 0);
-                $totalQuantity += $quantity;
-                $totalPrice += $quantity * $row['price'];
-                if ($quantity != 0) {
-                    array_push(
-                        $result['warehouses'],
-                        [
-                            'id' => $row['id'],
-                            'address' => $row['address'],
-                            'size' => $row['size'],
-                            'quantity' => $quantity
-                        ]
-                    );
-                }
-            }
-            $result += [
-                'Total quantity' => $totalQuantity,
-                'Total price' => $totalPrice
-            ];
-
-            return $result;
         }
     }
