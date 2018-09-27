@@ -94,16 +94,16 @@
         public function changeWarehouse(Request $request, Response $response, $args = [])
         {
             $bodyParams = $request->getParsedBody() ?? [];
-            $warehouseData = array (
-                'warehouseID' => $args['id'],
+            $warehouseID = $args['id'];
+            $warehouseData = [
                 'name' => array_key_exists('name', $bodyParams) ?
                     $bodyParams['name'] :
                     null,
                 'capacity' => array_key_exists('capacity', $bodyParams) ?
                     $bodyParams['capacity'] :
                     null
-            );
-            return $response->withStatus(200)->write($this->adminService->changeWarehouse($warehouseData));
+            ];
+            return $response->withStatus(200)->write($this->adminService->changeWarehouse($warehouseID, $warehouseData));
         }
 
         /**

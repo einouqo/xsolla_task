@@ -66,11 +66,17 @@
          */
         private function dataAccessValidation(EmployeeAdmin $admin, array $data)
         {
-            if (!isset($data['userID']) || $data['userID'] == '') {
+            if (is_null($data['userID']) || $data['userID'] == '') {
                 throw new \Exception('User ID cannot be empty.', 403);
             }
-            if (!isset($data['warehouseID']) || $data['warehouseID'] == '') {
+            if(!is_numeric($data['userID'])) {
+                throw new \Exception('User ID may consist digits only', 403);
+            }
+            if (is_null($data['warehouseID']) || $data['warehouseID'] == '') {
                 throw new \Exception('Warehouse ID cannot be empty.', 403);
+            }
+            if(!is_numeric($data['warehouseID'])) {
+                throw new \Exception('Warehouse ID may consist digits only', 403);
             }
             if (!$admin->isEmployeeExist($data['userID'])) {
                 throw new \Exception('Employee with this ID wasn\'t found in your organisation.', 400);
@@ -133,17 +139,29 @@
          */
         private function createWarehouseValidation(EmployeeAdmin $admin, array $data)
         {
-            if (!isset($data['roomID'], $data['name'], $data['capacity'])) {
-                throw new \Exception('Not all fields are filled.', 403);
+            if (is_null($data['roomID']) || $data['roomID'] == '') {
+                throw new \Exception('Room ID cannot be empty.', 403);
+            }
+            if (!is_numeric($data['roomID'])) {
+                throw new \Exception('Room ID may consist digits only', 403);
+            }
+            if (is_null($data['name']) || $data['name'] == '') {
+                throw new \Exception('Name cannot be empty.', 403);
+            }
+            if (is_null($data['capacity']) || $data['capacity'] == '') {
+                throw new \Exception('Capacity cannot be empty.', 403);
+            }
+            if (!is_numeric($data['capacity'])) {
+                throw new \Exception('Capacity value may consist digits only', 403);
+            }
+            if ($data['capacity'] < 1) {
+                throw new \Exception('Capacity value can be positive only.', 403);
             }
             if (!$admin->isRoomExist($data['roomID'])) {
                 throw new \Exception('Room with this ID wasn\'t found in your organisation.', 400);
             };
             if ($admin->isWarehouseExist($data['roomID'])) {
                 throw new \Exception('Warehouse was created before.', 403);
-            }
-            if (!is_numeric($data['capacity']) && $data['capacity'] < 1) {
-                throw new \Exception('Capacity value is wrong.', 403);
             }
         }
 
@@ -168,26 +186,31 @@
 
         /**
          * @param EmployeeAdmin $admin
+         * @param int $warehouseID
          * @param array $data
          * @throws \Exception
          */
-        private function changeWarehouseValidation(EmployeeAdmin $admin, array $data)
+        private function changeWarehouseValidation(EmployeeAdmin $admin, int $warehouseID, array $data)
         {
-            if (!isset($data['warehouseID'])) {
-                throw new \Exception('Warehouse ID is empty.', 403);
-            }
-            if (!$admin->isWarehouseExist($data['warehouseID'])) {
+            if (!$admin->isWarehouseExist($warehouseID)) {
                 throw new \Exception('Warehouse with this ID wasn\'t found in your organisation.', 400);
             }
 
-            $warehouse = $admin->getWarehouseByID($data['warehouseID']);
-            if (!isset($data['name']) && !isset($data['capacity']) ||
+            if (isset($data['capacity']) && !is_numeric($data['capacity'])) {
+                throw new \Exception('Capacity value may consist digits only', 403);
+            }
+
+            $warehouse = $admin->getWarehouseByID($warehouseID);
+            if ((is_null($data['name']) || $data['name'] == '') && (is_null($data['capacity']) || $data['capacity'] == '') ||
                 $warehouse->getName() == $data['name'] && $warehouse->getCapacity() == $data['capacity']) {
                 throw new \Exception('There is nothing to change.', 400);
             }
 
-            $oldWarehouseInfo = $warehouse->fullInfoToArray();
+            $oldWarehouseInfo = $warehouse->getFullInfo();
             foreach ($data as $field => $value) {
+                if ($value == '') {
+                    $data[$field] = $oldWarehouseInfo[$field];
+                }
                 if ($oldWarehouseInfo[$field] == $value) {
                     throw new \Exception('The '.$field.' value can not be the same as the old one, please try again.', 400);
                 }
@@ -200,14 +223,14 @@
          * @throws \Exception
          * @throws \Doctrine\DBAL\DBALException
          */
-        public function changeWarehouse(array $data)
+        public function changeWarehouse(int $warehouseID, array $data)
         {
             $admin = $this->getUser();
 
             $this->adminRepository->fillWarehouses($admin);
 
-            $this->changeWarehouseValidation($admin, $data);
-            $this->adminRepository->changeWarehouse($admin->getWarehouseByID($data['warehouseID']), $data);
+            $this->changeWarehouseValidation($admin, $warehouseID, $data);
+            $this->adminRepository->changeWarehouse($admin->getWarehouseByID($warehouseID), $data);
 
             return 'Warehouse info was successfully updated.';
         }
