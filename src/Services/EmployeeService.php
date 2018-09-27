@@ -23,6 +23,10 @@
             $this->userRepository = $userRepository;
         }
 
+        /**
+         * @return mixed
+         * @throws \Exception
+         */
         private function getUserIDFromCookie()
         {
             if (isset($_COOKIE['token'])) {
@@ -37,6 +41,11 @@
             }
         }
 
+        /**
+         * @return \App\Model\Employee|\App\Model\EmployeeAdmin
+         * @throws \Exception
+         * @throws \Doctrine\DBAL\DBALException
+         */
         private function getUser()
         {
             $user = $this->userRepository->getUserInfoByID(
@@ -49,6 +58,10 @@
             }
         }
 
+        /**
+         * @return array
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function getPendingList()
         {
             $employee = $this->getUser();
@@ -58,6 +71,12 @@
             return $employee->getTransferList();
         }
 
+        /**
+         * @param null $warehouseID
+         * @return array|null
+         * @throws \Exception
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function getAvailableList($warehouseID = null)
         {
             $employee = $this->getUser();
@@ -69,6 +88,12 @@
             return $employee->getItemList($warehouseID);
         }
 
+        /**
+         * @param $transferID
+         * @return string
+         * @throws \Exception
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function takeTransfer($transferID)
         {
             $employee = $this->getUser();
@@ -94,6 +119,9 @@
             return 'Items was successfully added to your warehouse.';
         }
 
+        /**
+         * @param array $data
+         */
         private function setCookieJWT(array $data)
         {
             setcookie('transfer', '', time() - 60 * 60, '/');
@@ -108,6 +136,12 @@
             );
         }
 
+        /**
+         * @param int $itemID
+         * @param array $data
+         * @param int $totalQuantity
+         * @return string
+         */
         private function makeTransferCookie(int $itemID, array $data, int $totalQuantity)
         {
             $this->setCookieJWT(
@@ -124,6 +158,9 @@
             return 'Transfer was created.';
         }
 
+        /**
+         * @return array|string
+         */
         private function getTransfersFromCookie()
         {
             if (isset($_COOKIE['transfer'])) {
@@ -145,6 +182,12 @@
             }
         }
 
+        /**
+         * @param array $item
+         * @param array $data
+         * @param int $totalQuantity
+         * @throws \Exception
+         */
         private function addItemQuantityToPreCookie(array &$item, array $data, int $totalQuantity)
         {
             if (is_null($item['quantity'])) {
@@ -157,6 +200,14 @@
             $item['quantity'] += $data['quantity'] ?? ($totalQuantity - $item['quantity']);
         }
 
+        /**
+         * @param array $transfer
+         * @param int $itemID
+         * @param array $data
+         * @param int $totalQuantity
+         * @return bool
+         * @throws \Exception
+         */
         private function findInItems(array &$transfer, int $itemID, array $data, int $totalQuantity)
         {
             foreach ($transfer['items'] as $key => $item) {
@@ -168,6 +219,13 @@
             return false;
         }
 
+        /**
+         * @param int $itemID
+         * @param array $data
+         * @param int $totalQuantity
+         * @return string
+         * @throws \Exception
+         */
         private function addToTransferCookie(int $itemID, array $data, int $totalQuantity)
         {
             $added = false;
@@ -204,6 +262,13 @@
             return 'Item was successfully added to transfer.';
         }
 
+        /**
+         * @param int $itemID
+         * @param array $data
+         * @return string
+         * @throws \Exception
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function addToTransfer(int $itemID, array $data)
         {
             $employee = $this->getUser();
@@ -237,22 +302,35 @@
                 $this->makeTransferCookie($itemID, $data, $totalQuantity);
         }
 
+        /**
+         * @return string
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function clearTransfer()
         {
-            $employee = $this->getUser();
+            $this->getUser();
             setcookie('transfer', '', time() - 60 * 60, '/');
             return 'Transfer list was successfully cleared.';
         }
 
+        /**
+         * @return array|string
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function getTransferList()
         {
-            $employee = $this->getUser();
+            $this->getUser();
             return $this->getTransfersFromCookie();
         }
 
+        /**
+         * @param int $warehouseToID
+         * @return string
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function sendTransfer(int $warehouseToID)
         {
-            $employee = $this->getUser();
+            $this->getUser();
             $isSent = false;
             $transfers = $this->getTransfersFromCookie();
             foreach ($transfers as $transfer) {
@@ -267,6 +345,10 @@
                 'There is nothing to send.';
         }
 
+        /**
+         * @param array $data
+         * @throws \Exception
+         */
         private function sellValidate(array $data)
         {
             foreach ($data as $field => $value) {
@@ -276,6 +358,13 @@
             }
         }
 
+        /**
+         * @param int $itemID
+         * @param array $data
+         * @return string
+         * @throws \Exception
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function sellItem(int $itemID, array $data)
         {
             $employee = $this->getUser();

@@ -8,6 +8,10 @@
             parent::__construct($data);
         }
 
+        /**
+         * @param int $warehouseID
+         * @return array|null
+         */
         private function warehouseItems(int $warehouseID)
         {
             foreach ($this->warehouses as $warehouse) {
@@ -18,6 +22,10 @@
             return null;
         }
 
+        /**
+         * @param array $itemsInfo
+         * @param Item $item
+         */
         private function addItemToInfo(array &$itemsInfo, Item $item)
         {
             foreach ($itemsInfo as $key => $itemInfo) {
@@ -29,6 +37,9 @@
             array_push($itemsInfo, $item->infoToArray());
         }
 
+        /**
+         * @return array
+         */
         private function allItems()
         {
             $result = array(
@@ -54,6 +65,10 @@
             return $result;
         }
 
+        /**
+         * @param int|null $warehouseID
+         * @return array|null
+         */
         public function getItemList(int $warehouseID = null)
         {
             return is_null($warehouseID) ?

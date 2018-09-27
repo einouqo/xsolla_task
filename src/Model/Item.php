@@ -43,32 +43,47 @@
             $this->quantity = $data['quantity'];
         }
 
+        /**
+         * @return int|mixed
+         */
         public function getID()
         {
             return $this->id;
         }
 
+        /**
+         * @return mixed|string
+         */
         public function getSize()
         {
             return $this->size;
         }
 
+        /**
+         * @return float|mixed
+         */
         public function getUnitPrice()
         {
             return $this->price;
         }
 
+        /**
+         * @return int|mixed
+         */
         public function getQuantity()
         {
             return $this->quantity;
         }
 
+        /**
+         * @return float|int
+         */
         public function getTotalPrice()
         {
             return $this->quantity * $this->price;
         }
 
-         /**???????????????????????????????????
+         /**
           * 'null' - removing failed
           * 'new Item' - removing done
           * @return mixed
@@ -85,6 +100,9 @@
             }
         }
 
+        /**
+         * @return array
+         */
         public function shortInfo()
         {
             return array(
@@ -95,6 +113,9 @@
             );
         }
 
+        /**
+         * @return array
+         */
         public function infoToArray()
         {
             $result = $this->shortInfo();

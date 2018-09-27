@@ -109,6 +109,7 @@
         /**
          * @param array $data
          * @return string
+         * @throws \Exception
          * @throws \Doctrine\DBAL\DBALException
          */
         public function registration(array $data)

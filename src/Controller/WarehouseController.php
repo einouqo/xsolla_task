@@ -17,6 +17,12 @@
             $this->warehouseService = $warehouseService;
         }
 
+        /**
+         * @param Request $request
+         * @param Response $response
+         * @param array $args
+         * @return Response
+         */
         public function getList(Request $request, Response $response, $args = [])
         {
             $result =$this->warehouseService->getList();
@@ -25,6 +31,13 @@
                 $response->withStatus(200)->withJson($this->warehouseService->getList());
         }
 
+        /**
+         * @param Request $request
+         * @param Response $response
+         * @param array $args
+         * @return Response
+         * @throws \Exception
+         */
         public function getOne(Request $request, Response $response, $args = [])
         {
             $date = $request->getQueryParam('date');

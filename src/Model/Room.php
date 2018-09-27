@@ -20,16 +20,25 @@
             $this->address = $data['address'];
         }
 
+        /**
+         * @return int|mixed
+         */
         public function getID()
         {
             return $this->id;
         }
 
+        /**
+         * @return mixed|string
+         */
         public function getAddress()
         {
             return $this->address;
         }
 
+        /**
+         * @return array
+         */
         public function getInfo()
         {
             return array(

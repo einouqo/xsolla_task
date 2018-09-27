@@ -54,6 +54,9 @@
             );
         }
 
+        /**
+         * @return array
+         */
         public function infoToArray()
         {
             $items = [];
@@ -66,36 +69,58 @@
             return $info;
         }
 
+        /**
+         * @param Item $item
+         */
         public function addItem(Item $item)
         {
             array_push($this->items, $item);
         }
 
+        /**
+         * @return bool
+         */
         public function isPending()
         {
             return is_null($this->dateReceiving);
         }
 
+        /**
+         * @return int|mixed
+         */
         public function getID()
         {
             return $this->id;
         }
 
+        /**
+         * @return int|mixed
+         */
         public function getWarehouseFromID()
         {
             return $this->warehouseFromID;
         }
 
+        /**
+         * @return int|mixed
+         */
         public function getWarehouseToID()
         {
             return $this->warehouseToID;
         }
 
+        /**
+         * @return Item[]|array
+         */
         public function getItems()
         {
             return $this->items;
         }
 
+        /**
+         * @param int $itemID
+         * @return bool
+         */
         public function isItemInTransaction(int $itemID)
         {
             foreach ($this->items as $item) {
@@ -106,6 +131,9 @@
             return false;
         }
 
+        /**
+         * @return int|mixed
+         */
         public function itemsQuantity()
         {
             $quantity = 0;

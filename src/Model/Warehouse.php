@@ -32,6 +32,9 @@
             $this->items = array();
         }
 
+        /**
+         * @param Item $item
+         */
         public function addItem(Item $item)
         {
             $this->loaded += $item->quantity;
@@ -68,6 +71,11 @@
             return null;
         }
 
+        /**
+         * @param int $itemID
+         * @param null $size
+         * @return array|null
+         */
         public function getItemByID(int $itemID, $size = null)
         {
             $result = [];
@@ -81,6 +89,9 @@
                 $result;
         }
 
+        /**
+         * @return Item[]|array
+         */
         public function getItems()
         {
             return $this->items;
@@ -131,26 +142,42 @@
             return $info;
         }
 
+        /**
+         * @return mixed|string
+         */
         public function getName()
         {
             return $this->name;
         }
 
+        /**
+         * @return int|mixed
+         */
         public function getCapacity()
         {
             return $this->capacity;
         }
 
+        /**
+         * @return int|mixed
+         */
         public function getFreeSpace()
         {
             return $this->capacity - $this->loaded;
         }
 
+        /**
+         * @return int
+         */
         public function getLoaded()
         {
             return $this->loaded;
         }
 
+        /**
+         * @param int $loaded
+         * @return bool
+         */
         public function setLoaded(int $loaded)
         {
             if ($loaded <= $this->capacity) {

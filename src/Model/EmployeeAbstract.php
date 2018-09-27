@@ -61,6 +61,9 @@
             $this->warehouses = array();
         }
 
+        /**
+         * @return array
+         */
         public function getPersonalInfo()
         {
             return array(
@@ -72,56 +75,90 @@
             );
         }
 
+        /**
+         * @return int|mixed
+         */
         public function getCompanyID()
         {
             return $this->companyID;
         }
 
+        /**
+         * @return mixed|string
+         */
         public function getName()
         {
             return $this->name;
         }
 
+        /**
+         * @return mixed|string
+         */
         public function getLastname()
         {
             return $this->lastname;
         }
 
+        /**
+         * @return mixed|string
+         */
         public function getEmail()
         {
             return $this->email;
         }
 
+        /**
+         * @return int|mixed
+         */
         public function getPhone()
         {
             return $this->phone;
         }
 
+        /**
+         * @return mixed|string
+         */
         public function getPassword()
         {
             return $this->password;
         }
 
+        /**
+         * @return int|mixed
+         */
         public function getID()
         {
             return $this->id;
         }
 
+        /**
+         * @param int $id
+         */
         public function setID(int $id)
         {
             $this->id = $id;
         }
 
+        /**
+         * @param Warehouse $warehouse
+         */
         public function addWarehouse(Warehouse $warehouse)
         {
             array_push($this->warehouses, $warehouse);
         }
 
+        /**
+         * @param Transfer $transfer
+         */
         public function addTransfer(Transfer $transfer)
         {
             array_push($this->transfers, $transfer);
         }
 
+        /**
+         * @param int $warehouseID
+         * @return bool
+         */
         public function isWarehouseExist(int $warehouseID)
         {
             foreach ($this->warehouses as $warehouse) {
@@ -132,6 +169,9 @@
             return false;
         }
 
+        /**
+         * @return array
+         */
         public function getWarehousesList()
         {
             $warehouses = [];
@@ -141,6 +181,10 @@
             return $warehouses;
         }
 
+        /**
+         * @param int $id
+         * @return Warehouse|mixed|null
+         */
         public function getWarehouseByID(int $id)
         {
             foreach ($this->warehouses as $warehouse) {
@@ -151,6 +195,9 @@
             return null;
         }
 
+        /**
+         * @return array
+         */
         public function getTransferList()
         {
             $transfers = [];
@@ -160,6 +207,10 @@
             return $transfers;
         }
 
+        /**
+         * @param int $id
+         * @return Transfer|mixed|null
+         */
         public function getTransferByID(int $id)
         {
             foreach ($this->transfers as $transfer) {

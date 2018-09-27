@@ -19,6 +19,10 @@
             $this->dbConnection = $dbConnection;
         }
 
+        /**
+         * @param Warehouse $warehouse
+         * @throws \Doctrine\DBAL\DBALException
+         */
         private function fillItems(Warehouse &$warehouse)
         {
             $rows = $this->dbConnection->executeQuery(
@@ -34,6 +38,10 @@
             }
         }
 
+        /**
+         * @param Employee $employee
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function fillWarehouses(Employee &$employee)
         {
             $rows = $this->dbConnection->executeQuery(
@@ -52,6 +60,10 @@
             }
         }
 
+        /**
+         * @param Transfer $transfer
+         * @throws \Doctrine\DBAL\DBALException
+         */
         private function fillItemForTransfer(Transfer &$transfer)
         {
             $rows = $this->dbConnection->executeQuery(
@@ -67,6 +79,10 @@
             }
         }
 
+        /**
+         * @param Employee $employee
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function fillPendingTransfers(Employee &$employee)
         {
             $rows = $this->dbConnection->executeQuery(
@@ -86,6 +102,11 @@
             }
         }
 
+        /**
+         * @param Item $item
+         * @param string $warehouseAddress
+         * @throws \Doctrine\DBAL\DBALException
+         */
         private function addToWarehouse(Item $item, string $warehouseAddress)
         {
             $this->dbConnection->executeQuery(
@@ -99,6 +120,12 @@
             );
         }
 
+        /**
+         * @param Item $item
+         * @param string $warehouseAddress
+         * @param $quantity
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function addQuantity(Item $item, string $warehouseAddress, $quantity)
         {
             $this->dbConnection->executeQuery(
@@ -112,6 +139,11 @@
             );
         }
 
+        /**
+         * @param Item $item
+         * @param string $warehouseAddress
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function addItemToWarehouse(Item $item, string $warehouseAddress)
         {
             $isExist = $this->dbConnection->fetchAssoc(
@@ -128,6 +160,10 @@
                 $this->addQuantity($item, $warehouseAddress, $isExist);
         }
 
+        /**
+         * @param int $transferID
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function closeTransfer(int $transferID)
         {
             $this->dbConnection->executeQuery(
@@ -138,6 +174,11 @@
             );
         }
 
+        /**
+         * @param int $warehouseID
+         * @param array $item
+         * @throws \Doctrine\DBAL\DBALException
+         */
         private function deleteItem(int $warehouseID, array $item)
         {
             $this->dbConnection->executeQuery(
@@ -151,6 +192,12 @@
             );
         }
 
+        /**
+         * @param int $warehouseID
+         * @param array $item
+         * @param int $availableQuantity
+         * @throws \Doctrine\DBAL\DBALException
+         */
         private function removeQuantity(int $warehouseID, array $item, int $availableQuantity)
         {
             $this->dbConnection->executeQuery(
@@ -165,6 +212,11 @@
             );
         }
 
+        /**
+         * @param int $warehouseID
+         * @param array $item
+         * @throws \Doctrine\DBAL\DBALException
+         */
         private function removeItem(int $warehouseID, array $item)
         {
             $avaleble = $this->dbConnection->fetchAssoc(
@@ -182,7 +234,12 @@
                 $this->removeQuantity($warehouseID, $item, $avaleble['quantity']);
         }
 
-        private function fillTranser(int $id, array $item)
+        /**
+         * @param int $id
+         * @param array $item
+         * @throws \Doctrine\DBAL\DBALException
+         */
+        private function fillTransfer(int $id, array $item)
         {
             $this->dbConnection->executeQuery(
                 'INSERT INTO transfer(id_history, id_item, quantity, size) VALUES (?, ?, ?, ?)',
@@ -194,7 +251,12 @@
                 ]
             );
         }
-        
+
+        /**
+         * @param array $transfer
+         * @param int $warehouseToID
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function registerTransfer(array $transfer, int $warehouseToID)
         {
             $this->dbConnection->executeQuery(
@@ -207,10 +269,17 @@
             $id_transfer = $this->dbConnection->lastInsertId();
             foreach ($transfer['items'] as $item) {
                 $this->removeItem($transfer['warehouseID'], $item);
-                $this->fillTranser($id_transfer, $item);
+                $this->fillTransfer($id_transfer, $item);
             }
         }
 
+        /**
+         * @param int $warehouseID
+         * @param int $employeeID
+         * @param int $itemID
+         * @param array $data
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function sellItem(int $warehouseID, int $employeeID, int $itemID, array $data)
         {
             $unit = $this->dbConnection->fetchAssoc(

@@ -25,9 +25,11 @@
             $this->employee = $data['employee'];
         }
 
+        /**
+         * @param Warehouse $wh
+         */
         public function addWarehouseToEmployee(Warehouse $wh)
         {
-            /* if (condition)*/
             $this->employee->addWarehouse($wh);
         }
 

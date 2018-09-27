@@ -30,6 +30,10 @@
             $this->userRepository = $userRepository;
         }
 
+        /**
+         * @return mixed
+         * @throws \Exception
+         */
         private function getUserIDFromCookie()
         {
             if (isset($_COOKIE['token'])) {
@@ -44,6 +48,11 @@
             }
         }
 
+        /**
+         * @return \App\Model\Employee|\App\Model\EmployeeAdmin
+         * @throws \Exception
+         * @throws \Doctrine\DBAL\DBALException
+         */
         private function getUser()
         {
             $user = $this->userRepository->getUserInfoByID(
@@ -57,12 +66,22 @@
             return $user;
         }
 
+        /**
+         * @return array
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function getList()
         {
             $user = $this->getUser();
             return $user->getWarehousesList();
         }
 
+        /**
+         * @param array $report
+         * @param \DateTime|null $date
+         * @return array
+         * @throws \Doctrine\DBAL\DBALException
+         */
         private function getReport(array $report, \DateTime $date = null)
         {
             if (is_null($date)) {
@@ -90,6 +109,13 @@
             return $report;
         }
 
+        /**
+         * @param int $warehouseID
+         * @param \DateTime|null $date
+         * @return array
+         * @throws \Exception
+         * @throws \Doctrine\DBAL\DBALException
+         */
         public function getOne(int $warehouseID, \DateTime $date = null)
         {
             $user = $this->getUser();
