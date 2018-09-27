@@ -43,7 +43,7 @@
                 $app->delete('/sell', 'employee.controller:sellItem');
                 $app->post('/toTransfer', 'employee.controller:addToTransfer');
             });
-            $app->group('/transfer', function () use ($app) {
+            $app->group('/transfers', function () use ($app) {
                 $app->get('/list', 'employee.controller:showTransfer');
                 $app->get('/clear', 'employee.controller:clearTransfer');
                 $app->delete('/send', 'employee.controller:sendTransfer');

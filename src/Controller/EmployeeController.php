@@ -17,6 +17,12 @@
             $this->employeeService = $employeeService;
         }
 
+        /**
+         * @param Request $request
+         * @param Response $response
+         * @param array $args
+         * @return Response
+         */
         public function pendingList(Request $request, Response $response, $args = [])
         {
             $result = $this->employeeService->getPendingList();
@@ -25,6 +31,13 @@
                 $response->withStatus(200)->withJson($result);
         }
 
+        /**
+         * @param Request $request
+         * @param Response $response
+         * @param array $args
+         * @return Response
+         * @throws \Exception
+         */
         public function availableList(Request $request, Response $response, $args = [])
         {
             $warehouseID = $request->getQueryParam('warehouseID');
@@ -34,9 +47,16 @@
                 $response->withStatus(200)->withJson($result);
         }
 
+        /**
+         * @param Request $request
+         * @param Response $response
+         * @param array $args
+         * @return Response
+         * @throws \Exception
+         */
         public function takeTransfer(Request $request, Response $response, $args = [])
         {
-            $parsedBody = $request->getParsedBody();
+            $parsedBody = $request->getParsedBody() ?? [];
             $transferID = key_exists('transferID', $parsedBody) ?
                 $parsedBody['transferID']:
                 null;
@@ -45,11 +65,18 @@
                 $response->withStatus(400)->write('Transfer id can not be empty.');
         }
 
+        /**
+         * @param Request $request
+         * @param Response $response
+         * @param array $args
+         * @return Response
+         * @throws \Exception
+         */
         public function addToTransfer(Request $request, Response $response, $args = [])
         {
             $itemID = $args['id'];
-            $parsedBody = $request->getParsedBody() ?? array();
-            $data = array (
+            $parsedBody = $request->getParsedBody() ?? [];
+            $data = [
                 'warehouseFromID' => key_exists('warehouseFromID', $parsedBody) ?
                     $parsedBody['warehouseFromID']:
                     null,
@@ -59,26 +86,44 @@
                 'quantity'=> key_exists('quantity', $parsedBody) ?
                     $parsedBody['quantity']:
                     null
-            );
+            ];
 
             return isset($data['warehouseFromID'])?
                 $response->withStatus(200)->write($this->employeeService->addToTransfer($itemID, $data)):
                 $response->withStatus(400)->write('Warehouse ID of this item cannot be empty.');
         }
 
+        /**
+         * @param Request $request
+         * @param Response $response
+         * @param array $args
+         * @return Response
+         */
         public function clearTransfer(Request $request, Response $response, $args = [])
         {
             return $response->withStatus(200)->write($this->employeeService->clearTransfer());
         }
 
+        /**
+         * @param Request $request
+         * @param Response $response
+         * @param array $args
+         * @return Response
+         */
         public function showTransfer(Request $request, Response $response, $args = [])
         {
             return $response->withStatus(200)->withJson($this->employeeService->getTransferList());
         }
 
+        /**
+         * @param Request $request
+         * @param Response $response
+         * @param array $args
+         * @return Response
+         */
         public function sendTransfer(Request $request, Response $response, $args = [])
         {
-            $parsedBody = $request->getParsedBody() ?? array();
+            $parsedBody = $request->getParsedBody() ?? [];
             $warehouseToID = key_exists('warehouseToID', $parsedBody) ?
                 $parsedBody['warehouseToID']:
                 null;
@@ -87,10 +132,17 @@
                 $response->withStatus(200)->write($this->employeeService->sendTransfer($warehouseToID));
         }
 
+        /**
+         * @param Request $request
+         * @param Response $response
+         * @param array $args
+         * @return Response
+         * @throws \Exception
+         */
         public function sellItem(Request $request, Response $response, $args = [])
         {
-            $parsedBody = $request->getParsedBody() ?? array();
-            $data = array (
+            $parsedBody = $request->getParsedBody() ?? [];
+            $data = [
                 'warehouseID' => key_exists('warehouseID', $parsedBody) ?
                     $parsedBody['warehouseID']:
                     null,
@@ -100,7 +152,7 @@
                 'quantity'=> key_exists('quantity', $parsedBody) ?
                     $parsedBody['quantity']:
                     null
-            );
+            ];
             $itemID = $args['id'];
             return $response->withStatus(200)->write($this->employeeService->sellItem($itemID, $data));
         }

@@ -80,9 +80,12 @@
                     ($this->adminRepository->getReceivingCondition($item['id'], $report['id'], $item['size'], $date) ?? 0);
                 $totalQuantity += $report['items'][$key]['quantity'];
                 $totalPrice += $report['items'][$key]['quantity'] * $report['items'][$key]['price'];
+                if ($report['items'][$key]['quantity'] == 0) {
+                    unset($report['items'][$key]);
+                }
             }
             $report['Total price: '] = $totalPrice;
-            $report['Total quantity: '] = $totalQuantity;
+            $report['loaded'] = $totalQuantity;
 
             return $report;
         }

@@ -102,8 +102,7 @@
                 $totalQuantity += $item->getQuantity();
             }
             $result += [
-                'Total price: ' => $totalPrice,
-                'Total quantity: ' => $totalQuantity
+                'Total price: ' => $totalPrice
             ];
             return $result;
         }

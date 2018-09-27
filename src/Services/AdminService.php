@@ -371,9 +371,12 @@
         private function newItemValidation(array $data)
         {
             foreach ($data as $field => $value) {
-                if (is_null($value)) {
+                if (is_null($value) || $value == '') {
                     throw new \Exception('Field '.$field.' cannot be empty.', 403);
                 }
+            }
+            if (!is_numeric($data['price'])) {
+                throw new \Exception('Price should be numeric.', 403);
             }
         }
 
@@ -388,8 +391,12 @@
         {
             $admin = $this->getUser();
 
-            if (is_null($warehouseID)) {
+            if (is_null($warehouseID) || $warehouseID == '') {
                 throw new \Exception('Receiving warehouse ID cannot be empty.', 403);
+            }
+
+            if (!is_numeric($warehouseID)) {
+                throw new \Exception('Warehouse ID value may consist digits only.', 403);
             }
 
             $this->adminRepository->fillWarehouses($admin, true);
