@@ -1,10 +1,10 @@
 <?php
     namespace App\Services;
 
+    use App\Model\EmployeeAbstract;
     use App\Model\EmployeeAdmin;
     use App\Repository\AdminRepository;
     use App\Repository\UserRepository;
-    use Firebase\JWT\JWT;
 
     class AdminService
     {
@@ -25,34 +25,13 @@
         }
 
         /**
-         * @return mixed
-         * @throws \Exception
-         */
-        private function getUserIDFromCookie()
-        {
-            if (isset($_COOKIE['token'])) {
-                $config = require __DIR__.'/../settings.php';
-                return ((array)JWT::decode(
-                    $_COOKIE['token'],
-                    $config['jwt']['secret'],
-                    array('HS256')
-                ))['userID'];
-            } else {
-                throw new \Exception('You need to login.', 401);
-            }
-        }
-
-        /**
+         * @param EmployeeAbstract $user
          * @return \App\Model\Employee|EmployeeAdmin
          * @throws \Exception
-         * @throws \Doctrine\DBAL\DBALException
          */
-        private function getUser()
+        private function validateUser(EmployeeAbstract $user)
         {
-            $user = $this->userRepository->getUserInfoByID(
-                $this->getUserIDFromCookie()
-            );
-            if (is_a($user, 'App\Model\EmployeeAdmin')) {
+            if ($user instanceof EmployeeAdmin) {
                 return $user;
             } else {
                 throw new \Exception('You have no access for this operation.', 403);
@@ -87,14 +66,15 @@
         }
 
         /**
+         * @param EmployeeAbstract $user
          * @param array $data
          * @return string
          * @throws \Exception
          * @throws \Doctrine\DBAL\DBALException
          */
-        public function giveAccess(array $data)
+        public function giveAccess(EmployeeAbstract $user, array $data)
         {
-            $admin = $this->getUser();
+            $admin = $this->validateUser($user);
 
             $this->adminRepository->fillWarehouses($admin);
             $this->adminRepository->fillEmployees($admin);
@@ -110,14 +90,15 @@
         }
 
         /**
+         * @param EmployeeAbstract $user
          * @param array $data
          * @return string
          * @throws \Exception
          * @throws \Doctrine\DBAL\DBALException
          */
-        public function deleteAccess(array $data)
+        public function deleteAccess(EmployeeAbstract $user, array $data)
         {
-            $admin = $this->getUser();
+            $admin = $this->validateUser($user);
 
             $this->adminRepository->fillWarehouses($admin);
             $this->adminRepository->fillEmployees($admin);
@@ -166,14 +147,15 @@
         }
 
         /**
+         * @param EmployeeAbstract $user
          * @param array $data
          * @return string
          * @throws \Exception
          * @throws \Doctrine\DBAL\DBALException
          */
-        public function createWarehouse(array $data)
+        public function createWarehouse(EmployeeAbstract $user, array $data)
         {
-            $admin = $this->getUser();
+            $admin = $this->validateUser($user);
 
             $this->adminRepository->fillRooms($admin);
             $this->adminRepository->fillWarehouses($admin);
@@ -218,15 +200,16 @@
         }
 
         /**
+         * @param EmployeeAbstract $user
          * @param int $warehouseID
          * @param array $data
          * @return string
          * @throws \Exception
          * @throws \Doctrine\DBAL\DBALException
          */
-        public function changeWarehouse(int $warehouseID, array $data)
+        public function changeWarehouse(EmployeeAbstract $user, int $warehouseID, array $data)
         {
-            $admin = $this->getUser();
+            $admin = $this->validateUser($user);
 
             $this->adminRepository->fillWarehouses($admin);
 
@@ -237,14 +220,15 @@
         }
 
         /**
+         * @param EmployeeAbstract $user
          * @param int $warehouseID
          * @return string
          * @throws \Exception
          * @throws \Doctrine\DBAL\DBALException
          */
-        public function deleteWarehouse(int $warehouseID)
+        public function deleteWarehouse(EmployeeAbstract $user, int $warehouseID)
         {
-            $admin = $this->getUser();
+            $admin = $this->validateUser($user);
 
             $this->adminRepository->fillWarehouses($admin);
 
@@ -272,14 +256,15 @@
         }
 
         /**
+         * @param EmployeeAbstract $user
          * @param array $data
          * @return string
          * @throws \Exception
          * @throws \Doctrine\DBAL\DBALException
          */
-        public function addRoom(array $data)
+        public function addRoom(EmployeeAbstract $user, array $data)
         {
-            $admin = $this->getUser();
+            $admin = $this->validateUser($user);
 
             $this->adminRepository->fillRooms($admin);
 
@@ -305,14 +290,15 @@
         }
 
         /**
+         * @param EmployeeAbstract $user
          * @param $roomID
          * @return string
          * @throws \Exception
          * @throws \Doctrine\DBAL\DBALException
          */
-        public function deleteRoom($roomID)
+        public function deleteRoom(EmployeeAbstract $user, $roomID)
         {
-            $admin = $this->getUser();
+            $admin = $this->validateUser($user);
 
             $this->adminRepository->fillRooms($admin);
 
@@ -323,12 +309,14 @@
         }
 
         /**
+         * @param EmployeeAbstract $user
          * @return array|string
+         * @throws \Exception
          * @throws \Doctrine\DBAL\DBALException
          */
-        public function getRooms()
+        public function getRooms(EmployeeAbstract $user)
         {
-            $admin = $this->getUser();
+            $admin = $this->validateUser($user);
 
             $this->adminRepository->fillRooms($admin);
 
@@ -336,14 +324,15 @@
         }
 
         /**
+         * @param EmployeeAbstract $user
          * @param int $warehouseID
          * @return array
          * @throws \Exception
          * @throws \Doctrine\DBAL\DBALException
          */
-        public function getTransfersForWarehouse(int $warehouseID)
+        public function getTransfersForWarehouse(EmployeeAbstract $user, int $warehouseID)
         {
-            $admin = $this->getUser();
+            $admin = $this->validateUser($user);
             $this->adminRepository->fillWarehouses($admin);
             if (is_null($admin->getWarehouseByID($warehouseID))) {
                 throw new \Exception('This warehouse wasn\'t found in your company.', 403);
@@ -354,13 +343,15 @@
         }
 
         /**
+         * @param EmployeeAbstract $user
          * @param int $itemID
          * @return array
+         * @throws \Exception
          * @throws \Doctrine\DBAL\DBALException
          */
-        public function getTransfersForItem(int $itemID)
+        public function getTransfersForItem(EmployeeAbstract $user, int $itemID)
         {
-            $admin = $this->getUser();
+            $admin = $this->validateUser($user);
             $this->adminRepository->fillTransfers($admin);
             return $admin->getItemTransfers($itemID);
         }
@@ -382,15 +373,16 @@
         }
 
         /**
+         * @param EmployeeAbstract $user
          * @param array $data
          * @param $warehouseID
          * @return string
          * @throws \Exception
          * @throws \Doctrine\DBAL\DBALException
          */
-        public function addItem(array $data, $warehouseID)
+        public function addItem(EmployeeAbstract $user, array $data, $warehouseID)
         {
-            $admin = $this->getUser();
+            $admin = $this->validateUser($user);
 
             if (is_null($warehouseID) || $warehouseID == '') {
                 throw new \Exception('Receiving warehouse ID cannot be empty.', 403);
@@ -419,15 +411,16 @@
         }
 
         /**
+         * @param EmployeeAbstract $user
          * @param $itemID
          * @param array $data
          * @return string
          * @throws \Exception
          * @throws \Doctrine\DBAL\DBALException
          */
-        public function changeItem($itemID, array $data)
+        public function changeItem(EmployeeAbstract $user, $itemID, array $data)
         {
-            $this->getUser();
+            $this->validateUser($user);
 
             if ((is_null($data['price']) || $data['price'] == '') &&
                 (is_null($data['name']) || $data['name'] == '') &&
@@ -457,14 +450,16 @@
         }
 
         /**
+         * @param EmployeeAbstract $user
          * @param int $id
          * @param \DateTime|null $onDate
          * @return array
+         * @throws \Exception
          * @throws \Doctrine\DBAL\DBALException
          */
-        public function itemState(int $id, \DateTime $onDate = null)
+        public function itemState(EmployeeAbstract $user, int $id, \DateTime $onDate = null)
         {
-            $admin = $this->getUser();
+            $admin = $this->validateUser($user);
 
             $itemsData = $this->adminRepository->getItems($id, $admin->getCompanyID());
             $result = [

@@ -24,19 +24,19 @@
          * @return Response
          * @throws \Exception
          */
-        public function authentication(Request $request, Response $response, $args = [])
+        public function login(Request $request, Response $response, $args = [])
         {
             $bodyParams = $request->getParsedBody() ?? [];
-            $authenticationData = [
-                'email' => array_key_exists('email', $bodyParams) ?
+            $loginData = [
+                'email' => key_exists('email', $bodyParams) ?
                     $bodyParams['email'] :
                     null,
-                'password' => array_key_exists('password', $bodyParams) ?
+                'password' => key_exists('password', $bodyParams) ?
                     $bodyParams['password'] :
                     null
             ];
 
-            return $response->withStatus(200)->write($this->userService->authentication($authenticationData));
+            return $response->withStatus(200)->write($this->userService->login($loginData));
         }
 
         /**
@@ -59,7 +59,7 @@
          */
         public function delete(Request $request, Response $response, $args = [])
         {
-            return $response->withStatus(200)->write($this->userService->delete());
+            return $response->withStatus(200)->write($this->userService->delete($request->getAttribute('user')));
         }
 
         /**
@@ -72,7 +72,7 @@
         public function change(Request $request, Response $response, $args = [])
         {
             $bodyParams = $request->getParsedBody() ?? [];
-            $newData = [
+            $data = [
                 'email' => array_key_exists('email', $bodyParams) ?
                     $bodyParams['email'] :
                     null,
@@ -90,6 +90,6 @@
                     null
             ];
 
-            return $response->write($this->userService->change($newData));
+            return $response->write($this->userService->change($request->getAttribute('user'), $data));
         }
     }

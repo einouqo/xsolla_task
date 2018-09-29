@@ -8,11 +8,9 @@
         ],
         'errorHandler' => function ($c) {
             return function ($request, $response, $exception) use ($c) {
-                try {
-                    return $c['response']->withStatus($exception->getCode())->write($exception->getMessage());
-                } catch (Exception $e) {
-                    return $c['response']->withStatus(500)->write('Database error. Operation are failed.');
-                }
+                return $exception instanceof \Doctrine\DBAL\DBALException ?
+                    $c['response']->withStatus(500)->write('Database error. Operation are failed.'):
+                    $c['response']->withStatus($exception->getCode())->write($exception->getMessage());
             };
         }
     ];

@@ -1085,7 +1085,7 @@
     </column>
     <column id="272" parent="236" name="capacity">
       <Position>3</Position>
-      <DataType>varchar(255)|0s</DataType>
+      <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>

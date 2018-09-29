@@ -15,6 +15,11 @@
             ]);
         };
 
+    $container['middleware'] = function ($c) {
+        $secret = (require __DIR__.'/settings.php')['jwt']['secret'];
+        /** @var ContainerInterface $c */
+        return new \App\Middleware($c->get('user.repository'), $secret);
+    };
 
     $container['user.repository'] = function ($c) {
         /** @var ContainerInterface $c */

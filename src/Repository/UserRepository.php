@@ -310,16 +310,21 @@
         /**
          * @param EmployeeAbstract $employee
          * @param array $data
+         * @throws \Exception
          * @throws \Doctrine\DBAL\DBALException
          */
         public function change(EmployeeAbstract $employee, array $data)
         {
-            $salt = $this->dbConnection->fetchAssoc(
-                'SELECT salt FROM users WHERE id = ?',
+            $passData = $this->dbConnection->fetchAssoc(
+                'SELECT salt, password FROM users WHERE id = ?',
                 [
                     $employee->getID()
                 ]
-            )['salt'];
+            );
+
+            if (password_verify($data['password'].$passData['salt'], $passData['password'])) {
+                throw new \Exception('Password value cannot be same as the old one.', 403);
+            }
 
             $this->dbConnection->executeQuery(
                 'UPDATE users SET email = ?, password = ? WHERE id = ?',
@@ -328,7 +333,7 @@
                         $data['email']:
                         $employee->getEmail(),
                     key_exists('password', $data) ?
-                        password_hash($data['password'].$salt, PASSWORD_DEFAULT):
+                        password_hash($data['password'].$passData['salt'], PASSWORD_DEFAULT):
                         $employee->getPassword(),
                     $employee->getID()
                 ]

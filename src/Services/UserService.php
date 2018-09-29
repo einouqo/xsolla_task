@@ -1,7 +1,7 @@
 <?php
     namespace App\Services;
 
-    use App\Model\Employee;
+    use App\Model\EmployeeAbstract;
     use App\Repository\UserRepository;
     use Firebase\JWT\JWT;
 
@@ -129,31 +129,18 @@
         }
 
         /**
-         * @return mixed
-         * @throws \Exception
+         * @param int $userID
          */
-        private function getUserIDFromCookie()
+        private function setTokenCookie(int $userID)
         {
-            if (isset($_COOKIE['token'])) {
-                $config = require __DIR__.'/../settings.php';
-                return ((array)JWT::decode(
-                    $_COOKIE['token'],
-                    $config['jwt']['secret'],
-                    array('HS256')
-                ))['userID'];
-            } else {
-                throw new \Exception('You need to login.', 401);
-            }
-        }
-
-        /**
-         * @return Employee|\App\Model\EmployeeAdmin
-         * @throws \Exception
-         */
-        private function getUser()
-        {
-            return $this->userRepository->getUserInfoByID(
-                $this->getUserIDFromCookie()
+            $config = require __DIR__.'/../settings.php';
+            setcookie('token',
+                JWT::encode(
+                    ['userID' => $userID, 'exp' => (time() + 60 * 60 * 24)],
+                    $config['jwt']['secret']
+                ),
+                time() + 60 * 60 * 24,
+                '/'
             );
         }
 
@@ -162,21 +149,17 @@
          * @return string
          * @throws \Exception
          */
-        public function authentication(array $data)
+        public function login(array $data)
         {
-            $user = isset($data['email'], $data['password']) ?
-                $this->userRepository->getUserInfo($data['email'], $data['password']):
-                $this->getUser();
+            if (!isset($data['email'], $data['password'])) {
+                $this->unsetCookies();
+                throw new \Exception('You need to login using email and password.', 401);
+            }
 
-            $config = require __DIR__.'/../settings.php';
-            setcookie('token',
-                JWT::encode(
-                ['userID' => $user->getID(), 'exp' => (time() + 60 * 60 * 24)],
-                $config['jwt']['secret']
-                ),
-                time() + 60 * 60 * 24,
-                '/'
-            );
+            $this->baseValidation($data);
+            $user = $this->userRepository->getUserInfo($data['email'], $data['password']);
+
+            $this->setTokenCookie($user->getID());
 
             return 'Hello, '.$user->getName().'!';
         }
@@ -205,12 +188,14 @@
         }
 
         /**
+         * @param EmployeeAbstract $user
          * @return string
          * @throws \Exception
+         * @throws \Doctrine\DBAL\DBALException
          */
-        public function delete()
+        public function delete(EmployeeAbstract $user)
         {
-            $this->userRepository->deleteAccount($this->getUserIDFromCookie());
+            $this->userRepository->deleteAccount($user->getID());
             $this->unsetCookies();
             return 'Your account was deleted.';
         }
@@ -226,6 +211,10 @@
                 if ($oldData[$field] == $data) {
                     throw new \Exception('The '.$field.' value can not be the same as the old one, please try again.', 400);
                 }
+            }
+
+            if (key_exists('email', $newData) && !filter_var($newData['email'], FILTER_VALIDATE_EMAIL)) {
+                throw new \Exception('New email are incorrect.', 403);
             }
 
             $this->dataValidation(
@@ -249,18 +238,18 @@
         }
 
         /**
-         * @param array $newData
+         * @param EmployeeAbstract $user
+         * @param array $data
          * @return string
          * @throws \Exception
+         * @throws \Doctrine\DBAL\DBALException
          */
-        public function change(array $newData)
+        public function change(EmployeeAbstract $user, array $data)
         {
-            $user = $this->getUser();
-
             $changeableData = array();
-            foreach ($newData as $field => $data) {
-                if (!is_null($data) && $data != '') {
-                    $changeableData[$field] = $data;
+            foreach ($data as $field => $value) {
+                if (!is_null($value) && $value != '') {
+                    $changeableData[$field] = $value;
                 }
             }
 

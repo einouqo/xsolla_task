@@ -35,7 +35,12 @@
                     $bodyParams['warehouseID'] :
                     null
             );
-            return $response->withStatus(200)->write($this->adminService->giveAccess($accessData));
+            return $response->withStatus(200)->write(
+                $this->adminService->giveAccess(
+                    $request->getAttribute('user'),
+                    $accessData
+                )
+            );
         }
 
         /**
@@ -56,7 +61,12 @@
                     $bodyParams['warehouseID'] :
                     null
             );
-            return $response->withStatus(200)->write($this->adminService->deleteAccess($accessData));
+            return $response->withStatus(200)->write(
+                $this->adminService->deleteAccess(
+                    $request->getAttribute('user'),
+                    $accessData
+                )
+            );
         }
 
         /**
@@ -80,7 +90,12 @@
                     $bodyParams['capacity'] :
                     null
             );
-            return $response->withStatus(200)->write($this->adminService->createWarehouse($warehouseData));
+            return $response->withStatus(200)->write(
+                $this->adminService->createWarehouse(
+                    $request->getAttribute('user'),
+                    $warehouseData
+                )
+            );
         }
 
 
@@ -103,7 +118,13 @@
                     $bodyParams['capacity'] :
                     null
             ];
-            return $response->withStatus(200)->write($this->adminService->changeWarehouse($warehouseID, $warehouseData));
+            return $response->withStatus(200)->write(
+                $this->adminService->changeWarehouse(
+                    $request->getAttribute('user'),
+                    $warehouseID,
+                    $warehouseData
+                )
+            );
         }
 
         /**
@@ -115,7 +136,12 @@
          */
         public function deleteWarehouse(Request $request, Response $response, $args = [])
         {
-            return $response->withStatus(200)->write($this->adminService->deleteWarehouse($args['id']));
+            return $response->withStatus(200)->write(
+                $this->adminService->deleteWarehouse(
+                    $request->getAttribute('user'),
+                    $args['id']
+                )
+            );
         }
 
         /**
@@ -133,7 +159,12 @@
                     $bodyParams['address'] :
                     null
             ];
-            return $response->withStatus(200)->write($this->adminService->addRoom($roomData));
+            return $response->withStatus(200)->write(
+                $this->adminService->addRoom(
+                    $request->getAttribute('user'),
+                    $roomData
+                )
+            );
         }
 
         /**
@@ -145,7 +176,12 @@
          */
         public function deleteRoom(Request $request, Response $response, $args = [])
         {
-            return $response->withStatus(200)->write($this->adminService->deleteRoom($args['id']));
+            return $response->withStatus(200)->write(
+                $this->adminService->deleteRoom(
+                    $request->getAttribute('user'),
+                    $args['id']
+                )
+            );
         }
 
         /**
@@ -157,10 +193,10 @@
          */
         public function getListRooms(Request $request, Response $response, $args = [])
         {
-            $result = $this->adminService->getRooms();
+            $result = $this->adminService->getRooms($request->getAttribute('user'));
             return count($result) == 0 ?
                 $response->withStatus(406)->write('Rooms were not found.'):
-                $response->withStatus(200)->withJson($this->adminService->getRooms());
+                $response->withStatus(200)->withJson($result);
         }
 
         /**
@@ -172,7 +208,10 @@
          */
         public function getTransfersForWarehouse(Request $request, Response $response, $args = [])
         {
-            $result = $this->adminService->getTransfersForWarehouse($args['id']);
+            $result = $this->adminService->getTransfersForWarehouse(
+                $request->getAttribute('user'),
+                $args['id']
+            );
             return count($result) == 0 ?
                 $response->withStatus(406)->write('Transfers were not found.'):
                 $response->withStatus(200)->withJson($result);
@@ -187,7 +226,10 @@
          */
         public function getTransfersForItem(Request $request, Response $response, $args = [])
         {
-            $result = $this->adminService->getTransfersForItem($args['id']);
+            $result = $this->adminService->getTransfersForItem(
+                $request->getAttribute('user'),
+                $args['id']
+            );
             return count($result) == 0 ?
                 $response->withStatus(406)->write('Transfers were not found.'):
                 $response->withStatus(200)->withJson($result);
@@ -224,7 +266,13 @@
                 $parsedBody['warehouseID']:
                 null;
 
-            return $response->withStatus(200)->write($this->adminService->addItem($data, $warehouseID));
+            return $response->withStatus(200)->write(
+                $this->adminService->addItem(
+                    $request->getAttribute('user'),
+                    $data,
+                    $warehouseID
+                )
+            );
         }
 
         /**
@@ -250,7 +298,13 @@
             ];
             $itemID = $args['id'];
 
-            return $response->withStatus(200)->write($this->adminService->changeItem($itemID, $data));
+            return $response->withStatus(200)->write(
+                $this->adminService->changeItem(
+                    $request->getAttribute('user'),
+                    $itemID,
+                    $data
+                )
+            );
         }
 
         /**
@@ -266,7 +320,11 @@
             $onDate = isset($date) ?
                 new \DateTime($date) :
                 null;
-            $result = $this->adminService->itemState($args['id'], $onDate);
+            $result = $this->adminService->itemState(
+                $request->getAttribute('user'),
+                $args['id'],
+                $onDate
+            );
             return count($result['warehouses']) == 0 ?
                 $response->withStatus(406)->write('Item was not found.'):
                 $response->withStatus(200)->withJson($result);

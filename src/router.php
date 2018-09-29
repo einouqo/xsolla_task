@@ -4,10 +4,10 @@
     $app->post('/registration', 'registration.controller:registration');
 
     $app->group('/user', function () use ($app) {
-        $app->post('/authentication', 'user.controller:authentication');
+        $app->post('/login', 'user.controller:login');
         $app->group('/settings', function () use ($app) {
-            $app->delete('/delete', 'user.controller:delete');
-            $app->put('/change', 'user.controller:change');
+            $app->delete('/delete', 'user.controller:delete')->add('middleware');
+            $app->put('/change', 'user.controller:change')->add('middleware');
         });
         $app->get('/exit', 'user.controller:logoff');
     });
@@ -15,7 +15,7 @@
     $app->group('/access', function () use ($app) {
         $app->post('/give', 'admin.controller:giveAccess');
         $app->delete('/delete', 'admin.controller:deleteAccess');
-    });
+    })->add('middleware');
 
     $app->group('/rooms', function () use ($app) {
         $app->get('/list', 'admin.controller:getListRooms');
