@@ -36,7 +36,9 @@
                     null
             ];
 
-            return $response->withStatus(200)->write($this->userService->login($loginData));
+            return $response->withStatus(200)->write(
+                $this->userService->login($loginData)
+            );
         }
 
         /**
@@ -47,7 +49,9 @@
          */
         public function logoff(Request $request, Response $response, $args = [])
         {
-            return $response->withStatus(200)->write($this->userService->logoff());
+            return $response->withStatus(200)->write(
+                $this->userService->logoff()
+            );
         }
 
         /**
@@ -59,7 +63,9 @@
          */
         public function delete(Request $request, Response $response, $args = [])
         {
-            return $response->withStatus(200)->write($this->userService->delete($request->getAttribute('user')));
+            return $response->withStatus(200)->write(
+                $this->userService->delete($request->getAttribute('user'))
+            );
         }
 
         /**
@@ -90,6 +96,11 @@
                     null
             ];
 
-            return $response->write($this->userService->change($request->getAttribute('user'), $data));
+            return $response->withStatus(200)->write(
+                $this->userService->change(
+                    $request->getAttribute('user'),
+                    $data
+                )
+            );
         }
     }

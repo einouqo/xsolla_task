@@ -4,7 +4,7 @@
     use App\Model\EmployeeAbstract;
     use App\Model\EmployeeAdmin;
     use App\Repository\AdminRepository;
-    use App\Repository\UserRepository;
+    use App\Repository\WarehouseRepository;
 
     class AdminService
     {
@@ -14,14 +14,14 @@
         private $adminRepository;
 
         /**
-         * @var UserRepository
+         * @var WarehouseRepository
          */
-        private $userRepository;
+        private $warehouseRepository;
 
-        public function __construct(AdminRepository $adminRepository, UserRepository $userRepository)//Два репозитория - это ок?
+        public function __construct(AdminRepository $adminRepository, WarehouseRepository $warehouseRepository)
         {
             $this->adminRepository = $adminRepository;
-            $this->userRepository = $userRepository;
+            $this->warehouseRepository = $warehouseRepository;
         }
 
         /**
@@ -443,10 +443,10 @@
         private function countQuantityOnDate(int $id, array $itemData, \DateTime $onDate)
         {
             return $itemData['quantity'] -
-                ($this->adminRepository->getDeliveryCondition($id, $itemData['address'], $itemData['size'], $onDate) ?? 0) +
-                ($this->adminRepository->getSellingCondition($id, $itemData['id'], $itemData['size'], $onDate) ?? 0) +
-                ($this->adminRepository->getSendedCondition($id, $itemData['id'], $itemData['size'], $onDate) ?? 0) -
-                ($this->adminRepository->getReceivingCondition($id, $itemData['id'], $itemData['size'], $onDate) ?? 0);
+                ($this->warehouseRepository->getDeliveryCondition($id, $itemData['address'], $itemData['size'], $onDate) ?? 0) +
+                ($this->warehouseRepository->getSellingCondition($id, $itemData['id'], $itemData['size'], $onDate) ?? 0) +
+                ($this->warehouseRepository->getSendedCondition($id, $itemData['id'], $itemData['size'], $onDate) ?? 0) -
+                ($this->warehouseRepository->getReceivingCondition($id, $itemData['id'], $itemData['size'], $onDate) ?? 0);
         }
 
         /**

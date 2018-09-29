@@ -25,10 +25,12 @@
          */
         public function getList(Request $request, Response $response, $args = [])
         {
-            $result =$this->warehouseService->getList();
+            $result = $this->warehouseService->getList(
+                $request->getAttribute('user')
+            );
             return count($result) == 0?
                 $response->withStatus(406)->write('Warehouses were not found.'):
-                $response->withStatus(200)->withJson($this->warehouseService->getList());
+                $response->withStatus(200)->withJson($result);
         }
 
         /**
@@ -44,6 +46,12 @@
             $onDate = isset($date) ?
                 new \DateTime($date) :
                 null;
-            return $response->withStatus(200)->withJson($this->warehouseService->getOne($args['id'], $onDate));
+            return $response->withStatus(200)->withJson(
+                $this->warehouseService->getOne(
+                    $request->getAttribute('user'),
+                    $args['id'],
+                    $onDate
+                )
+            );
         }
     }

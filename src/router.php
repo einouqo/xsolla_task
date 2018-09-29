@@ -21,7 +21,7 @@
         $app->get('/list', 'admin.controller:getListRooms');
         $app->post('/add', 'admin.controller:addRoom');
         $app->delete('/{id}/delete', 'admin.controller:deleteRoom');
-    });
+    })->add('middleware');
 
     $app->group('/warehouses', function () use ($app) {
         $app->get('/list', 'warehouse.controller:getList');
@@ -49,7 +49,7 @@
                 $app->delete('/send', 'employee.controller:sendTransfer');
             });
         });
-    });
+    })->add('middleware');
 
     $app->group('/items', function () use ($app) {
         $app->post('/add', 'admin.controller:addItem');
@@ -58,4 +58,4 @@
             $app->get('/state', 'admin.controller:itemState');
             $app->get('/transfers', 'admin.controller:getTransfersForItem');
         });
-    });
+    })->add('middleware');

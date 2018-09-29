@@ -1,6 +1,9 @@
 <?php
     namespace App\Services;
 
+    use App\Model\Employee;
+    use App\Model\EmployeeAbstract;
+    use App\Model\Item;
     use App\Repository\EmployeeRepository;
     use App\Repository\UserRepository;
     use Firebase\JWT\JWT;
@@ -12,46 +15,19 @@
          */
         private $employeeRepository;
 
-        /**
-         * @var UserRepository
-         */
-        private $userRepository;
-
-        public function __construct(EmployeeRepository $employeeRepository, UserRepository $userRepository)
+        public function __construct(EmployeeRepository $employeeRepository)
         {
             $this->employeeRepository = $employeeRepository;
-            $this->userRepository = $userRepository;
         }
 
         /**
-         * @return mixed
+         * @param EmployeeAbstract $user
+         * @return EmployeeAbstract
          * @throws \Exception
          */
-        private function getUserIDFromCookie()
+        private function validateUser(EmployeeAbstract $user)
         {
-            if (isset($_COOKIE['token'])) {
-                $config = require __DIR__.'/../settings.php';
-                return ((array)JWT::decode(
-                    $_COOKIE['token'],
-                    $config['jwt']['secret'],
-                    array('HS256')
-                ))['userID'];
-            } else {
-                throw new \Exception('You need to login.', 401);
-            }
-        }
-
-        /**
-         * @return \App\Model\Employee|\App\Model\EmployeeAdmin
-         * @throws \Exception
-         * @throws \Doctrine\DBAL\DBALException
-         */
-        private function getUser()
-        {
-            $user = $this->userRepository->getUserInfoByID(
-                $this->getUserIDFromCookie()
-            );
-            if (is_a($user, 'App\Model\Employee')) {
+            if ($user instanceof Employee) {
                 return $user;
             } else {
                 throw new \Exception('You have no access for this operation.', 403);
@@ -59,12 +35,15 @@
         }
 
         /**
+         * @param EmployeeAbstract $user
          * @return array
+         * @throws \Exception
          * @throws \Doctrine\DBAL\DBALException
          */
-        public function getPendingList()
+        public function getPendingList(EmployeeAbstract $user)
         {
-            $employee = $this->getUser();
+            /** @var Employee $employee */
+            $employee = $this->validateUser($user);
 
             $this->employeeRepository->fillPendingTransfers($employee);
 
@@ -72,14 +51,16 @@
         }
 
         /**
+         * @param EmployeeAbstract $user
          * @param null $warehouseID
          * @return array|null
          * @throws \Exception
          * @throws \Doctrine\DBAL\DBALException
          */
-        public function getAvailableList($warehouseID = null)
+        public function getAvailableList(EmployeeAbstract $user, $warehouseID = null)
         {
-            $employee = $this->getUser();
+            /** @var Employee $employee */
+            $employee = $this->validateUser($user);
 
             $this->employeeRepository->fillWarehouses($employee);
             if (isset($warehouseID) && !$employee->isWarehouseExist($warehouseID)) {
@@ -89,14 +70,16 @@
         }
 
         /**
+         * @param EmployeeAbstract $user
          * @param $transferID
          * @return string
          * @throws \Exception
          * @throws \Doctrine\DBAL\DBALException
          */
-        public function takeTransfer($transferID)
+        public function takeTransfer(EmployeeAbstract $user, $transferID)
         {
-            $employee = $this->getUser();
+            /** @var Employee $employee */
+            $employee = $this->validateUser($user);
 
             $this->employeeRepository->fillPendingTransfers($employee);
             $transfer = $employee->getTransferByID($transferID);
@@ -263,15 +246,17 @@
         }
 
         /**
+         * @param EmployeeAbstract $user
          * @param int $itemID
          * @param array $data
          * @return string
          * @throws \Exception
          * @throws \Doctrine\DBAL\DBALException
          */
-        public function addToTransfer(int $itemID, array $data)
+        public function addToTransfer(EmployeeAbstract $user, int $itemID, array $data)
         {
-            $employee = $this->getUser();
+            /** @var Employee $employee */
+            $employee = $this->validateUser($user);
 
             if (is_null($data['size'])){
                 throw new \Exception('You need to set size.', 400);
@@ -289,6 +274,7 @@
             }
 
             $totalQuantity = 0;
+            /** @var Item $item */
             foreach ($items as $item) {
                 $totalQuantity += $item->getQuantity();
             }
@@ -303,34 +289,38 @@
         }
 
         /**
+         * @param EmployeeAbstract $user
          * @return string
-         * @throws \Doctrine\DBAL\DBALException
+         * @throws \Exception
          */
-        public function clearTransfer()
+        public function clearTransfer(EmployeeAbstract $user)
         {
-            $this->getUser();
+            $this->validateUser($user);
             setcookie('transfer', '', time() - 60 * 60, '/');
             return 'Transfer list was successfully cleared.';
         }
 
         /**
+         * @param EmployeeAbstract $user
          * @return array|string
-         * @throws \Doctrine\DBAL\DBALException
+         * @throws \Exception
          */
-        public function getTransferList()
+        public function getTransferList(EmployeeAbstract $user)
         {
-            $this->getUser();
+            $this->validateUser($user);
             return $this->getTransfersFromCookie();
         }
 
         /**
+         * @param EmployeeAbstract $user
          * @param int $warehouseToID
          * @return string
+         * @throws \Exception
          * @throws \Doctrine\DBAL\DBALException
          */
-        public function sendTransfer(int $warehouseToID)
+        public function sendTransfer(EmployeeAbstract $user, int $warehouseToID)
         {
-            $this->getUser();
+            $this->validateUser($user);
             $isSent = false;
             $transfers = $this->getTransfersFromCookie();
             if (gettype($transfers) == 'array') {
@@ -381,18 +371,21 @@
                     }
                 }
             }
+            return 0;
         }
 
         /**
+         * @param EmployeeAbstract $user
          * @param int $itemID
          * @param array $data
          * @return string
          * @throws \Exception
          * @throws \Doctrine\DBAL\DBALException
          */
-        public function sellItem(int $itemID, array $data)
+        public function sellItem(EmployeeAbstract $user, int $itemID, array $data)
         {
-            $employee = $this->getUser();
+            /** @var Employee $employee */
+            $employee = $this->validateUser($user);
             $this->sellValidate($data);
             $this->employeeRepository->fillWarehouses($employee);
             $warehouse = $employee->getWarehouseByID($data['warehouseID']);

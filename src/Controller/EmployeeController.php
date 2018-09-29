@@ -26,7 +26,7 @@
          */
         public function pendingList(Request $request, Response $response, $args = [])
         {
-            $result = $this->employeeService->getPendingList();
+            $result = $this->employeeService->getPendingList($request->getAttribute('user'));
             return count($result) == 0 ?
                 $response->withStatus(200)->write('Nothing is pending.'):
                 $response->withStatus(200)->withJson($result);
@@ -41,8 +41,10 @@
          */
         public function availableList(Request $request, Response $response, $args = [])
         {
-            $warehouseID = $request->getQueryParam('warehouseID');
-            $result = $this->employeeService->getAvailableList($warehouseID);
+            $result = $this->employeeService->getAvailableList(
+                $request->getAttribute('user'),
+                $request->getQueryParam('warehouseID')
+            );
             return count($result['items']) == 0 ?
                 $response->withStatus(200)->write('Your warehouses are empty.'):
                 $response->withStatus(200)->withJson($result);
@@ -62,8 +64,12 @@
                 $parsedBody['transferID']:
                 null;
             return isset($transferID) ?
-                $response->withStatus(200)->write($this->employeeService->takeTransfer($transferID)):
-                $response->withStatus(400)->write('Transfer id can not be empty.');
+                $response->withStatus(200)->write(
+                    $this->employeeService->takeTransfer(
+                        $request->getAttribute('user'),
+                        $transferID
+                    )
+                ) : $response->withStatus(400)->write('Transfer id can not be empty.');
         }
 
         /**
@@ -75,7 +81,6 @@
          */
         public function addToTransfer(Request $request, Response $response, $args = [])
         {
-            $itemID = $args['id'];
             $parsedBody = $request->getParsedBody() ?? [];
             $data = [
                 'warehouseFromID' => key_exists('warehouseFromID', $parsedBody) ?
@@ -90,8 +95,13 @@
             ];
 
             return isset($data['warehouseFromID'])?
-                $response->withStatus(200)->write($this->employeeService->addToTransfer($itemID, $data)):
-                $response->withStatus(400)->write('Warehouse ID of this item cannot be empty.');
+                $response->withStatus(200)->write(
+                    $this->employeeService->addToTransfer(
+                        $request->getAttribute('user'),
+                        $args['id'],
+                        $data
+                    )
+                ) : $response->withStatus(400)->write('Warehouse ID of this item cannot be empty.');
         }
 
         /**
@@ -99,11 +109,13 @@
          * @param Response $response
          * @param array $args
          * @return Response
-         * @throws \Doctrine\DBAL\DBALException
+         * @throws \Exception
          */
         public function clearTransfer(Request $request, Response $response, $args = [])
         {
-            return $response->withStatus(200)->write($this->employeeService->clearTransfer());
+            return $response->withStatus(200)->write(
+                $this->employeeService->clearTransfer($request->getAttribute('user'))
+            );
         }
 
         /**
@@ -111,11 +123,13 @@
          * @param Response $response
          * @param array $args
          * @return Response
-         * @throws \Doctrine\DBAL\DBALException
+         * @throws \Exception
          */
         public function showTransfer(Request $request, Response $response, $args = [])
         {
-            return $response->withStatus(200)->withJson($this->employeeService->getTransferList());
+            return $response->withStatus(200)->withJson(
+                $this->employeeService->getTransferList($request->getAttribute('user'))
+            );
         }
 
         /**
@@ -133,7 +147,12 @@
                 null;
             return is_null($warehouseToID) ?
                 $response->withStatus(400)->write('Destination warehouse ID cannot be empty.'):
-                $response->withStatus(200)->write($this->employeeService->sendTransfer($warehouseToID));
+                $response->withStatus(200)->write(
+                    $this->employeeService->sendTransfer(
+                        $request->getAttribute('user'),
+                        $warehouseToID
+                    )
+                );
         }
 
         /**
@@ -157,7 +176,12 @@
                     $parsedBody['quantity']:
                     null
             ];
-            $itemID = $args['id'];
-            return $response->withStatus(200)->write($this->employeeService->sellItem($itemID, $data));
+            return $response->withStatus(200)->write(
+                $this->employeeService->sellItem(
+                    $request->getAttribute('user'),
+                    $args['id'],
+                    $data
+                )
+            );
         }
     }

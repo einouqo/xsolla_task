@@ -26,6 +26,11 @@
         return new \App\Repository\UserRepository($c->get('db'));
     };
 
+    $container['warehouse.repository'] = function ($c) {
+        /** @var ContainerInterface $c */
+        return new \App\Repository\WarehouseRepository($c->get('db'));
+    };
+
     $container['admin.repository'] = function ($c) {
         /** @var ContainerInterface $c */
         return new \App\Repository\AdminRepository($c->get('db'));
@@ -43,18 +48,17 @@
 
     $container['warehouse.service'] = function ($c) {
         /** @var ContainerInterface $c */
-        return new \App\Services\WarehouseService($c->get('admin.repository'),
-            $c->get('employee.repository'), $c->get('user.repository'));
+        return new \App\Services\WarehouseService($c->get('warehouse.repository'));
     };
 
     $container['admin.service'] = function ($c) {
         /** @var ContainerInterface $c */
-        return new \App\Services\AdminService($c->get('admin.repository'), $c->get('user.repository'));
+        return new \App\Services\AdminService($c->get('admin.repository'), $c->get('warehouse.repository'));
     };
 
     $container['employee.service'] = function ($c) {
         /** @var ContainerInterface $c */
-        return new \App\Services\EmployeeService($c->get('employee.repository'), $c->get('user.repository'));
+        return new \App\Services\EmployeeService($c->get('employee.repository'));
     };
 
     $container['registration.controller'] = function ($c) {
