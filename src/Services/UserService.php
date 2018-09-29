@@ -151,8 +151,8 @@
          */
         public function login(array $data)
         {
+            $this->unsetCookies();
             if (!isset($data['email'], $data['password'])) {
-                $this->unsetCookies();
                 throw new \Exception('You need to login using email and password.', 401);
             }
 

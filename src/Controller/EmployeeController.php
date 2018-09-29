@@ -127,7 +127,10 @@
          */
         public function showTransfer(Request $request, Response $response, $args = [])
         {
-            return $response->withStatus(200)->withJson(
+            $result = $this->employeeService->getTransferList($request->getAttribute('user'));
+            return is_null($result) ?
+                $response->withStatus(200)->write('Transaction list are empty.'):
+                $response->withStatus(200)->withJson(
                 $this->employeeService->getTransferList($request->getAttribute('user'))
             );
         }

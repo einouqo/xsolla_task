@@ -249,17 +249,17 @@
          * @throws \Exception
          * @throws \Doctrine\DBAL\DBALException
          */
-        private function hasCompletedTransfers(int $warehouseID)
+        private function hasUncompletedTransfers(int $warehouseID)
         {
-            $unComlitedTransfers = $this->dbConnection->fetchAssoc(
+            $uncomlitedTransfers = $this->dbConnection->fetchAssoc(
                 'SELECT COUNT(*) as count FROM transferHistory WHERE date_receiving IS NULL AND id_to = ?',
                 [
                     $warehouseID
                 ]
             );
 
-            if ($unComlitedTransfers['count'] != 0) {
-                throw new \Exception('Warehouse are awaiting '.$unComlitedTransfers['count'].' transfer(-s). Deleting forbidden.', 403);
+            if ($uncomlitedTransfers['count'] != 0) {
+                throw new \Exception('Warehouse are awaiting '.$uncomlitedTransfers['count'].' transfer(-s). Deleting forbidden.', 403);
             }
         }
 
@@ -271,7 +271,7 @@
         public function deleteWarehouse(int $id, string $address)
         {
             $this->isEmpty($address);
-            $this->hasCompletedTransfers($id);
+            $this->hasUncompletedTransfers($id);
 
             $this->dbConnection->executeQuery(
                 'DELETE FROM infoWarehouses WHERE address = ?',

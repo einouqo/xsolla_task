@@ -280,7 +280,7 @@
          * @param array $data
          * @throws \Doctrine\DBAL\DBALException
          */
-        public function sellItem(int $warehouseID, int $employeeID, int $itemID, array $data)
+        public function sellItem(int $warehouseID, int $itemID, array $data)
         {
             $unit = $this->dbConnection->fetchAssoc(
                 'SELECT price FROM items WHERE id = ?',
@@ -292,11 +292,10 @@
             $this->removeItem($warehouseID, $data + ['id' => $itemID]);
 
             $this->dbConnection->executeQuery(
-                'INSERT INTO selling(id_address, id_user, id_item, size, quantity, unit_price, date)
-                    VALUES (?, ?, ?, ?, ?, ?, NOW())',
+                'INSERT INTO selling(id_address, id_item, size, quantity, unit_price, date)
+                    VALUES (?, ?, ?, ?, ?, NOW())',
                 [
                     $warehouseID,
-                    $employeeID,
                     $itemID,
                     $data['size'],
                     $data['quantity'],

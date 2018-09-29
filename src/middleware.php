@@ -54,12 +54,18 @@
             );
         }
 
+        /**
+         * @param Request $request
+         * @param Response $response
+         * @param $next
+         * @return Response
+         * @throws \Exception
+         */
         public function __invoke(Request $request, Response $response, $next)
         {
             $user = $this->getUser();
             $request = $request->withAttribute('user', $user);
             $response = $next($request, $response);
-            $response->getBody()->write('AFTER');
 
             return $response;
         }

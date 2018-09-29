@@ -5,7 +5,6 @@
     use App\Model\EmployeeAbstract;
     use App\Model\Item;
     use App\Repository\EmployeeRepository;
-    use App\Repository\UserRepository;
     use Firebase\JWT\JWT;
 
     class EmployeeService
@@ -161,7 +160,7 @@
                 }
                 return $transfers;
             } else {
-                return 'Transaction list are empty.';
+                return null;
             }
         }
 
@@ -405,7 +404,7 @@
                 throw new \Exception('There is not enough items. Available: '.$available.' units. Reserved '.$reserved.' units.', 403);
             }
 
-            $this->employeeRepository->sellItem($warehouse->getID(), $employee->getID(),$itemID, $data);
+            $this->employeeRepository->sellItem($warehouse->getID(), $itemID, $data);
             return 'Item was sold successfully.';
         }
     }
