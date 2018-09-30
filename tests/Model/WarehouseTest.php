@@ -120,4 +120,164 @@
                 ]
             ];
         }
+
+        /**
+         * @dataProvider dataRemoveItem
+         */
+        public function testRemoveItem($warehouseData, $itemData, $expectingItem)
+        {
+            $warehouse = new \App\Model\Warehouse($warehouseData);
+            $warehouse->addItem(new \App\Model\Item($itemData));
+            $this->assertEquals($warehouse->getItemByID($itemData['id']), [$expectingItem]);
+            $warehouse->removeItem($itemData['id'], 10);
+            $this->assertEquals($warehouse->getItemByID($itemData['id']), null);
+        }
+
+        public function dataRemoveItem()
+        {
+            $itemData = [
+                'id' => 1,
+                'name' => 'test1Item',
+                'type' => 'test',
+                'size' => '1',
+                'price' => 1000,
+                'quantity' => 10
+            ];
+            return [
+                [
+                    $this->warehouseData,
+                    $itemData,
+                    new \App\Model\Item($itemData)
+                ]
+            ];
+        }
+
+        /**
+         * @dataProvider dataGetItems
+         */
+        public function testGetItems($warehouseData, $itemData1, $itemData2, $itemData3, $expectingArray)
+        {
+            $warehouse = new \App\Model\Warehouse($warehouseData);
+            $warehouse->addItem(new \App\Model\Item($itemData1));
+            $warehouse->addItem(new \App\Model\Item($itemData2));
+            $warehouse->addItem(new \App\Model\Item($itemData3));
+            $this->assertEquals($warehouse->getItems(), $expectingArray);
+        }
+
+        public function dataGetItems()
+        {
+            $itemData1 = [
+                'id' => 1,
+                'name' => 'test1Item',
+                'type' => 'test',
+                'size' => '1',
+                'price' => 1000,
+                'quantity' => 10
+            ];
+            $itemData2 = [
+                'id' => 2,
+                'name' => 'test2Item',
+                'type' => 'test',
+                'size' => '1',
+                'price' => 500,
+                'quantity' => 10
+            ];
+            $itemData3 = [
+                'id' => 2,
+                'name' => 'test2Item',
+                'type' => 'test',
+                'size' => '2',
+                'price' => 1500,
+                'quantity' => 5
+            ];
+            return [
+                [
+                    $this->warehouseData,
+                    $itemData1,
+                    $itemData2,
+                    $itemData3,
+                    [
+                        new \App\Model\Item($itemData1),
+                        new \App\Model\Item($itemData2),
+                        new \App\Model\Item($itemData3),
+                    ]
+                ]
+            ];
+        }
+
+        /**
+         * @dataProvider dataGetItemsInfo
+         */
+        public function testGetItemsInfo($warehouseData, $itemData1, $itemData2, $itemData3, $expectingArray)
+        {
+            $warehouse = new \App\Model\Warehouse($warehouseData);
+            $warehouse->addItem(new \App\Model\Item($itemData1));
+            $warehouse->addItem(new \App\Model\Item($itemData2));
+            $warehouse->addItem(new \App\Model\Item($itemData3));
+            $this->assertEquals($warehouse->getItemsInfo(), $expectingArray);
+        }
+
+        public function dataGetItemsInfo()
+        {
+            $itemData1 = [
+                'id' => 1,
+                'name' => 'test1Item',
+                'type' => 'test',
+                'size' => '1',
+                'price' => 1000,
+                'quantity' => 10
+            ];
+            $itemData2 = [
+                'id' => 2,
+                'name' => 'test2Item',
+                'type' => 'test',
+                'size' => '1',
+                'price' => 500,
+                'quantity' => 10
+            ];
+            $itemData3 = [
+                'id' => 2,
+                'name' => 'test2Item',
+                'type' => 'test',
+                'size' => '2',
+                'price' => 100,
+                'quantity' => 5
+            ];
+            return [
+                [
+                    $this->warehouseData,
+                    $itemData1,
+                    $itemData2,
+                    $itemData3,
+                    [
+                        'items' => [
+                            $itemData1,
+                            $itemData2,
+                            $itemData3
+                        ],
+                        'Total price: ' => 15500
+                    ]
+                ]
+            ];
+        }
+
+        /**
+         * @dataProvider dataSetLoad
+         */
+        public function testSetLoad($warehouseData, $loaded)
+        {
+            $warehouse = new \App\Model\Warehouse($warehouseData);
+            $warehouse->setLoaded($loaded);
+            $this->assertEquals($warehouse->getLoaded(), $loaded);
+        }
+
+        public function dataSetLoad()
+        {
+            return [
+                [
+                    $this->warehouseData,
+                    78
+                ]
+            ];
+        }
     }

@@ -106,11 +106,9 @@
                 'items' => array()
             );
             $totalPrice = 0.;
-            $totalQuantity = 0;
             foreach ($this->items as $item){
                 array_push($result['items'], $item->infoToArray());
                 $totalPrice += $item->getTotalPrice();
-                $totalQuantity += $item->getQuantity();
             }
             $result += [
                 'Total price: ' => $totalPrice

@@ -83,23 +83,6 @@
             return $this->quantity * $this->price;
         }
 
-         /**
-          * 'null' - removing failed
-          * 'new Item' - removing done
-          * @return mixed
-          */
-        public function remove(int $quantity)
-        {
-            if ($this->quantity - $quantity < 0){
-                return null;
-            } else {
-                $this->quantity -= $quantity;
-                $info = $this->infoToArray();
-                $info['quantity'] = $quantity;
-                return new Item($info);
-            }
-        }
-
         /**
          * @return array
          */
