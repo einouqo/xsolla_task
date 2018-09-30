@@ -54,7 +54,6 @@
             $totalQuantity = 0;
             $totalPrice = 0.;
             foreach ($report['items'] as $key => $item) {
-                print_r($report['items']);
                 $report['items'][$key]['quantity'] +=
                     ($this->warehouseRepository->getSellingCondition($item['id'], $report['id'], $item['size'], $date) ?? 0) -
                     ($this->warehouseRepository->getDeliveryCondition($item['id'], $report['address'], $item['size'], $date) ?? 0) +
@@ -82,7 +81,6 @@
          */
         public function getOne(EmployeeAbstract $user, int $warehouseID, \DateTime $date = null)
         {
-            print_r($date);
             $this->fillWarehouses($user);
             $warehouse = $user->getWarehouseByID($warehouseID);
             if (is_null($warehouse)) {

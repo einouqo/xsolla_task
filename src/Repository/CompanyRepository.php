@@ -57,6 +57,40 @@
 
         /**
          * @param int $companyID
+         * @return bool
+         * @throws \Doctrine\DBAL\DBALException
+         */
+        public function isEmptyWarehouses(int $companyID)
+        {
+            return $this->dbConnection->fetchAssoc(
+                    'SELECT COUNT(*) AS count FROM addresses
+                  INNER JOIN infoWarehouses ON addresses.address = infoWarehouses.address
+                  INNER JOIN quantity ON infoWarehouses.address = quantity.address AND id_company = ?',
+                    [
+                        $companyID
+                    ]
+                )['count'] == 0;
+        }
+
+        /**
+         * @param int $companyID
+         * @return bool
+         * @throws \Doctrine\DBAL\DBALException
+         */
+        public function isPendingTransfers(int $companyID)
+        {
+            return $this->dbConnection->fetchAssoc(
+                'SELECT COUNT(*) AS count FROM transferHistory
+                  INNER JOIN addresses ON (transferHistory.id_from = addresses.id OR transferHistory.id_to = addresses.id)
+                  AND date_receiving IS NULL',
+                [
+                    $companyID
+                ]
+            )['count'] == 0;
+        }
+
+        /**
+         * @param int $companyID
          * @throws \Doctrine\DBAL\DBALException
          */
         private function deleteSelling(int $companyID)
