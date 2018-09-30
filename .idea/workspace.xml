@@ -11,9 +11,7 @@
       <change beforePath="$PROJECT_DIR$/../s1/report" beforeDir="false" afterPath="$PROJECT_DIR$/../s1/report" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../ubuntu-xenial-16.04-cloudimg-console.log" beforeDir="false" afterPath="$PROJECT_DIR$/../ubuntu-xenial-16.04-cloudimg-console.log" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Repository/CompanyRepository.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Repository/CompanyRepository.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Services/CompanyService.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Services/CompanyService.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Services/WarehouseService.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Services/WarehouseService.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WarehousesDB_dump.sql" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/Model/TransferTest.php" beforeDir="false" afterPath="$PROJECT_DIR$/tests/Model/TransferTest.php" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -187,13 +185,13 @@
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="json" value="67" />
-          <entry key="php" value="58433" />
+          <entry key="php" value="58579" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="JSON" value="67" />
-          <entry key="PHP" value="58088" />
+          <entry key="PHP" value="58234" />
           <entry key="SQL" value="345" />
         </counts>
       </usages-collector>
@@ -201,20 +199,20 @@
         <counts>
           <entry key="dist" value="1" />
           <entry key="json" value="7" />
-          <entry key="php" value="522" />
+          <entry key="php" value="525" />
           <entry key="phpunit" value="3" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
           <entry key="JSON" value="7" />
-          <entry key="PHP" value="525" />
+          <entry key="PHP" value="528" />
           <entry key="PLAIN_TEXT" value="1" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="34" />
+          <entry key="project.closed" value="35" />
           <entry key="project.open.time.1" value="1" />
           <entry key="project.open.time.10" value="4" />
           <entry key="project.open.time.11" value="1" />
@@ -258,10 +256,19 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/tests/Model/WarehouseTest.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="568">
+              <caret line="45" column="14" lean-forward="true" selection-start-line="30" selection-start-column="12" selection-end-line="45" selection-end-column="14" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/tests/Model/ItemTest.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="273">
-              <caret line="30" column="9" lean-forward="true" selection-start-line="23" selection-start-column="8" selection-end-line="30" selection-end-column="9" />
+            <state relative-caret-position="237">
+              <caret line="14" column="5" lean-forward="true" selection-start-line="14" selection-start-column="5" selection-end-line="19" selection-end-column="33" />
               <folding>
                 <element signature="e#46#65#0#PHP" expanded="true" />
               </folding>
@@ -269,38 +276,14 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/tests/Model/TransferTest.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="469">
-              <caret line="35" selection-start-line="35" selection-end-line="35" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/Services/WarehouseService.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="253">
-              <caret line="87" column="89" selection-start-line="87" selection-start-column="89" selection-end-line="87" selection-end-column="89" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/Services/CompanyService.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="392">
-              <caret line="53" column="61" selection-start-line="53" selection-start-column="43" selection-end-line="53" selection-end-column="61" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/Repository/CompanyRepository.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="517">
-              <caret line="77" column="47" selection-start-line="77" selection-start-column="47" selection-end-line="77" selection-end-column="47" />
+            <state relative-caret-position="234">
+              <caret line="81" column="48" selection-start-line="81" selection-start-column="48" selection-end-line="81" selection-end-column="48" />
+              <folding>
+                <element signature="e#42#61#0#PHP" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -308,8 +291,17 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/Model/Transfer.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="103">
-              <caret line="59" column="35" selection-start-line="59" selection-start-column="24" selection-end-line="59" selection-end-column="35" />
+            <state relative-caret-position="446">
+              <caret line="63" column="46" selection-start-line="63" selection-start-column="46" selection-end-line="63" selection-end-column="46" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/Model/Item.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="614">
+              <caret line="101" column="24" selection-start-line="101" selection-start-column="24" selection-end-line="101" selection-end-column="24" />
             </state>
           </provider>
         </entry>
@@ -410,10 +402,10 @@
         <option value="$PROJECT_DIR$/tests/Model/WarehouseTest.php" />
         <option value="$PROJECT_DIR$/src/Model/Item.php" />
         <option value="$PROJECT_DIR$/tests/Model/ItemTest.php" />
-        <option value="$PROJECT_DIR$/tests/Model/TransferTest.php" />
         <option value="$PROJECT_DIR$/src/Services/WarehouseService.php" />
         <option value="$PROJECT_DIR$/src/Services/CompanyService.php" />
         <option value="$PROJECT_DIR$/src/Repository/CompanyRepository.php" />
+        <option value="$PROJECT_DIR$/tests/Model/TransferTest.php" />
       </list>
     </option>
   </component>
@@ -683,17 +675,16 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="398507000" />
+    <option name="totallyTimeSpent" value="400125000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="2560" height="1080" extended-state="0" />
-    <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49911818" visible="true" weight="0.18228753" />
       <window_info id="Structure" order="1" sideWeight="0.50088185" side_tool="true" weight="0.27265862" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
-      <window_info active="true" anchor="bottom" id="Find" order="1" visible="true" weight="0.32997987" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.32997987" />
       <window_info anchor="bottom" id="Run" order="2" weight="0.32897383" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
@@ -702,7 +693,7 @@
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Database Changes" order="8" />
       <window_info anchor="bottom" id="Version Control" order="9" weight="0.32997987" />
-      <window_info anchor="bottom" id="Terminal" order="10" weight="0.42454728" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="10" visible="true" weight="0.42454728" />
       <window_info anchor="bottom" id="Event Log" order="11" side_tool="true" weight="0.32897383" />
       <window_info active="true" anchor="bottom" id="Database Console" order="12" visible="true" weight="0.32991204" />
       <window_info anchor="bottom" id="Inspection Results" order="13" weight="0.32997987" />
@@ -995,29 +986,8 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/router.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="743">
-          <caret line="46" column="29" selection-start-line="46" selection-start-column="25" selection-end-line="46" selection-end-column="29" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/vendor/bin/phpunit">
       <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/Model/WarehouseTest.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="105">
-          <caret line="5" column="14" selection-start-line="5" selection-start-column="8" selection-end-line="5" selection-end-column="14" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Model/Item.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-39">
-          <caret line="90" column="25" lean-forward="true" selection-start-line="90" selection-start-column="25" selection-end-line="90" selection-end-column="25" />
-        </state>
-      </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Model/Warehouse.php">
       <provider selected="true" editor-type-id="text-editor">
@@ -1033,30 +1003,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tests/Model/ItemTest.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="273">
-          <caret line="30" column="9" lean-forward="true" selection-start-line="23" selection-start-column="8" selection-end-line="30" selection-end-column="9" />
-          <folding>
-            <element signature="e#46#65#0#PHP" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Model/Transfer.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="103">
-          <caret line="59" column="35" selection-start-line="59" selection-start-column="24" selection-end-line="59" selection-end-column="35" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/Model/TransferTest.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="469">
-          <caret line="35" selection-start-line="35" selection-end-line="35" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/Services/WarehouseService.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="253">
@@ -1066,15 +1012,63 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Services/CompanyService.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="392">
-          <caret line="53" column="61" selection-start-line="53" selection-start-column="43" selection-end-line="53" selection-end-column="61" />
+        <state relative-caret-position="349">
+          <caret line="53" column="59" lean-forward="true" selection-start-line="53" selection-start-column="59" selection-end-line="53" selection-end-column="59" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Repository/CompanyRepository.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="517">
-          <caret line="77" column="47" selection-start-line="77" selection-start-column="47" selection-end-line="77" selection-end-column="47" />
+        <state relative-caret-position="346">
+          <caret line="83" column="43" lean-forward="true" selection-start-line="83" selection-start-column="43" selection-end-line="83" selection-end-column="43" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/router.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="454">
+          <caret line="46" column="29" selection-start-line="46" selection-start-column="25" selection-end-line="46" selection-end-column="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/Model/WarehouseTest.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="568">
+          <caret line="45" column="14" lean-forward="true" selection-start-line="30" selection-start-column="12" selection-end-line="45" selection-end-column="14" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Model/Transfer.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="446">
+          <caret line="63" column="46" selection-start-line="63" selection-start-column="46" selection-end-line="63" selection-end-column="46" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Model/Item.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="614">
+          <caret line="101" column="24" selection-start-line="101" selection-start-column="24" selection-end-line="101" selection-end-column="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/Model/ItemTest.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="237">
+          <caret line="14" column="5" lean-forward="true" selection-start-line="14" selection-start-column="5" selection-end-line="19" selection-end-column="33" />
+          <folding>
+            <element signature="e#46#65#0#PHP" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/Model/TransferTest.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="234">
+          <caret line="81" column="48" selection-start-line="81" selection-start-column="48" selection-end-line="81" selection-end-column="48" />
+          <folding>
+            <element signature="e#42#61#0#PHP" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
