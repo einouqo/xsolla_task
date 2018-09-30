@@ -76,7 +76,7 @@
         {
             $admin = $this->validateUser($user);
 
-            $this->adminRepository->fillWarehouses($admin);
+            $this->warehouseRepository->fillWarehousesForAdmin($admin);
             $this->adminRepository->fillEmployees($admin);
             $this->adminRepository->fillAccesses($admin);
 
@@ -100,7 +100,7 @@
         {
             $admin = $this->validateUser($user);
 
-            $this->adminRepository->fillWarehouses($admin);
+            $this->warehouseRepository->fillWarehousesForAdmin($admin);
             $this->adminRepository->fillEmployees($admin);
             $this->adminRepository->fillAccesses($admin);
 
@@ -158,7 +158,7 @@
             $admin = $this->validateUser($user);
 
             $this->adminRepository->fillRooms($admin);
-            $this->adminRepository->fillWarehouses($admin);
+            $this->warehouseRepository->fillWarehousesForAdmin($admin);
 
             $this->createWarehouseValidation($admin, $data);
             $this->adminRepository->createWarehouse($data);
@@ -211,7 +211,7 @@
         {
             $admin = $this->validateUser($user);
 
-            $this->adminRepository->fillWarehouses($admin);
+            $this->warehouseRepository->fillWarehousesForAdmin($admin);
 
             $this->changeWarehouseValidation($admin, $warehouseID, $data);
             $this->adminRepository->changeWarehouse($admin->getWarehouseByID($warehouseID), $data);
@@ -230,7 +230,7 @@
         {
             $admin = $this->validateUser($user);
 
-            $this->adminRepository->fillWarehouses($admin);
+            $this->warehouseRepository->fillWarehousesForAdmin($admin);
 
             if (!$admin->isWarehouseExist($warehouseID)) {
                 throw new \Exception('Warehouse with this ID wasn\'t found in your organisation.', 400);
@@ -333,7 +333,7 @@
         public function getTransfersForWarehouse(EmployeeAbstract $user, int $warehouseID)
         {
             $admin = $this->validateUser($user);
-            $this->adminRepository->fillWarehouses($admin);
+            $this->warehouseRepository->fillWarehousesForAdmin($admin);
             if (is_null($admin->getWarehouseByID($warehouseID))) {
                 throw new \Exception('This warehouse wasn\'t found in your company.', 403);
             }
@@ -392,7 +392,7 @@
                 throw new \Exception('Warehouse ID value may consist digits only.', 403);
             }
 
-            $this->adminRepository->fillWarehouses($admin, true);
+            $this->warehouseRepository->fillWarehousesForAdmin($admin, true);
             $warehouseTo = $admin->getWarehouseByID($warehouseID);
             if (is_null($warehouseTo)) {
                 throw new \Exception('This warehouse wasn\'t found in your company.', 403);

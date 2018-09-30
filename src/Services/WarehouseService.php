@@ -2,6 +2,7 @@
     namespace App\Services;
 
     use App\Model\EmployeeAbstract;
+    use App\Model\EmployeeAdmin;
     use App\Repository\WarehouseRepository;
 
     class WarehouseService
@@ -19,9 +20,13 @@
         /**
          * @param EmployeeAbstract $user
          * @return array
+         * @throws \Doctrine\DBAL\DBALException
          */
         public function getList(EmployeeAbstract $user)
         {
+            $user instanceof EmployeeAdmin ?
+                $this->warehouseRepository->fillWarehousesForAdmin($user, true):
+                $this->warehouseRepository->fillWarehousesForEmployee($user);
             return $user->getWarehousesList();
         }
 

@@ -5,6 +5,7 @@
     use App\Model\EmployeeAbstract;
     use App\Model\Item;
     use App\Repository\EmployeeRepository;
+    use App\Repository\WarehouseRepository;
     use Firebase\JWT\JWT;
 
     class EmployeeService
@@ -14,9 +15,15 @@
          */
         private $employeeRepository;
 
-        public function __construct(EmployeeRepository $employeeRepository)
+        /**
+         * @var WarehouseRepository
+         */
+        private $warehouseRepository;
+
+        public function __construct(EmployeeRepository $employeeRepository, WarehouseRepository $warehouseRepository)
         {
             $this->employeeRepository = $employeeRepository;
+            $this->warehouseRepository = $warehouseRepository;
         }
 
         /**
@@ -61,7 +68,7 @@
             /** @var Employee $employee */
             $employee = $this->validateUser($user);
 
-            $this->employeeRepository->fillWarehouses($employee);
+            $this->warehouseRepository->fillWarehousesForEmployee($employee);
             if (isset($warehouseID) && !$employee->isWarehouseExist($warehouseID)) {
                 throw new \Exception('You have no access for this warehouse.', 403);
             }
@@ -85,7 +92,7 @@
             if (is_null($transfer)) {
                 throw new \Exception('Pending transfer with this id wasn\'t found.', 403);
             }
-            $this->employeeRepository->fillWarehouses($employee);
+            $this->warehouseRepository->fillWarehousesForEmployee($employee);
             $warehouse = $employee->getWarehouseByID($transfer->getWarehouseToID());
             if ($warehouse->getCapacity() - $warehouse->getLoaded() < $transfer->itemsQuantity()) {
                 throw new \Exception('There is not enough space in the warehouse.');
@@ -261,7 +268,7 @@
                 throw new \Exception('You need to set size.', 400);
             }
 
-            $this->employeeRepository->fillWarehouses($employee);
+            $this->warehouseRepository->fillWarehousesForEmployee($employee);
             $warehouse = $employee->getWarehouseByID($data['warehouseFromID']);
             if (is_null($warehouse)) {
                 throw new \Exception('You have no access for this warehouse.', 403);
@@ -386,7 +393,7 @@
             /** @var Employee $employee */
             $employee = $this->validateUser($user);
             $this->sellValidate($data);
-            $this->employeeRepository->fillWarehouses($employee);
+            $this->warehouseRepository->fillWarehousesForEmployee($employee);
             $warehouse = $employee->getWarehouseByID($data['warehouseID']);
             if (is_null($warehouse)) {
                 throw new \Exception('You have no access for this warehouse.', 403);

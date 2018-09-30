@@ -20,47 +20,6 @@
         }
 
         /**
-         * @param Warehouse $warehouse
-         * @throws \Doctrine\DBAL\DBALException
-         */
-        private function fillItems(Warehouse &$warehouse)
-        {
-            $rows = $this->dbConnection->executeQuery(
-                'SELECT id, price, name, type, quantity, size FROM items
-                    INNER JOIN quantity ON items.id = quantity.id_item AND address = ?',
-                [
-                    $warehouse->getAddress()
-                ]
-            );
-
-            while ($row = $rows->fetch(\PDO::FETCH_ASSOC)) {
-                $warehouse->addItem(new Item($row));
-            }
-        }
-
-        /**
-         * @param Employee $employee
-         * @throws \Doctrine\DBAL\DBALException
-         */
-        public function fillWarehouses(Employee &$employee)
-        {
-            $rows = $this->dbConnection->executeQuery(
-                'SELECT id, addresses.address, name, capacity FROM addresses
-                    INNER JOIN infoWarehouses ON addresses.address = infoWarehouses.address
-                    INNER JOIN userAccessible ON addresses.id = userAccessible.id_address AND id_user = ?',
-                [
-                    $employee->getID()
-                ]
-            );
-
-            while ($row = $rows->fetch(\PDO::FETCH_ASSOC)) {
-                $warehouse =new Warehouse($row);
-                $this->fillItems($warehouse);
-                $employee->addWarehouse($warehouse);
-            }
-        }
-
-        /**
          * @param Transfer $transfer
          * @throws \Doctrine\DBAL\DBALException
          */

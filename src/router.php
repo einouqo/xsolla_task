@@ -1,5 +1,11 @@
 <?php
-    require_once ('resources.php');
+    require ('resources.php');
+
+    $app->group('/company', function () use ($app) {
+        $app->get('/list', 'company.controller:getList');
+        $app->post('/create', 'company.controller:create');
+        $app->delete('/{id}/delete', 'company.controller:delete');
+    });
 
     $app->post('/registration', 'registration.controller:registration');
 

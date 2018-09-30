@@ -22,6 +22,7 @@
          * @param Response $response
          * @param array $args
          * @return Response
+         * @throws \Doctrine\DBAL\DBALException
          */
         public function getList(Request $request, Response $response, $args = [])
         {

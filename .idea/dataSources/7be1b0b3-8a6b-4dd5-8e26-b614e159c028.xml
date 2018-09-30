@@ -1004,106 +1004,120 @@
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <key id="258" parent="234" name="PRIMARY">
+    <column id="258" parent="234" name="access_key">
+      <Position>3</Position>
+      <DataType>varchar(255)|0s</DataType>
+      <NotNull>1</NotNull>
+      <ColumnKind>normal</ColumnKind>
+    </column>
+    <key id="259" parent="234" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <column id="259" parent="235" name="address">
+    <column id="260" parent="235" name="address">
       <Position>1</Position>
       <DataType>varchar(255)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="260" parent="235" name="id_item">
+    <column id="261" parent="235" name="id_item">
       <Position>2</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="261" parent="235" name="size">
+    <column id="262" parent="235" name="size">
       <Position>3</Position>
       <DataType>varchar(11)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="262" parent="235" name="quantity">
+    <column id="263" parent="235" name="quantity">
       <Position>4</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="263" parent="235" name="date">
+    <column id="264" parent="235" name="date">
       <Position>5</Position>
       <DataType>datetime|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="264" parent="235" name="id">
+    <column id="265" parent="235" name="id">
       <Position>6</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>1</SequenceIdentity>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <index id="265" parent="235" name="address">
+    <index id="266" parent="235" name="delivery_ibfk_1">
       <ColNames>address</ColNames>
       <Type>btree</Type>
     </index>
-    <index id="266" parent="235" name="id_item">
+    <index id="267" parent="235" name="delivery_ibfk_2">
       <ColNames>id_item</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="267" parent="235" name="PRIMARY">
+    <index id="268" parent="235" name="size">
+      <ColNames>size</ColNames>
+      <Type>btree</Type>
+    </index>
+    <key id="269" parent="235" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <foreign-key id="268" parent="235" name="delivery_ibfk_1">
+    <foreign-key id="270" parent="235" name="delivery_ibfk_1">
       <ColNames>address</ColNames>
       <RefSchemaName>PHP04</RefSchemaName>
       <RefTableName>infoWarehouses</RefTableName>
       <RefColNames>address</RefColNames>
+      <OnUpdate>cascade</OnUpdate>
+      <OnDelete>cascade</OnDelete>
     </foreign-key>
-    <foreign-key id="269" parent="235" name="delivery_ibfk_2">
+    <foreign-key id="271" parent="235" name="delivery_ibfk_2">
       <ColNames>id_item</ColNames>
       <RefSchemaName>PHP04</RefSchemaName>
       <RefTableName>items</RefTableName>
       <RefColNames>id</RefColNames>
+      <OnUpdate>cascade</OnUpdate>
+      <OnDelete>cascade</OnDelete>
     </foreign-key>
-    <column id="270" parent="236" name="address">
+    <column id="272" parent="236" name="address">
       <Position>1</Position>
       <DataType>varchar(255)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="271" parent="236" name="name">
+    <column id="273" parent="236" name="name">
       <Position>2</Position>
       <DataType>varchar(255)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="272" parent="236" name="capacity">
+    <column id="274" parent="236" name="capacity">
       <Position>3</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <index id="273" parent="236" name="address">
+    <index id="275" parent="236" name="address">
       <ColNames>address</ColNames>
       <Unique>1</Unique>
       <Type>btree</Type>
     </index>
-    <key id="274" parent="236" name="PRIMARY">
+    <key id="276" parent="236" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>address</ColNames>
       <Primary>1</Primary>
     </key>
-    <key id="275" parent="236" name="address">
+    <key id="277" parent="236" name="address">
       <ColNames>address</ColNames>
       <UnderlyingIndexName>address</UnderlyingIndexName>
     </key>
-    <foreign-key id="276" parent="236" name="infoWarehouses_ibfk_1">
+    <foreign-key id="278" parent="236" name="infoWarehouses_ibfk_1">
       <ColNames>address</ColNames>
       <RefSchemaName>PHP04</RefSchemaName>
       <RefTableName>addresses</RefTableName>
@@ -1111,197 +1125,201 @@
       <OnUpdate>cascade</OnUpdate>
       <OnDelete>cascade</OnDelete>
     </foreign-key>
-    <column id="277" parent="237" name="id">
+    <column id="279" parent="237" name="id">
       <Position>1</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>1</SequenceIdentity>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="278" parent="237" name="price">
+    <column id="280" parent="237" name="price">
       <Position>2</Position>
       <DataType>float|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="279" parent="237" name="name">
+    <column id="281" parent="237" name="name">
       <Position>3</Position>
       <DataType>varchar(255)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="280" parent="237" name="type">
+    <column id="282" parent="237" name="type">
       <Position>4</Position>
       <DataType>varchar(255)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <index id="281" parent="237" name="id">
+    <index id="283" parent="237" name="id">
       <ColNames>id</ColNames>
       <Unique>1</Unique>
       <Type>btree</Type>
     </index>
-    <key id="282" parent="237" name="PRIMARY">
+    <key id="284" parent="237" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <key id="283" parent="237" name="id">
+    <key id="285" parent="237" name="id">
       <ColNames>id</ColNames>
       <UnderlyingIndexName>id</UnderlyingIndexName>
     </key>
-    <column id="284" parent="238" name="id">
+    <column id="286" parent="238" name="id">
       <Position>1</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>1</SequenceIdentity>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="285" parent="238" name="name">
+    <column id="287" parent="238" name="name">
       <Position>2</Position>
       <DataType>varchar(255)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="286" parent="238" name="lastname">
+    <column id="288" parent="238" name="lastname">
       <Position>3</Position>
       <DataType>varchar(255)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="287" parent="238" name="phone">
+    <column id="289" parent="238" name="phone">
       <Position>4</Position>
       <DataType>varchar(11)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <key id="288" parent="238" name="PRIMARY">
+    <key id="290" parent="238" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <column id="289" parent="239" name="id">
+    <column id="291" parent="239" name="id">
       <Position>1</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>1</SequenceIdentity>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="290" parent="239" name="name">
+    <column id="292" parent="239" name="name">
       <Position>2</Position>
       <DataType>varchar(255)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <key id="291" parent="239" name="PRIMARY">
+    <key id="293" parent="239" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <column id="292" parent="240" name="address">
+    <column id="294" parent="240" name="address">
       <Position>1</Position>
       <DataType>varchar(255)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="293" parent="240" name="id_item">
+    <column id="295" parent="240" name="id_item">
       <Position>2</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="294" parent="240" name="size">
+    <column id="296" parent="240" name="size">
       <Position>3</Position>
       <DataType>varchar(11)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="295" parent="240" name="quantity">
+    <column id="297" parent="240" name="quantity">
       <Position>4</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <index id="296" parent="240" name="id_item">
+    <index id="298" parent="240" name="quantity_ibfk_2">
       <ColNames>id_item</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="297" parent="240" name="PRIMARY">
+    <key id="299" parent="240" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>address
 id_item
 size</ColNames>
       <Primary>1</Primary>
     </key>
-    <foreign-key id="298" parent="240" name="quantity_ibfk_1">
+    <foreign-key id="300" parent="240" name="quantity_ibfk_1">
       <ColNames>address</ColNames>
       <RefSchemaName>PHP04</RefSchemaName>
       <RefTableName>infoWarehouses</RefTableName>
       <RefColNames>address</RefColNames>
+      <OnUpdate>cascade</OnUpdate>
+      <OnDelete>cascade</OnDelete>
     </foreign-key>
-    <foreign-key id="299" parent="240" name="quantity_ibfk_2">
+    <foreign-key id="301" parent="240" name="quantity_ibfk_2">
       <ColNames>id_item</ColNames>
       <RefSchemaName>PHP04</RefSchemaName>
       <RefTableName>items</RefTableName>
       <RefColNames>id</RefColNames>
+      <OnUpdate>cascade</OnUpdate>
+      <OnDelete>cascade</OnDelete>
     </foreign-key>
-    <column id="300" parent="241" name="id">
+    <column id="302" parent="241" name="id">
       <Position>1</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>1</SequenceIdentity>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="301" parent="241" name="id_address">
+    <column id="303" parent="241" name="id_address">
       <Position>2</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="302" parent="241" name="id_item">
+    <column id="304" parent="241" name="id_item">
       <Position>3</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="303" parent="241" name="size">
+    <column id="305" parent="241" name="size">
       <Position>4</Position>
       <DataType>varchar(11)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="304" parent="241" name="quantity">
+    <column id="306" parent="241" name="quantity">
       <Position>5</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="305" parent="241" name="unit_price">
+    <column id="307" parent="241" name="unit_price">
       <Position>6</Position>
       <DataType>float|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="306" parent="241" name="date">
+    <column id="308" parent="241" name="date">
       <Position>7</Position>
       <DataType>datetime|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <index id="307" parent="241" name="selling_ibfk_2">
+    <index id="309" parent="241" name="selling_ibfk_2">
       <ColNames>id_address</ColNames>
       <Type>btree</Type>
     </index>
-    <index id="308" parent="241" name="id_item">
+    <index id="310" parent="241" name="id_item">
       <ColNames>id_item</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="309" parent="241" name="PRIMARY">
+    <key id="311" parent="241" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <foreign-key id="310" parent="241" name="selling_ibfk_2">
+    <foreign-key id="312" parent="241" name="selling_ibfk_2">
       <ColNames>id_address</ColNames>
       <RefSchemaName>PHP04</RefSchemaName>
       <RefTableName>addresses</RefTableName>
@@ -1309,48 +1327,48 @@ size</ColNames>
       <OnUpdate>cascade</OnUpdate>
       <OnDelete>cascade</OnDelete>
     </foreign-key>
-    <foreign-key id="311" parent="241" name="selling_ibfk_3">
+    <foreign-key id="313" parent="241" name="selling_ibfk_3">
       <ColNames>id_item</ColNames>
       <RefSchemaName>PHP04</RefSchemaName>
       <RefTableName>items</RefTableName>
       <RefColNames>id</RefColNames>
     </foreign-key>
-    <column id="312" parent="242" name="id_history">
+    <column id="314" parent="242" name="id_history">
       <Position>1</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="313" parent="242" name="id_item">
+    <column id="315" parent="242" name="id_item">
       <Position>2</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="314" parent="242" name="quantity">
+    <column id="316" parent="242" name="quantity">
       <Position>3</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="315" parent="242" name="size">
+    <column id="317" parent="242" name="size">
       <Position>4</Position>
       <DataType>varchar(11)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <index id="316" parent="242" name="transfer_ibfk_1">
+    <index id="318" parent="242" name="transfer_ibfk_1">
       <ColNames>id_item</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="317" parent="242" name="PRIMARY">
+    <key id="319" parent="242" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id_history
 id_item
 size</ColNames>
       <Primary>1</Primary>
     </key>
-    <foreign-key id="318" parent="242" name="transfer_ibfk_2">
+    <foreign-key id="320" parent="242" name="transfer_ibfk_2">
       <ColNames>id_history</ColNames>
       <RefSchemaName>PHP04</RefSchemaName>
       <RefTableName>transferHistory</RefTableName>
@@ -1358,7 +1376,7 @@ size</ColNames>
       <OnUpdate>cascade</OnUpdate>
       <OnDelete>cascade</OnDelete>
     </foreign-key>
-    <foreign-key id="319" parent="242" name="transfer_ibfk_1">
+    <foreign-key id="321" parent="242" name="transfer_ibfk_1">
       <ColNames>id_item</ColNames>
       <RefSchemaName>PHP04</RefSchemaName>
       <RefTableName>items</RefTableName>
@@ -1366,50 +1384,50 @@ size</ColNames>
       <OnUpdate>cascade</OnUpdate>
       <OnDelete>cascade</OnDelete>
     </foreign-key>
-    <column id="320" parent="243" name="id">
+    <column id="322" parent="243" name="id">
       <Position>1</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>1</SequenceIdentity>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="321" parent="243" name="date_departure">
+    <column id="323" parent="243" name="date_departure">
       <Position>2</Position>
       <DataType>datetime|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="322" parent="243" name="date_receiving">
+    <column id="324" parent="243" name="date_receiving">
       <Position>3</Position>
       <DataType>datetime|0s</DataType>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="323" parent="243" name="id_from">
+    <column id="325" parent="243" name="id_from">
       <Position>4</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="324" parent="243" name="id_to">
+    <column id="326" parent="243" name="id_to">
       <Position>5</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <index id="325" parent="243" name="transferHistory_ibfk_1">
+    <index id="327" parent="243" name="transferHistory_ibfk_1">
       <ColNames>id_from</ColNames>
       <Type>btree</Type>
     </index>
-    <index id="326" parent="243" name="transferHistory_ibfk_2">
+    <index id="328" parent="243" name="transferHistory_ibfk_2">
       <ColNames>id_to</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="327" parent="243" name="PRIMARY">
+    <key id="329" parent="243" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <foreign-key id="328" parent="243" name="transferHistory_ibfk_1">
+    <foreign-key id="330" parent="243" name="transferHistory_ibfk_1">
       <ColNames>id_from</ColNames>
       <RefSchemaName>PHP04</RefSchemaName>
       <RefTableName>addresses</RefTableName>
@@ -1417,7 +1435,7 @@ size</ColNames>
       <OnUpdate>cascade</OnUpdate>
       <OnDelete>cascade</OnDelete>
     </foreign-key>
-    <foreign-key id="329" parent="243" name="transferHistory_ibfk_2">
+    <foreign-key id="331" parent="243" name="transferHistory_ibfk_2">
       <ColNames>id_to</ColNames>
       <RefSchemaName>PHP04</RefSchemaName>
       <RefTableName>addresses</RefTableName>
@@ -1425,39 +1443,39 @@ size</ColNames>
       <OnUpdate>cascade</OnUpdate>
       <OnDelete>cascade</OnDelete>
     </foreign-key>
-    <column id="330" parent="244" name="id_company">
+    <column id="332" parent="244" name="id_company">
       <Position>1</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="331" parent="244" name="id_address">
+    <column id="333" parent="244" name="id_address">
       <Position>2</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="332" parent="244" name="id_user">
+    <column id="334" parent="244" name="id_user">
       <Position>3</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <index id="333" parent="244" name="userAccessible_ibfk_1">
+    <index id="335" parent="244" name="userAccessible_ibfk_1">
       <ColNames>id_company</ColNames>
       <Type>btree</Type>
     </index>
-    <index id="334" parent="244" name="userAccessible_ibfk_3">
+    <index id="336" parent="244" name="userAccessible_ibfk_3">
       <ColNames>id_user</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="335" parent="244" name="PRIMARY">
+    <key id="337" parent="244" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id_address
 id_user</ColNames>
       <Primary>1</Primary>
     </key>
-    <foreign-key id="336" parent="244" name="userAccessible_ibfk_1">
+    <foreign-key id="338" parent="244" name="userAccessible_ibfk_1">
       <ColNames>id_company</ColNames>
       <RefSchemaName>PHP04</RefSchemaName>
       <RefTableName>company</RefTableName>
@@ -1465,7 +1483,7 @@ id_user</ColNames>
       <OnUpdate>cascade</OnUpdate>
       <OnDelete>cascade</OnDelete>
     </foreign-key>
-    <foreign-key id="337" parent="244" name="userAccessible_ibfk_2">
+    <foreign-key id="339" parent="244" name="userAccessible_ibfk_2">
       <ColNames>id_address</ColNames>
       <RefSchemaName>PHP04</RefSchemaName>
       <RefTableName>addresses</RefTableName>
@@ -1473,7 +1491,7 @@ id_user</ColNames>
       <OnUpdate>cascade</OnUpdate>
       <OnDelete>cascade</OnDelete>
     </foreign-key>
-    <foreign-key id="338" parent="244" name="userAccessible_ibfk_3">
+    <foreign-key id="340" parent="244" name="userAccessible_ibfk_3">
       <ColNames>id_user</ColNames>
       <RefSchemaName>PHP04</RefSchemaName>
       <RefTableName>users</RefTableName>
@@ -1481,76 +1499,76 @@ id_user</ColNames>
       <OnUpdate>cascade</OnUpdate>
       <OnDelete>cascade</OnDelete>
     </foreign-key>
-    <column id="339" parent="245" name="id">
+    <column id="341" parent="245" name="id">
       <Position>1</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>1</SequenceIdentity>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="340" parent="245" name="email">
+    <column id="342" parent="245" name="email">
       <Position>2</Position>
       <DataType>varchar(255)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="341" parent="245" name="password">
+    <column id="343" parent="245" name="password">
       <Position>3</Position>
       <DataType>varchar(255)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="342" parent="245" name="id_company">
+    <column id="344" parent="245" name="id_company">
       <Position>4</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="343" parent="245" name="id_personalData">
+    <column id="345" parent="245" name="id_personalData">
       <Position>5</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="344" parent="245" name="position">
+    <column id="346" parent="245" name="position">
       <Position>6</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="345" parent="245" name="salt">
+    <column id="347" parent="245" name="salt">
       <Position>7</Position>
       <DataType>varchar(255)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <index id="346" parent="245" name="email">
+    <index id="348" parent="245" name="email">
       <ColNames>email</ColNames>
       <Unique>1</Unique>
       <Type>btree</Type>
     </index>
-    <index id="347" parent="245" name="users_ibfk_1">
+    <index id="349" parent="245" name="users_ibfk_1">
       <ColNames>id_company</ColNames>
       <Type>btree</Type>
     </index>
-    <index id="348" parent="245" name="users_ibfk_2">
+    <index id="350" parent="245" name="users_ibfk_2">
       <ColNames>id_personalData</ColNames>
       <Type>btree</Type>
     </index>
-    <index id="349" parent="245" name="users_ibfk_3">
+    <index id="351" parent="245" name="users_ibfk_3">
       <ColNames>position</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="350" parent="245" name="PRIMARY">
+    <key id="352" parent="245" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <key id="351" parent="245" name="email">
+    <key id="353" parent="245" name="email">
       <ColNames>email</ColNames>
       <UnderlyingIndexName>email</UnderlyingIndexName>
     </key>
-    <foreign-key id="352" parent="245" name="users_ibfk_1">
+    <foreign-key id="354" parent="245" name="users_ibfk_1">
       <ColNames>id_company</ColNames>
       <RefSchemaName>PHP04</RefSchemaName>
       <RefTableName>company</RefTableName>
@@ -1558,7 +1576,7 @@ id_user</ColNames>
       <OnUpdate>cascade</OnUpdate>
       <OnDelete>cascade</OnDelete>
     </foreign-key>
-    <foreign-key id="353" parent="245" name="users_ibfk_2">
+    <foreign-key id="355" parent="245" name="users_ibfk_2">
       <ColNames>id_personalData</ColNames>
       <RefSchemaName>PHP04</RefSchemaName>
       <RefTableName>personalInfo</RefTableName>
@@ -1566,7 +1584,7 @@ id_user</ColNames>
       <OnUpdate>cascade</OnUpdate>
       <OnDelete>cascade</OnDelete>
     </foreign-key>
-    <foreign-key id="354" parent="245" name="users_ibfk_3">
+    <foreign-key id="356" parent="245" name="users_ibfk_3">
       <ColNames>position</ColNames>
       <RefSchemaName>PHP04</RefSchemaName>
       <RefTableName>positions</RefTableName>

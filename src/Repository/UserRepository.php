@@ -322,7 +322,7 @@
                 ]
             );
 
-            if (password_verify($data['password'].$passData['salt'], $passData['password'])) {
+            if (key_exists('password', $data) && password_verify($data['password'].$passData['salt'], $passData['password'])) {
                 throw new \Exception('Password value cannot be same as the old one.', 403);
             }
 

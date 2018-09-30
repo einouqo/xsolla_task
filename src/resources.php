@@ -21,6 +21,11 @@
         return new \App\Middleware($c->get('user.repository'), $secret);
     };
 
+    $container['company.repository'] = function ($c) {
+        /** @var ContainerInterface $c */
+        return new \App\Repository\CompanyRepository($c->get('db'));
+    };
+
     $container['user.repository'] = function ($c) {
         /** @var ContainerInterface $c */
         return new \App\Repository\UserRepository($c->get('db'));
@@ -41,6 +46,11 @@
         return new \App\Repository\EmployeeRepository($c->get('db'));
     };
 
+    $container['company.service'] = function ($c) {
+        /** @var ContainerInterface $c */
+        return new \App\Services\CompanyService($c->get('company.repository'));
+    };
+
     $container['user.service'] = function ($c) {
         /** @var ContainerInterface $c */
         return new \App\Services\UserService($c->get('user.repository'));
@@ -58,7 +68,12 @@
 
     $container['employee.service'] = function ($c) {
         /** @var ContainerInterface $c */
-        return new \App\Services\EmployeeService($c->get('employee.repository'));
+        return new \App\Services\EmployeeService($c->get('employee.repository'), $c->get('warehouse.repository'));
+    };
+
+    $container['company.controller'] = function ($c) {
+        /** @var ContainerInterface $c */
+        return new \App\Controller\CompanyController($c->get('company.service'));
     };
 
     $container['registration.controller'] = function ($c) {

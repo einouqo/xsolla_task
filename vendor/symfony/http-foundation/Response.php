@@ -351,7 +351,7 @@ class Response
     }
 
     /**
-     * Sends content for the current public response.
+     * Sends content for the current web response.
      *
      * @return $this
      */
@@ -481,7 +481,7 @@ class Response
     }
 
     /**
-     * Retrieves the status code for the current public response.
+     * Retrieves the status code for the current web response.
      *
      * @return int Status code
      *
