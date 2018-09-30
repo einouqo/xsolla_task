@@ -54,6 +54,25 @@
             return 'This is your private key for deleting company data. Do not lose it: '.$key;
         }
 
+        private function deletePersonalInfo(array $personalInfo)
+        {
+            foreach ($personalInfo as $info) {
+                if ($this->dbConnection->fetchAssoc(
+                    'SELECT COUNT(*) AS count FROM users WHERE id_personalData = ?',
+                    [
+                        $info['id']
+                    ]
+                )['count'] == 0) {
+                    $this->dbConnection->executeQuery(
+                        'DELETE FROM personalInfo WHERE id = ?',
+                        [
+                            $info['id']
+                        ]
+                    );
+                }
+            }
+        }
+
         /**
          * @param array $data
          * @throws \Exception
@@ -77,12 +96,22 @@
                 throw new \Exception('Your key is incorrect. Access to delete action is prohibited.', 403);
             }
 
+            $personalInfo = $this->dbConnection->fetchAssoc(
+                'SELECT personalInfo.id AS id FROM personalInfo
+                  INNER JOIN users on personalInfo.id = users.id_personalData AND id_company = ?',
+                [
+                    $data['companyID']
+                ]
+            );
+
             $this->dbConnection->executeQuery(
                 'DELETE FROM company WHERE id = ?',
                 [
                     $data['companyID']
                 ]
             );
+
+            $this->deletePersonalInfo($personalInfo);
 
             return 'Company was deleted successfully.';
         }
