@@ -2,6 +2,7 @@
     namespace App\Repository;
 
     use Doctrine\DBAL\Connection;
+    use Doctrine\DBAL\Driver\ResultStatement;
 
     class CompanyRepository
     {
@@ -42,7 +43,7 @@
          */
         public function create(string $name)
         {
-            $key = md5($name.(require __DIR__.'/../settings.php')['jwt']['secret']);
+            $key = md5($name.(require __DIR__.'/../settings.php')['jwt']['secret'].rand(1, 100));
 
             $this->dbConnection->executeQuery(
                 'INSERT INTO company(name, access_key) VALUES (?, ?)',
@@ -54,19 +55,46 @@
             return 'This is your private key for deleting company data. Do not lose it: '.$key;
         }
 
-        private function deletePersonalInfo(array $personalInfo)
+        /**
+         * @param int $companyID
+         * @throws \Doctrine\DBAL\DBALException
+         */
+        private function deleteSelling(int $companyID)
         {
-            foreach ($personalInfo as $info) {
+            $this->dbConnection->executeQuery(
+                'DELETE FROM selling WHERE id_address in (
+                  SELECT id FROM addresses WHERE id_company = ?)',
+                [
+                    $companyID
+                ]
+            );
+        }
+
+        /**
+         * @param int $companyID
+         * @throws \Doctrine\DBAL\DBALException
+         */
+        private function deletePersonalInfo(int $companyID)
+        {
+            $rows = $this->dbConnection->executeQuery(
+                'SELECT personalInfo.id AS id FROM personalInfo
+                  INNER JOIN users on personalInfo.id = users.id_personalData AND id_company = ?',
+                [
+                    $companyID
+                ]
+            );
+
+            while($row = $rows->fetch(\PDO::FETCH_ASSOC)) {
                 if ($this->dbConnection->fetchAssoc(
                     'SELECT COUNT(*) AS count FROM users WHERE id_personalData = ?',
                     [
-                        $info['id']
+                        $row['id']
                     ]
-                )['count'] == 0) {
+                )['count'] == 1) {
                     $this->dbConnection->executeQuery(
                         'DELETE FROM personalInfo WHERE id = ?',
                         [
-                            $info['id']
+                            $row['id']
                         ]
                     );
                 }
@@ -96,13 +124,8 @@
                 throw new \Exception('Your key is incorrect. Access to delete action is prohibited.', 403);
             }
 
-            $personalInfo = $this->dbConnection->fetchAssoc(
-                'SELECT personalInfo.id AS id FROM personalInfo
-                  INNER JOIN users on personalInfo.id = users.id_personalData AND id_company = ?',
-                [
-                    $data['companyID']
-                ]
-            );
+            $this->deleteSelling($data['companyID']);
+            $this->deletePersonalInfo($data['companyID']);
 
             $this->dbConnection->executeQuery(
                 'DELETE FROM company WHERE id = ?',
@@ -110,8 +133,6 @@
                     $data['companyID']
                 ]
             );
-
-            $this->deletePersonalInfo($personalInfo);
 
             return 'Company was deleted successfully.';
         }

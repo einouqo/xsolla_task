@@ -83,7 +83,7 @@
             );
 
             if (is_null($companyID['id'])) {
-                throw new \Exception('There is no company with that name.', 409);
+                throw new \Exception('There is no company with that ID.', 409);
             }
         }
 
