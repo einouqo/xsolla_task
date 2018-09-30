@@ -95,7 +95,7 @@
             $this->warehouseRepository->fillWarehousesForEmployee($employee);
             $warehouse = $employee->getWarehouseByID($transfer->getWarehouseToID());
             if ($warehouse->getCapacity() - $warehouse->getLoaded() < $transfer->itemsQuantity()) {
-                throw new \Exception('There is not enough space in the warehouse.');
+                throw new \Exception('There is not enough space in the warehouse.', 403);
             }
 
             $items = $transfer->getItems();

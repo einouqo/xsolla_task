@@ -45,8 +45,11 @@
         {
             $date = $request->getQueryParam('date');
             $onDate = isset($date) ?
-                new \DateTime($date) :
+                \DateTime::createFromFormat('Y-m-d H:i:s', $date.''.($request->getQueryParam('time') ?? '00:00:00')) :
                 null;
+            if (gettype($onDate) == 'boolean') {
+                throw new \Exception('Date format are wrong. Date should be like: "year-month-day" [optional: time "hours:minutes:seconds"]', 403);
+            }
             return $response->withStatus(200)->withJson(
                 $this->warehouseService->getOne(
                     $request->getAttribute('user'),

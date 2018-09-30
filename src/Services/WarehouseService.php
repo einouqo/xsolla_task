@@ -19,14 +19,23 @@
 
         /**
          * @param EmployeeAbstract $user
+         * @throws \Doctrine\DBAL\DBALException
+         */
+        private function fillWarehouses(EmployeeAbstract &$user)
+        {
+            $user instanceof EmployeeAdmin ?
+                $this->warehouseRepository->fillWarehousesWithItems($user, true):
+                $this->warehouseRepository->fillWarehousesForEmployee($user);
+        }
+
+        /**
+         * @param EmployeeAbstract $user
          * @return array
          * @throws \Doctrine\DBAL\DBALException
          */
         public function getList(EmployeeAbstract $user)
         {
-            $user instanceof EmployeeAdmin ?
-                $this->warehouseRepository->fillWarehousesForAdmin($user, true):
-                $this->warehouseRepository->fillWarehousesForEmployee($user);
+            $this->fillWarehouses($user);
             return $user->getWarehousesList();
         }
 
@@ -73,9 +82,15 @@
          */
         public function getOne(EmployeeAbstract $user, int $warehouseID, \DateTime $date = null)
         {
+            print_r($date);
+            $this->fillWarehouses($user);
             $warehouse = $user->getWarehouseByID($warehouseID);
             if (is_null($warehouse)) {
-                throw new \Exception('This warehouse wasn\'t found in your organisation.', 400);
+                if ($user instanceof EmployeeAdmin) {
+                    throw new \Exception('This warehouse wasn\'t found in your organisation.', 400);
+                } else {
+                    throw new \Exception('You don\'t have access to this warehouse.', 400);
+                }
             }
 
             return is_null($date) ?
