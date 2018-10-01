@@ -237,6 +237,13 @@
             }
 
             $this->dbConnection->executeQuery(
+                'DELETE FROM selling WHERE id_address = ?',
+                [
+                    $roomID
+                ]
+            );
+
+            $this->dbConnection->executeQuery(
                 'DELETE FROM addresses WHERE id = ?',
                 [
                     $roomID
