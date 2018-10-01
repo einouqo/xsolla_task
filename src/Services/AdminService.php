@@ -178,8 +178,12 @@
                 throw new \Exception('Warehouse with this ID wasn\'t found in your organisation.', 400);
             }
 
-            if (isset($data['capacity']) && !is_numeric($data['capacity'])) {
-                throw new \Exception('Capacity value may consist digits only', 403);
+            if (isset($data['capacity'])) {
+                if (!is_numeric($data['capacity'])) {
+                    throw new \Exception('Capacity value may consist digits only and must be positive', 403);
+                } elseif ($data['capacity'] < 1) {
+                    throw new \Exception('Capacity value can be positive only.', 403);
+                }
             }
 
             $warehouse = $admin->getWarehouseByID($warehouseID);
@@ -354,8 +358,16 @@
                     throw new \Exception('Field '.$field.' cannot be empty.', 403);
                 }
             }
+            if (!is_numeric($data['quantity'])) {
+                throw new \Exception('Quantity should be numeric.', 403);
+            } elseif ($data['quantity'] <= 0) {
+                throw new \Exception('Quantity should be positive.', 403);
+            }
+
             if (!is_numeric($data['price'])) {
                 throw new \Exception('Price should be numeric.', 403);
+            } elseif ($data['price'] <= 0) {
+                throw new \Exception('Price should be positive.', 403);
             }
         }
 
@@ -413,6 +425,18 @@
                 (is_null($data['name']) || $data['name'] == '') &&
                 (is_null($data['type']) || $data['type'] == '')) {
                 throw new \Exception('Nothing to change.', 400);
+            }
+
+            if (!is_numeric($data['price'])) {
+                throw new \Exception('Price should be numeric.', 403);
+            } elseif ($data['price'] <= 0) {
+                throw new \Exception('Price should be positive.', 403);
+            }
+
+            foreach ($data as $key => $value) {
+                if (isset($value) && $value == '') {
+                    throw new \Exception('Field '.$key.' cannot be empty.', 403);
+                }
             }
 
             $this->adminRepository->changeItem($itemID, $data);

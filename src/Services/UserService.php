@@ -18,16 +18,53 @@
         }
 
         /**
+         * @param $email
+         * @throws \Exception
+         */
+        private function emailValidation($email)
+        {
+            if (is_null($email) || $email == '') {
+                throw new \Exception('Email cannot be empty.', 403);
+            } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                throw new \Exception('Email are incorrect.', 403);
+            }
+        }
+
+        /**
+         * @param $phone
+         * @throws \Exception
+         */
+        private function phoneValidation($phone)
+        {
+            if (is_null($phone) || $phone == '') {
+                throw new \Exception('Phone cannot be empty.', 403);
+            } elseif (!is_numeric($phone)) {
+                throw new \Exception('Phone may consist digits only.', 403);
+            } elseif (strlen($phone) > 11) {
+                throw new \Exception('Phone cannot be more than 11 digits.', 403);
+            }
+        }
+
+        /**
+         * @param $name
+         * @throws \Exception
+         */
+        private function nameValidation($name)
+        {
+            if (is_null($name) || $name == '') {
+                throw new \Exception('Name and Last name cannot be empty.', 403);
+            } elseif (!ctype_alpha($name)) {
+                throw new \Exception('Name and Last name may consist letters only.', 403);
+            }
+        }
+
+        /**
          * @param array $data
          * @throws \Exception
          */
         private function baseValidation(array $data)
         {
-            if (is_null($data['email']) || $data['email'] == '') {
-                throw new \Exception('Email cannot be empty.', 403);
-            } elseif (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
-                throw new \Exception('Email are incorrect.', 403);
-            }
+            $this->emailValidation($data['email']);
 
             if (is_null($data['password']) || $data['password'] == '') {
                 throw new \Exception('Password cannot be empty.', 403);
@@ -42,17 +79,8 @@
          */
         private function fullValidation(array $data, $exceptID = '')
         {
-            if (is_null($data['name']) || $data['name'] == '') {
-                throw new \Exception('Name cannot be empty.', 403);
-            } elseif (!ctype_alpha($data['name'])) {
-                throw new \Exception('Name may consist letters only.', 403);
-            }
-
-            if (is_null($data['lastname']) || $data['lastname'] == '') {
-                throw new \Exception('Last name cannot be empty.', 403);
-            } elseif (!ctype_alpha($data['lastname'])) {
-                throw new \Exception('Last name may consist letters only.', 403);
-            }
+            $this->nameValidation($data['name']);
+            $this->nameValidation($data['lastname']);
 
             if (is_null($data['companyID']) || $data['companyID'] == '') {
                 throw new \Exception('Company ID cannot be empty.', 403);
@@ -60,13 +88,7 @@
                 throw new \Exception('Company ID may consist digits only.', 403);
             }
 
-            if (is_null($data['phone']) || $data['phone'] == '') {
-                throw new \Exception('Phone cannot be empty.', 403);
-            } elseif (!is_numeric($data['phone'])) {
-                throw new \Exception('Phone may consist digits only.', 403);
-            } elseif (strlen($data['phone']) > 11) {
-                throw new \Exception('Phone cannot be more than 11 digits.', 403);
-            }
+            $this->phoneValidation($data['phone']);
 
             if (is_null($data['position']) || $data['position'] == '') {
                 throw new \Exception('Position cannot be empty. (0 - regular Employee, 1 - admin)', 403);
@@ -242,15 +264,12 @@
         }
 
         /**
-         * @param EmployeeAbstract $user
          * @param array $data
-         * @return string
+         * @return array
          * @throws \Exception
-         * @throws \Doctrine\DBAL\DBALException
          */
-        public function change(EmployeeAbstract $user, array $data)
-        {
-            $changeableData = array();
+        private function changeValidation(array $data){
+            $changeableData = [];
             foreach ($data as $field => $value) {
                 if (!is_null($value) && $value != '') {
                     $changeableData[$field] = $value;
@@ -261,6 +280,35 @@
                 throw new \Exception('Nothing to change.', 400);
             }
 
+            if (isset($changeableData['email'])) {
+                $this->emailValidation($changeableData['email']);
+            }
+
+            if (isset($changeableData['phone'])) {
+                $this->phoneValidation($changeableData['phone']);
+            }
+
+            if (isset($changeableData['name'])) {
+                $this->nameValidation($changeableData['name']);
+            }
+
+            if (isset($changeableData['lastname'])) {
+                $this->nameValidation($changeableData['lastname']);
+            }
+
+            return $changeableData;
+        }
+
+        /**
+         * @param EmployeeAbstract $user
+         * @param array $data
+         * @return string
+         * @throws \Exception
+         * @throws \Doctrine\DBAL\DBALException
+         */
+        public function change(EmployeeAbstract $user, array $data)
+        {
+            $changeableData = $this->changeValidation($data);
             $this->isChangeable(
                 $user->getPersonalInfo() + [
                     'id' => $user->getID(),
