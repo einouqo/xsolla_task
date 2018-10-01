@@ -79,7 +79,7 @@
          * @throws \Exception
          * @throws \Doctrine\DBAL\DBALException
          */
-        public function getOne(EmployeeAbstract $user, int $warehouseID, \DateTime $date = null)
+        public function getOne(EmployeeAbstract $user, $warehouseID, \DateTime $date = null)
         {
             $this->fillWarehouses($user);
             $warehouse = $user->getWarehouseByID($warehouseID);

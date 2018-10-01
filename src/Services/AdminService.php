@@ -172,7 +172,7 @@
          * @param array $data
          * @throws \Exception
          */
-        private function changeWarehouseValidation(EmployeeAdmin $admin, int $warehouseID, array $data)
+        private function changeWarehouseValidation(EmployeeAdmin $admin, $warehouseID, array $data)
         {
             if (!$admin->isWarehouseExist($warehouseID)) {
                 throw new \Exception('Warehouse with this ID wasn\'t found in your organisation.', 400);
@@ -207,7 +207,7 @@
          * @throws \Exception
          * @throws \Doctrine\DBAL\DBALException
          */
-        public function changeWarehouse(EmployeeAbstract $user, int $warehouseID, array $data)
+        public function changeWarehouse(EmployeeAbstract $user, $warehouseID, array $data)
         {
             $admin = $this->validateUser($user);
 
@@ -226,7 +226,7 @@
          * @throws \Exception
          * @throws \Doctrine\DBAL\DBALException
          */
-        public function deleteWarehouse(EmployeeAbstract $user, int $warehouseID)
+        public function deleteWarehouse(EmployeeAbstract $user, $warehouseID)
         {
             $admin = $this->validateUser($user);
 
@@ -275,21 +275,6 @@
         }
 
         /**
-         * @param EmployeeAdmin $admin
-         * @param $roomID
-         * @throws \Exception
-         */
-        private function deleteRoomValidation(EmployeeAdmin $admin, $roomID)
-        {
-            if (!is_numeric($roomID)) {
-                throw new \Exception('Room ID are wrong.', 403);
-            }
-            if (!$admin->isRoomExist($roomID)) {
-                throw new \Exception('This room wasn\'t found in your company.', 403);
-            }
-        }
-
-        /**
          * @param EmployeeAbstract $user
          * @param $roomID
          * @return string
@@ -302,7 +287,9 @@
 
             $this->adminRepository->fillRooms($admin);
 
-            $this->deleteRoomValidation($admin, $roomID);
+            if (!$admin->isRoomExist($roomID)) {
+                throw new \Exception('This room wasn\'t found in your company.', 403);
+            }
             $this->adminRepository->deleteRoom($roomID);
 
             return 'Room was successfully deleted.';
@@ -330,7 +317,7 @@
          * @throws \Exception
          * @throws \Doctrine\DBAL\DBALException
          */
-        public function getTransfersForWarehouse(EmployeeAbstract $user, int $warehouseID)
+        public function getTransfersForWarehouse(EmployeeAbstract $user, $warehouseID)
         {
             $admin = $this->validateUser($user);
             $this->warehouseRepository->fillWarehousesForAdmin($admin);
@@ -349,7 +336,7 @@
          * @throws \Exception
          * @throws \Doctrine\DBAL\DBALException
          */
-        public function getTransfersForItem(EmployeeAbstract $user, int $itemID)
+        public function getTransfersForItem(EmployeeAbstract $user, $itemID)
         {
             $admin = $this->validateUser($user);
             $this->adminRepository->fillTransfers($admin);
@@ -457,7 +444,7 @@
          * @throws \Exception
          * @throws \Doctrine\DBAL\DBALException
          */
-        public function itemState(EmployeeAbstract $user, int $id, \DateTime $onDate = null)
+        public function itemState(EmployeeAbstract $user, $id, \DateTime $onDate = null)
         {
             $admin = $this->validateUser($user);
 

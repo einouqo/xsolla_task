@@ -56,12 +56,16 @@
 
             if (is_null($data['companyID']) || $data['companyID'] == '') {
                 throw new \Exception('Company ID cannot be empty.', 403);
+            } elseif (!is_numeric($data['companyID'])) {
+                throw new \Exception('Company ID may consist digits only.', 403);
             }
 
             if (is_null($data['phone']) || $data['phone'] == '') {
                 throw new \Exception('Phone cannot be empty.', 403);
             } elseif (!is_numeric($data['phone'])) {
                 throw new \Exception('Phone may consist digits only.', 403);
+            } elseif (strlen($data['phone']) > 11) {
+                throw new \Exception('Phone cannot be more than 11 digits.', 403);
             }
 
             if (is_null($data['position']) || $data['position'] == '') {

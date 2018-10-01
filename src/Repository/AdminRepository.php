@@ -426,7 +426,7 @@
          * @throws \Exception
          * @throws \Doctrine\DBAL\DBALException
          */
-        public function changeItem(int $itemID, array $data)
+        public function changeItem($itemID, array $data)
         {
             $itemOld = $this->dbConnection->fetchAssoc(
                 'SELECT price, name, type FROM items WHERE id = ?',
@@ -461,7 +461,7 @@
          * @param int $companyID
          * @return array
          */
-        public function getItems(int $itemID, int $companyID)
+        public function getItems($itemID, int $companyID)
         {
             return $this->dbConnection->fetchAll(
                 'SELECT addresses.id AS id, quantity.address AS address, items.name, size, quantity, price FROM quantity

@@ -72,11 +72,11 @@
         }
 
         /**
-         * @param int $itemID
+         * @param $itemID
          * @param null $size
          * @return array|null
          */
-        public function getItemByID(int $itemID, $size = null)
+        public function getItemByID($itemID, $size = null)
         {
             $result = [];
             foreach ($this->items as $item) {

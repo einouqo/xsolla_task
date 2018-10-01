@@ -159,7 +159,7 @@
          * @param int $warehouseID
          * @return bool
          */
-        public function isWarehouseExist(int $warehouseID)
+        public function isWarehouseExist($warehouseID)
         {
             foreach ($this->warehouses as $warehouse) {
                 if ($warehouse->getID() == $warehouseID) {
@@ -182,10 +182,10 @@
         }
 
         /**
-         * @param int $id
+         * @param $id
          * @return Warehouse|mixed|null
          */
-        public function getWarehouseByID(int $id)
+        public function getWarehouseByID($id)
         {
             foreach ($this->warehouses as $warehouse) {
                 if ($warehouse->getID() == $id) {
@@ -208,7 +208,7 @@
         }
 
         /**
-         * @param int $id
+         * @param $id
          * @return Transfer|mixed|null
          */
         public function getTransferByID(int $id)

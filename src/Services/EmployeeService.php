@@ -259,7 +259,7 @@
          * @throws \Exception
          * @throws \Doctrine\DBAL\DBALException
          */
-        public function addToTransfer(EmployeeAbstract $user, int $itemID, array $data)
+        public function addToTransfer(EmployeeAbstract $user, $itemID, array $data)
         {
             /** @var Employee $employee */
             $employee = $this->validateUser($user);
@@ -388,7 +388,7 @@
          * @throws \Exception
          * @throws \Doctrine\DBAL\DBALException
          */
-        public function sellItem(EmployeeAbstract $user, int $itemID, array $data)
+        public function sellItem(EmployeeAbstract $user, $itemID, array $data)
         {
             /** @var Employee $employee */
             $employee = $this->validateUser($user);

@@ -69,11 +69,11 @@
         }
 
         /**
-         * @param string $companyID
+         * @param int $companyID
          * @throws \Exception
          * @throws \Doctrine\DBAL\DBALException
          */
-        public function isCompanyExist(string $companyID)
+        public function isCompanyExist(int $companyID)
         {
             $companyID = $this->dbConnection->fetchAssoc(
                 'SELECT id FROM company WHERE id = ?',

@@ -57,10 +57,10 @@
         }
 
         /**
-         * @param int $roomID
+         * @param $roomID
          * @return bool
          */
-        public function isRoomExist(int $roomID)
+        public function isRoomExist($roomID)
         {
             foreach ($this->rooms as $room) {
                 if ($room->getID() == $roomID) {
