@@ -20,6 +20,22 @@
         }
 
         /**
+         * @param $id
+         * @return bool
+         * @throws \Doctrine\DBAL\DBALException
+         */
+        public function isWarehouseExist($id)
+        {
+            return $this->dbConnection->fetchAssoc(
+                'SELECT COUNT(*) as count FROM addresses
+                  INNER JOIN infoWarehouses ON addresses.address = infoWarehouses.address AND id = ?',
+                [
+                    $id
+                ]
+            )['count'] != 0;
+        }
+
+        /**
          * @param int $itemID
          * @param string $address
          * @param string $size

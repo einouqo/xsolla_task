@@ -264,9 +264,7 @@
             /** @var Employee $employee */
             $employee = $this->validateUser($user);
 
-            if (is_null($data['size'])){
-                throw new \Exception('You need to set size.', 400);
-            }
+            $this->itemActionValidate($data);
 
             $this->warehouseRepository->fillWarehousesForEmployee($employee);
             $warehouse = $employee->getWarehouseByID($data['warehouseFromID']);
@@ -286,7 +284,7 @@
             }
 
             if (isset($data['quantity']) && ($totalQuantity - $data['quantity'] < 0)) {
-                throw new \Exception('There is not enough items.', 403);
+                throw new \Exception('There is not enough items. Available: '.$totalQuantity.' units.', 403);
             }
 
             return key_exists('transfer', $_COOKIE) ?
@@ -324,10 +322,16 @@
          * @throws \Exception
          * @throws \Doctrine\DBAL\DBALException
          */
-        public function sendTransfer(EmployeeAbstract $user, int $warehouseToID)
+        public function sendTransfer(EmployeeAbstract $user, $warehouseToID)
         {
             $this->validateUser($user);
+            if (is_null($warehouseToID) || $warehouseToID == '') {
+                throw  new \Exception('Warehouse ID cannot be empty.', 403);
+            }
             $isSent = false;
+            if (!$this->warehouseRepository->isWarehouseExist($warehouseToID)) {
+                throw new \Exception('The warehouse with the specified identifier does not exist. Operation is forbidden.', 403);
+            }
             $transfers = $this->getTransfersFromCookie();
             if (gettype($transfers) == 'array') {
                 foreach ($transfers as $transfer) {
@@ -347,12 +351,18 @@
          * @param array $data
          * @throws \Exception
          */
-        private function sellValidate(array $data)
+        private function itemActionValidate(array $data)
         {
             foreach ($data as $field => $value) {
-                if (is_null($value)) {
+                if (is_null($value) || $value == '') {
                     throw new \Exception('Field '.$field.' cannot be empty.', 403);
                 }
+            }
+
+            if (!is_numeric($data['quantity'])) {
+                throw new \Exception('Quantity should be numeric.', 403);
+            } elseif ($data['quantity'] <= 0) {
+                throw new \Exception('Quantity should be positive.', 403);
             }
         }
 
@@ -392,7 +402,7 @@
         {
             /** @var Employee $employee */
             $employee = $this->validateUser($user);
-            $this->sellValidate($data);
+            $this->itemActionValidate($data);
             $this->warehouseRepository->fillWarehousesForEmployee($employee);
             $warehouse = $employee->getWarehouseByID($data['warehouseID']);
             if (is_null($warehouse)) {

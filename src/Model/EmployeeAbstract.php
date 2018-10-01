@@ -211,7 +211,7 @@
          * @param $id
          * @return Transfer|mixed|null
          */
-        public function getTransferByID(int $id)
+        public function getTransferByID($id)
         {
             foreach ($this->transfers as $transfer) {
                 if ($transfer->getID() == $id) {
