@@ -57,8 +57,8 @@
             $this->email = $data['email'];
             $this->password = $data['password'];
             $this->phone = $data['phone'];
-            $this->transfers = array();
-            $this->warehouses = array();
+            $this->transfers = [];
+            $this->warehouses = [];
         }
 
         /**
@@ -66,13 +66,13 @@
          */
         public function getPersonalInfo()
         {
-            return array(
+            return [
                 'name' => $this->name,
                 'lastname' => $this->lastname,
                 'email' => $this->email,
                 'password' => $this->password,
                 'phone' => $this->phone
-            );
+            ];
         }
 
         /**

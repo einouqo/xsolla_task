@@ -86,4 +86,92 @@
                 ]
             ];
         }
+
+        /**
+         * @dataProvider dataIsPending
+         */
+        public function testIsPending($transferData, $expected)
+        {
+            $transfer = new Transfer($transferData);
+            $this->assertEquals($transfer->isPending(), $expected);
+        }
+
+        public function dataIsPending()
+        {
+            return [
+                [
+                    $this->transferData,
+                    true
+                ]
+            ];
+        }
+
+        /**
+         * @dataProvider dataIsItemInTransaction
+         */
+        public function testIsItemInTransaction($transferData, $itemData, $expected)
+        {
+            $transfer = new Transfer($transferData);
+            $item = new Item($itemData);
+            $this->assertEquals($transfer->isItemInTransaction($item->getID()), $expected);
+            $transfer->addItem($item);
+            $this->assertEquals($transfer->isItemInTransaction($item->getID()), !$expected);
+        }
+
+        public function dataIsItemInTransaction()
+        {
+            return [
+                [
+                    $this->transferData,
+                    [
+                        'id' => 2,
+                        'name' => 'test2Item',
+                        'type' => 'test',
+                        'size' => '1',
+                        'price' => 500,
+                        'quantity' => 10
+                    ],
+                    false
+                ]
+            ];
+        }
+
+        /**
+         * @dataProvider dataItemsQuantity
+         */
+        public function testItemsQuantity($transferData, $item1Data, $item2Data, $expected)
+        {
+            $transfer = new Transfer($transferData);
+            $transfer->addItem(new Item($item1Data));
+            $transfer->addItem(new Item(($item2Data)));
+            $this->assertEquals($transfer->itemsQuantity(), $expected);
+        }
+
+        public function dataItemsQuantity()
+        {
+            $item1Data = [
+                'id' => 1,
+                'name' => 'test1Item',
+                'type' => 'test',
+                'size' => '1',
+                'price' => 1000,
+                'quantity' => 134
+            ];
+            $item2Data = [
+                'id' => 2,
+                'name' => 'test2Item',
+                'type' => 'test',
+                'size' => '1',
+                'price' => 500,
+                'quantity' => 20
+            ];
+            return [
+                [
+                    $this->transferData,
+                    $item1Data,
+                    $item2Data,
+                    154
+                ]
+            ];
+        }
     }
