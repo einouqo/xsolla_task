@@ -48,13 +48,13 @@
             if (is_null($data['userID']) || $data['userID'] == '') {
                 throw new \Exception('User ID cannot be empty.', 403);
             }
-            if(!is_numeric($data['userID'])) {
+            if(!ctype_digit($data['userID'])) {
                 throw new \Exception('User ID may consist digits only', 403);
             }
             if (is_null($data['warehouseID']) || $data['warehouseID'] == '') {
                 throw new \Exception('Warehouse ID cannot be empty.', 403);
             }
-            if(!is_numeric($data['warehouseID'])) {
+            if(!ctype_digit($data['warehouseID'])) {
                 throw new \Exception('Warehouse ID may consist digits only', 403);
             }
             if (!$admin->isEmployeeExist($data['userID'])) {
@@ -123,7 +123,7 @@
             if (is_null($data['roomID']) || $data['roomID'] == '') {
                 throw new \Exception('Room ID cannot be empty.', 403);
             }
-            if (!is_numeric($data['roomID'])) {
+            if (!ctype_digit($data['roomID'])) {
                 throw new \Exception('Room ID may consist digits only', 403);
             }
             if (is_null($data['name']) || $data['name'] == '') {
@@ -132,7 +132,7 @@
             if (is_null($data['capacity']) || $data['capacity'] == '') {
                 throw new \Exception('Capacity cannot be empty.', 403);
             }
-            if (!is_numeric($data['capacity'])) {
+            if (!ctype_digit($data['capacity'])) {
                 throw new \Exception('Capacity value may consist digits only', 403);
             }
             if ($data['capacity'] < 1) {
@@ -179,9 +179,9 @@
             }
 
             if (isset($data['capacity'])) {
-                if (!is_numeric($data['capacity'])) {
+                if (!ctype_digit($data['capacity'])) {
                     throw new \Exception('Capacity value may consist digits only and must be positive', 403);
-                } elseif ($data['capacity'] < 1) {
+                } elseif ($data['capacity'] == 0) {
                     throw new \Exception('Capacity value can be positive only.', 403);
                 }
             }
@@ -358,9 +358,9 @@
                     throw new \Exception('Field '.$field.' cannot be empty.', 403);
                 }
             }
-            if (!is_numeric($data['quantity'])) {
+            if (!ctype_digit($data['quantity'])) {
                 throw new \Exception('Quantity should be numeric.', 403);
-            } elseif ($data['quantity'] <= 0) {
+            } elseif ($data['quantity'] == 0) {
                 throw new \Exception('Quantity should be positive.', 403);
             }
 
@@ -387,7 +387,7 @@
                 throw new \Exception('Receiving warehouse ID cannot be empty.', 403);
             }
 
-            if (!is_numeric($warehouseID)) {
+            if (!ctype_digit($warehouseID)) {
                 throw new \Exception('Warehouse ID value may consist digits only.', 403);
             }
 

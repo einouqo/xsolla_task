@@ -38,7 +38,7 @@
         {
             if (is_null($phone) || $phone == '') {
                 throw new \Exception('Phone cannot be empty.', 403);
-            } elseif (!is_numeric($phone)) {
+            } elseif (!ctype_digit($phone)) {
                 throw new \Exception('Phone may consist digits only.', 403);
             } elseif (strlen($phone) > 11) {
                 throw new \Exception('Phone cannot be more than 11 digits.', 403);
@@ -84,7 +84,7 @@
 
             if (is_null($data['companyID']) || $data['companyID'] == '') {
                 throw new \Exception('Company ID cannot be empty.', 403);
-            } elseif (!is_numeric($data['companyID'])) {
+            } elseif (!ctype_digit($data['companyID'])) {
                 throw new \Exception('Company ID may consist digits only.', 403);
             }
 
@@ -92,7 +92,7 @@
 
             if (is_null($data['position']) || $data['position'] == '') {
                 throw new \Exception('Position cannot be empty. (0 - regular Employee, 1 - admin)', 403);
-            } elseif (!is_numeric($data['position']) || $data['position'] > 2 || $data['position'] < 0) {
+            } elseif (!ctype_digit($data['position']) || $data['position'] > 2 || $data['position'] < 0) {
                 throw new \Exception('Position value are wrong.', 403);
             }
 

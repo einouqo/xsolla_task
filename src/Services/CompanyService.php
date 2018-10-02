@@ -45,7 +45,7 @@
             if (is_null($data['companyID']) || $data['companyID'] == '') {
                 throw new \Exception('Company ID cannot be empty.', 403);
             }
-            if (!is_numeric($data['companyID'])) {
+            if (!ctype_digit($data['companyID'])) {
                 throw new \Exception('Company ID may consist digits only.', 403);
             }
             if (!$this->companyRepository->isEmptyWarehouses($data['companyID'])) {

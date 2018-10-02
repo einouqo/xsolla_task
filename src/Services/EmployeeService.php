@@ -359,7 +359,7 @@
                 }
             }
 
-            if (!is_numeric($data['quantity'])) {
+            if (!ctype_digit($data['quantity'])) {
                 throw new \Exception('Quantity should be numeric.', 403);
             } elseif ($data['quantity'] <= 0) {
                 throw new \Exception('Quantity should be positive.', 403);
