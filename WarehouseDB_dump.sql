@@ -11,7 +11,7 @@
  Target Server Version : 50723
  File Encoding         : 65001
 
- Date: 30/09/2018 22:09:27
+ Date: 05/10/2018 08:38:56
 */
 
 SET NAMES utf8mb4;
@@ -30,7 +30,7 @@ CREATE TABLE `addresses` (
   UNIQUE KEY `address` (`address`),
   KEY `id_company` (`id_company`),
   CONSTRAINT `id_company` FOREIGN KEY (`id_company`) REFERENCES `company` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- ----------------------------
 -- Table structure for company
@@ -41,7 +41,7 @@ CREATE TABLE `company` (
   `name` varchar(255) NOT NULL,
   `access_key` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- ----------------------------
 -- Table structure for delivery
@@ -60,7 +60,7 @@ CREATE TABLE `delivery` (
   KEY `size` (`size`),
   CONSTRAINT `delivery_ibfk_1` FOREIGN KEY (`address`) REFERENCES `infoWarehouses` (`address`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `delivery_ibfk_2` FOREIGN KEY (`id_item`) REFERENCES `items` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- ----------------------------
 -- Table structure for infoWarehouses
@@ -86,7 +86,7 @@ CREATE TABLE `items` (
   `type` varchar(255) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- ----------------------------
 -- Table structure for personalInfo
@@ -98,7 +98,7 @@ CREATE TABLE `personalInfo` (
   `lastname` varchar(255) NOT NULL,
   `phone` varchar(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- ----------------------------
 -- Table structure for positions
@@ -150,7 +150,7 @@ CREATE TABLE `selling` (
   KEY `selling_ibfk_2` (`id_address`),
   CONSTRAINT `selling_ibfk_2` FOREIGN KEY (`id_address`) REFERENCES `addresses` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `selling_ibfk_3` FOREIGN KEY (`id_item`) REFERENCES `items` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- ----------------------------
 -- Table structure for transfer
@@ -182,7 +182,7 @@ CREATE TABLE `transferHistory` (
   KEY `transferHistory_ibfk_2` (`id_to`),
   CONSTRAINT `transferHistory_ibfk_1` FOREIGN KEY (`id_from`) REFERENCES `addresses` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `transferHistory_ibfk_2` FOREIGN KEY (`id_to`) REFERENCES `addresses` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- ----------------------------
 -- Table structure for userAccessible
@@ -220,7 +220,7 @@ CREATE TABLE `users` (
   CONSTRAINT `users_ibfk_1` FOREIGN KEY (`id_company`) REFERENCES `company` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `users_ibfk_2` FOREIGN KEY (`id_personalData`) REFERENCES `personalInfo` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `users_ibfk_3` FOREIGN KEY (`position`) REFERENCES `positions` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- ----------------------------
 -- Triggers structure for table selling
@@ -228,11 +228,14 @@ CREATE TABLE `users` (
 DROP TRIGGER IF EXISTS `clean_items`;
 delimiter ;;
 CREATE TRIGGER `clean_items` AFTER DELETE ON `selling` FOR EACH ROW BEGIN
-DECLARE helper INT(11);
-   SET helper := (SELECT COUNT(*) 
-	 FROM `selling` 
-	 WHERE id_item = OLD.id_item);
-	 IF `helper` = 0 THEN BEGIN
+DECLARE helper_s INT(11);
+DECLARE helper_q INT(11);
+DECLARE helper_t INT(11);
+   SET helper_s := (SELECT COUNT(*) FROM `selling` WHERE id_item = OLD.id_item);
+	 SET helper_q := (SELECT COUNT(*) FROM `quantity` WHERE id_item = OLD.id_item);
+	 SET helper_t := (SELECT COUNT(*) FROM `transfer`
+INNER JOIN transferHistory ON id_history = id AND id_item = OLD.id_item AND date_receiving IS NULL);
+	 IF `helper_s` = 0 AND `helper_q` = 0 AND `helper_t` = 0 THEN BEGIN
 			DELETE FROM `items` WHERE id = OLD.id_item;
 			END;
 	 END IF;
