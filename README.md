@@ -1,6 +1,6 @@
 # Backend летняя школа - итоговая работа
 
-[![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=master)](https://travis-ci.org/joemccann/dillinger)
+![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=master)
 
 # Задача
 Требуется создать многопользовательское приложение для управления складскими запасами. Приложение нужно реализовать как backend сервис работающий по протоколу HTTP и использующий стандарт RESTful API . ([Полная постановка задачи][link_t])
